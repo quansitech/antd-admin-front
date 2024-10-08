@@ -5,7 +5,7 @@
 ## 安装
 
 ```shell
-npm install qs-antd-admin
+npm install @quansitech/antd-admin
 ```
 
 ## 使用参考
@@ -19,7 +19,7 @@ npm install qs-antd-admin
 对外暴露 [container](./lib/container.ts) 供外部调用
 
 ```ts
-import container from "qs-antd-admin/lib/container";
+import container from "@quansitech/antd-admin/lib/container";
 
 container.register('[组件名]', () => import('[组件路径]'));
 ```
@@ -34,7 +34,7 @@ container.register('[组件名]', () => import('[组件路径]'));
 ```tsx
 // [组件.tsx]
 
-import {TableActionProps} from "qs-antd-admin/compontents/Table/Action/types";
+import {TableActionProps} from "@quansitech/antd-admin/compontents/Table/Action/types";
 
 export default function (props: TableActionProps) {
     return <Button>{props.title}</Button>
@@ -42,7 +42,7 @@ export default function (props: TableActionProps) {
 
 // [app.tsx]
 
-import container from "qs-antd-admin/lib/container";
+import container from "@quansitech/antd-admin/lib/container";
 
 container.register('Table.Column.Action.组件名', () => import('[组件路径]'));
 
@@ -58,7 +58,7 @@ container.register('Table.Column.Action.组件名', () => import('[组件路径]
 ```tsx
 // [组件.tsx]
 
-import {FormItemProps} from "qs-antd-admin/compontents/Table/Column/FormItem/types";
+import {FormItemProps} from "@quansitech/antd-admin/compontents/Table/Column/FormItem/types";
 
 export default function (props: FormItemProps) {
     return <Input onChange={props.onChange} value={props.config.value}/>
@@ -66,7 +66,7 @@ export default function (props: FormItemProps) {
 
 // [app.tsx]
 
-import container from "qs-antd-admin/lib/container";
+import container from "@quansitech/antd-admin/lib/container";
 
 container.register('Table.Column.FormItem.组件名', () => import('[组件路径]'));
 
@@ -82,7 +82,7 @@ container.register('Table.Column.FormItem.组件名', () => import('[组件路�
 ```tsx
 // [组件.tsx]
 
-import {ColumnProps} from "qs-antd-admin/compontents/Table/Column/types";
+import {ColumnProps} from "@quansitech/antd-admin/compontents/Table/Column/types";
 
 export default function (props: ColumnProps) {
     return <>{props.record[props.dataIndex]}</>
@@ -90,7 +90,7 @@ export default function (props: ColumnProps) {
 
 // [app.tsx]
 
-import container from "qs-antd-admin/lib/container";
+import container from "@quansitech/antd-admin/lib/container";
 
 container.register('Table.Column.组件名', () => import('[组件路径]'));
 
@@ -106,7 +106,7 @@ container.register('Table.Column.组件名', () => import('[组件路径]'));
 ```tsx
 // [组件.tsx]
 
-import {TableColumnOptionProps} from "qs-antd-admin/compontents/Table/Column/Option/types";
+import {TableColumnOptionProps} from "@quansitech/antd-admin/compontents/Table/Column/Option/types";
 
 export default function (props: TableColumnOptionProps) {
     <a onClick={onClick}>{props.title}</a>
@@ -114,7 +114,7 @@ export default function (props: TableColumnOptionProps) {
 
 // [app.tsx]
 
-import container from "qs-antd-admin/lib/container";
+import container from "@quansitech/antd-admin/lib/container";
 
 container.register('Table.Column.Option.组件名', () => import('[组件路径]'));
 
