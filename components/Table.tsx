@@ -16,6 +16,7 @@ import container from "../lib/container";
 import {TableActionProps} from "./Table/Action/types";
 import http from "../lib/http";
 import {Spin} from "antd";
+import "./Table.scss"
 
 export type TableProps = ProTableProps<any, any> & {
     columns: ProColumnType[],
@@ -27,6 +28,7 @@ export type TableProps = ProTableProps<any, any> & {
     defaultSearchValue?: Record<string, any>,
     actions: TableActionProps[],
     searchUrl: string,
+    search?: boolean,
 }
 
 export default function (props: TableProps) {
@@ -42,9 +44,11 @@ export default function (props: TableProps) {
             ...filter,
             sort,
         }
-        data[props.pagination.paramName || 'page'] = data.current
-        delete data.current
-        delete data.pageSize
+        if (props.pagination) {
+            data[props.pagination.paramName || 'page'] = data.current
+            delete data.current
+            delete data.pageSize
+        }
 
         setEditableKeys([])
         setEditableValues([])
@@ -57,12 +61,14 @@ export default function (props: TableProps) {
                 }
             })
 
-            setPagination({
-                ...pagination,
-                current: params.current,
-            })
+            if (res.data.pagination) {
+                setPagination({
+                    ...res.data.pagination,
+                    current: params.current,
+                })
+            }
             return {
-                data: res.data,
+                data: res.data.dataSource || [],
                 success: true,
             }
         } finally {
@@ -79,9 +85,11 @@ export default function (props: TableProps) {
     const [loading, setLoading] = useState(false)
     const [initialized, setInitialized] = useState(false)
     const [pagination, setPagination] = useState<TablePaginationConfig>()
+    const [dataSource, setDataSource] = useState<any[]>([])
 
     useEffect(() => {
         setPagination(props.pagination as TablePaginationConfig || false)
+        setDataSource(props.dataSource)
 
         // 重新定义列
         setColumns(_.cloneDeep(props.columns)?.map((c: ProColumnType) => {
@@ -146,8 +154,10 @@ export default function (props: TableProps) {
             {!initialized && <ProSkeleton type={"list"} list={2}></ProSkeleton>}
             <ProTable rowKey={props.rowKey}
                       style={{display: initialized ? 'block' : 'none'}}
+                      tableClassName={'qs-antd-table'}
                       columns={columns}
-                      defaultData={props.dataSource}
+                      onDataSourceChange={setDataSource}
+                      dataSource={dataSource}
                       pagination={pagination}
                       loading={loading}
                       scroll={props.scroll}
@@ -217,6 +227,8 @@ export default function (props: TableProps) {
                       request={request}
                       formRef={formRef}
                       actionRef={actionRef}
+                      search={props.search}
+                      dateFormatter={props.dateFormatter}
             ></ProTable>
 
         </TableContext.Provider>

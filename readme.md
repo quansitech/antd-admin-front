@@ -24,6 +24,58 @@ import container from "@quansitech/antd-admin/lib/container";
 container.register('[组件名]', () => import('[组件路径]'));
 ```
 
+### 通用
+
+#### 通用Column Schema
+
+- 组件名前缀：``` Column. ```
+- 用途：表单项组件（非只读模式）、表格列编辑组件、表格搜索项组件
+- 示例：
+
+```tsx
+// [组件.tsx]
+import {ColumnProps} from "@quansitech/antd-admin/compontents/Column/types";
+
+export default function (props: ColumnProps) {
+
+    return <>
+        组件内容
+    </>
+}
+
+// [app.tsx]
+import container from "@quansitech/antd-admin/lib/container";
+
+container.register('Column.组件名', () => import('[组件路径]'));
+```
+
+- 若要补充组件库，请把组件放``` compontents/Column/ ``` 目录下
+
+#### 只读Column Schema
+
+- 组件名前缀：``` Column.Readonly. ```
+- 用途：表单项组件（只读模式）、表格列组件
+- 示例：
+
+```tsx
+// [组件.tsx]
+import {ColumnProps} from "@quansitech/antd-admin/compontents/Column/Readonly/types";
+
+export default function (props: ColumnProps) {
+
+    return <>
+        组件内容
+    </>
+}
+
+// [app.tsx]
+import container from "@quansitech/antd-admin/lib/container";
+
+container.register('Column.Readonly.组件名', () => import('[组件路径]'));
+```
+
+- 若要补充组件库，请把组件放``` compontents/Column/Readonly/ ``` 目录下
+
 ### 表格Table
 
 #### 工具栏操作组件
@@ -49,54 +101,6 @@ container.register('Table.Column.Action.组件名', () => import('[组件路径]
 ```
 
 - 若要补充组件库，请把组件放``` compontents/Table/Action/ ``` 目录下
-
-#### 列查询及编辑组件
-
-- 组件名前缀：``` Table.Column.FormItem. ```
-- 示例：
-
-```tsx
-// [组件.tsx]
-
-import {FormItemProps} from "@quansitech/antd-admin/compontents/Table/Column/FormItem/types";
-
-export default function (props: FormItemProps) {
-    return <Input onChange={props.onChange} value={props.config.value}/>
-}
-
-// [app.tsx]
-
-import container from "@quansitech/antd-admin/lib/container";
-
-container.register('Table.Column.FormItem.组件名', () => import('[组件路径]'));
-
-```
-
-- 若要补充组件库，请把组件放``` compontents/Table/Column/FormItem/ ``` 目录下
-
-#### 列渲染组件
-
-- 组件名前缀：``` Column. ```
-- 示例：
-
-```tsx
-// [组件.tsx]
-
-import {ColumnProps} from "@quansitech/antd-admin/compontents/Table/Column/types";
-
-export default function (props: ColumnProps) {
-    return <>{props.record[props.dataIndex]}</>
-}
-
-// [app.tsx]
-
-import container from "@quansitech/antd-admin/lib/container";
-
-container.register('Table.Column.组件名', () => import('[组件路径]'));
-
-```
-
-- 若要补充组件库，请把组件放``` compontents/Table/Column/ ``` 目录下
 
 #### 行操作组件
 

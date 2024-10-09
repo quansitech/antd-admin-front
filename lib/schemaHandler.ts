@@ -35,6 +35,45 @@ const uploadTransform = (value?: UploadFile[], _name?: string) => {
 }
 
 export const schemaHandler: Record<string, Handler> = {
+    dateTimeRange: schema => {
+        if (schema.search !== false) {
+            return {
+                ...schema,
+                search: {
+                    transform(value) {
+                        if (value) {
+                            return value.join(' - ')
+                        }
+                        return value
+                    }
+                }
+            }
+        }
+
+        return {
+            ...schema,
+        }
+    },
+    dateRange: schema => {
+        if (schema.search !== false) {
+            return {
+                ...schema,
+                search: {
+                    transform(value) {
+                        if (value) {
+                            return value.join(' - ')
+                        }
+                        return value
+                    }
+                }
+            }
+        }
+
+        return {
+            ...schema,
+        }
+    },
+
     // 上传
     image: schema => {
         schema.formItemProps.rules.push({
@@ -73,34 +112,4 @@ export const schemaHandler: Record<string, Handler> = {
         }
         return schema
     },
-
-    cascader1(schema) {
-        if (schema.fieldProps?.loadDataUrl) {
-            return {
-                ...schema,
-                fieldProps: {
-                    ...schema.fieldProps,
-                    loadData: async (selectedOptions: any) => {
-                        if (!selectedOptions) {
-                            return
-                        }
-                        const option = selectedOptions[selectedOptions.length - 1]
-                        const res = await http(schema.fieldProps.loadDataUrl, {
-                            params: {
-                                selected: selectedOptions?.map((item: any) => item.value).join(',')
-                            },
-                        })
-                        option.children = res.data
-                        console.log(option)
-                        return option
-                    },
-                },
-                request: async (params: any) => {
-                    const res = await http(schema.fieldProps.loadDataUrl)
-                    return res.data
-                }
-            }
-        }
-        return schema
-    }
 }

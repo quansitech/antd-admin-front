@@ -3,10 +3,12 @@ import {lazy, Suspense, useEffect, useState} from "react";
 import type {Tab} from 'rc-tabs/lib/interface';
 import _ from "lodash";
 import container from "../lib/container";
+import {routerNavigateTo} from "../lib/helpers";
 
 type TabProps = {
     title: string,
-    pane: {
+    url?: string,
+    pane?: {
         component: 'form' | 'table',
         props: any,
     }
@@ -19,11 +21,22 @@ export type TabsPageType = {
 
 export default function (props: TabsPageType) {
     const [items, setItems] = useState<Tab[]>([]);
+    const [activeKey, setActiveKey] = useState<string>();
 
     useEffect(() => {
+        setActiveKey(props.defaultActiveKey || Object.keys(props.tabs)[0])
+
         setItems(Object.keys(props.tabs).map(key => {
             const t = props.tabs[key]
-            const Component = lazy(() => container.get('Tab.Pane.' + _.upperFirst(t.pane.component)))
+
+            if (!t.pane) {
+                return {
+                    key,
+                    label: t.title,
+                }
+            }
+
+            const Component = lazy(() => container.get('Tab.Pane.' + _.upperFirst(t.pane?.component)))
 
             return {
                 key,
@@ -37,7 +50,19 @@ export default function (props: TabsPageType) {
         }))
     }, []);
 
+    const onChange = (key: string) => {
+        setActiveKey(key)
+
+        const tab = props.tabs[key]
+        if (tab.url) {
+            routerNavigateTo(tab.url)
+        }
+    }
+
     return <>
-        <Tabs items={items} defaultActiveKey={props.defaultActiveKey}></Tabs>
+        <Tabs items={items}
+              onChange={onChange}
+              activeKey={activeKey}
+        ></Tabs>
     </>
 }

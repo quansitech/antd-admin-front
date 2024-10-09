@@ -1,15 +1,15 @@
 import React, {useContext, useState} from "react";
 import {modal, replaceParams, replaceUrl, routerNavigateTo} from "../../../lib/helpers";
-import {Popconfirm, Spin} from "antd";
+import {Button, Popconfirm, Spin} from "antd";
 import {TableContext} from "../../TableContext";
 import http from "../../../lib/http";
 import {TableColumnOptionProps} from "./types";
-import {ModalOptions, RequestOptions} from "../../../types";
 
 type Props = TableColumnOptionProps & {
     href?: string,
     request?: RequestOptions,
     modal?: ModalOptions,
+    danger?: boolean
 }
 
 export default function (props: Props) {
@@ -58,11 +58,10 @@ export default function (props: Props) {
         <Spin spinning={loading}>
             {props.request?.confirm
                 ? <Popconfirm title={props.request?.confirm} onConfirm={onClick}>
-                    <a onClick={() => {
-                    }}>{props.title}</a>
-                </Popconfirm> : ''
+                    <Button type={"link"} danger={props.danger} onClick={() => {
+                    }}>{props.title}</Button>
+                </Popconfirm> : <Button type={"link"} danger={props.danger} onClick={onClick}>{props.title}</Button>
             }
-            <a onClick={onClick}>{props.title}</a>
         </Spin>
     </>
 }

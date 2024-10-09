@@ -60,9 +60,9 @@ export default function ({children}: {
                 const item = list[i];
                 if (item.key === key) {
                     return [item.key]
-                } else if (item.children) {
+                } else if (item.children?.length) {
                     const path = findKeyPath(key, item.children)
-                    if (path) {
+                    if (path?.length) {
                         return [item.key as string, ...path]
                     }
                 }
