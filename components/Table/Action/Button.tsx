@@ -4,7 +4,6 @@ import {TableContext} from "../../TableContext";
 import http from "../../../lib/http";
 import {modal, routerNavigateTo} from "../../../lib/helpers";
 import {TableActionProps} from "./types";
-import {ModalOptions, RequestOptions} from "../../../types";
 
 export default function (props: TableActionProps & {
     props: Record<string, any>,
@@ -28,6 +27,16 @@ export default function (props: TableActionProps & {
             const data = props.request.data || {}
             if (props.relateSelection) {
                 data.selection = props.selectedRows?.map(item => item[rowKey])
+                for (const key in data) {
+                    if (typeof data[key] !== 'string') {
+                        continue
+                    }
+                    const matches = data[key].match(/^__(\w+)__$/)
+                    if (!matches) {
+                        continue
+                    }
+                    data[key] = props.selectedRows?.map(item => item[matches[1]])
+                }
             }
             try {
                 await http({
