@@ -2,8 +2,8 @@ import {ColumnProps} from "./types";
 import {Component} from "react";
 import {createScript, filterObjectKeys} from "../../lib/helpers";
 import {Spin} from "antd";
-import _ from "lodash";
 import {ModalContext} from "../ModalContext";
+import uniqueId from "lodash/uniqueId";
 
 export default class Ueditor extends Component<ColumnProps & {
     fieldProps: {
@@ -17,7 +17,7 @@ export default class Ueditor extends Component<ColumnProps & {
     containerRef: HTMLElement | null = null
     state = {
         loading: true,
-        containerId: _.uniqueId('ueditor_'),
+        containerId: uniqueId('ueditor_'),
         width: '',
     }
 

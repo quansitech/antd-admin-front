@@ -4,14 +4,13 @@ import type {LayoutProps} from "./LayoutContext";
 import {LayoutContext} from "./LayoutContext";
 import {useEffect, useState} from "react";
 import {usePage} from "@inertiajs/react";
-import _ from "lodash";
 import {routerNavigateTo} from "../lib/helpers";
 import {MenuInfo} from "rc-menu/lib/interface";
 import http from "../lib/http";
 // @ts-ignore
-import Animate from "rc-animate"
 import {Route} from '@ant-design/pro-layout/lib/typing';
 import global from "../lib/global";
+import assign from "lodash/assign";
 
 export default function ({children}: {
     children: React.ReactNode
@@ -37,7 +36,7 @@ export default function ({children}: {
     })
 
     const assignProps = (newProps: LayoutProps) => {
-        setProps(_.assign(props, newProps))
+        setProps(assign(props, newProps))
     }
 
     const headerContentRender = () => {
@@ -54,7 +53,6 @@ export default function ({children}: {
     const [route, setRoute] = useState<Route>()
 
     useEffect(() => {
-
         function findKeyPath(key: string, list: MenuDataItem[]): string[] {
             for (let i = 0; i < list.length; i++) {
                 const item = list[i];
@@ -78,12 +76,25 @@ export default function ({children}: {
     }, [props.menuActiveKey]);
 
     useEffect(() => {
-        if (props.metaTitle) {
-            setPageTitle(props.metaTitle + ' - ' + props.title)
-            return
+        if (pageProps.layoutProps?.menuActiveKey) {
+            assignProps({
+                menuActiveKey: pageProps.layoutProps.menuActiveKey
+            })
         }
-        setPageTitle(props.title as string)
-    }, [props.metaTitle]);
+
+        const title = props.title || layoutProps.title
+        if (pageProps.layoutProps?.metaTitle) {
+            setPageTitle(pageProps.layoutProps.metaTitle + ' - ' + title)
+            assignProps({
+                metaTitle: pageProps.layoutProps.metaTitle + ' - ' + title
+            })
+        } else {
+            setPageTitle(title as string)
+            assignProps({
+                metaTitle: title
+            })
+        }
+    }, [pageProps]);
 
 
     useEffect(() => {
@@ -123,38 +134,6 @@ export default function ({children}: {
 
         setRoute(r)
 
-        const onNavigate = (e: any) => {
-            if (e.detail.page.props.layoutProps) {
-                assignProps({
-                    ...e.detail.page.props.layoutProps,
-                })
-            } else {
-                assignProps({
-                    metaTitle: '',
-                })
-            }
-        }
-
-        const onBefore = (e: any) => {
-            assignProps({
-                loading: true
-            })
-        }
-        const onFinish = (e: any) => {
-            assignProps({
-                loading: false
-            })
-        }
-
-        document.addEventListener('inertia:before', onBefore)
-        document.addEventListener('inertia:navigate', onNavigate)
-        document.addEventListener('inertia:finish', onFinish)
-
-        return () => {
-            document.removeEventListener('inertia:navigate', onNavigate)
-            document.removeEventListener('inertia:before', onBefore)
-            document.removeEventListener('inertia:finish', onFinish)
-        }
     }, [])
 
 
@@ -199,7 +178,7 @@ export default function ({children}: {
                        footerRender={() => <>
                            <Space>
                                <a href="https://www.quansitech.com/" target={'_blank'}>全思科技</a>
-                               <a href="https://github.com/quansitech/qs_cmf" target={'_blank'}>Github</a>
+                               <a href="https://github.com/quansitech/" target={'_blank'}>Github</a>
                            </Space>
                        </>}
                        avatarProps={{
@@ -241,12 +220,6 @@ export default function ({children}: {
                            onClick: onMenuClick,
                            onOpenChange: setOpenKeys
                        }}
-                // menu={{
-                // type: "group"
-                // request: async () => {
-                //     return layoutProps.menuList || []
-                // }
-                // }}
             >
 
                 <PageContainer title={props.metaTitle}>

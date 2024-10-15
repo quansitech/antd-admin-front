@@ -1,4 +1,4 @@
-import React, {lazy, Suspense, useEffect, useRef, useState} from "react";
+import React, {lazy, Suspense, useContext, useEffect, useRef, useState} from "react";
 import {
     ActionType,
     FormInstance,
@@ -9,7 +9,8 @@ import {
 } from "@ant-design/pro-components";
 import type {SortOrder} from "antd/lib/table/interface";
 import {TablePaginationConfig} from "antd/es/table";
-import _, {upperFirst} from "lodash"
+import isArray from "lodash/isArray"
+import upperFirst from "lodash/upperFirst"
 import {TableContext} from "./TableContext";
 import ToolbarActions from "./Table/ToolbarActions";
 import container from "../lib/container";
@@ -17,6 +18,9 @@ import {TableActionProps} from "./Table/Action/types";
 import http from "../lib/http";
 import {Spin} from "antd";
 import "./Table.scss"
+import {ModalContext} from "./ModalContext";
+import cloneDeep from "lodash/cloneDeep";
+import uniqueId from "lodash/uniqueId";
 
 export type TableProps = ProTableProps<any, any> & {
     columns: ProColumnType[],
@@ -86,13 +90,16 @@ export default function (props: TableProps) {
     const [initialized, setInitialized] = useState(false)
     const [pagination, setPagination] = useState<TablePaginationConfig>()
     const [dataSource, setDataSource] = useState<any[]>([])
+    const [sticky, setSticky] = useState<TableProps['sticky']>(true)
+
+    const modalContext = useContext(ModalContext)
 
     useEffect(() => {
         setPagination(props.pagination as TablePaginationConfig || false)
-        setDataSource(props.dataSource)
+        setDataSource(postData(props.dataSource))
 
         // 重新定义列
-        setColumns(_.cloneDeep(props.columns)?.map((c: ProColumnType) => {
+        setColumns(cloneDeep(props.columns)?.map((c: ProColumnType) => {
             c.key = c.dataIndex as string
 
             // 列render
@@ -113,8 +120,6 @@ export default function (props: TableProps) {
             if (container.check(formItemComponent)) {
                 const Component = lazy(container.get(formItemComponent))
                 c.renderFormItem = (schema, config, form) => (
-                    // config.isEditable
-                    //     ? config.defaultRender(schema)
                     <Suspense fallback={<Spin/>}>
                         <Component config={config}
                                    form={form}
@@ -137,10 +142,43 @@ export default function (props: TableProps) {
             return c
         }))
 
-
         setLoading(false)
         setInitialized(true)
+
+        if (!modalContext.inModal) {
+            setSticky({
+                offsetHeader: document.querySelector('.ant-layout-header')?.clientHeight || 56,
+            })
+        }
+
     }, []);
+
+    const postData = (data: any[]) => {
+        if (!isArray(data)) {
+            return data
+        }
+
+        props.columns.map(column => {
+            switch (column.valueType) {
+                case 'dateTime':
+                    data = data.map(row => {
+                        const v = row[column.dataIndex]
+                        if (parseInt(v) == v && v < 4102444800) {
+                            row[column.dataIndex] *= 1000
+                        }
+                        return row
+                    })
+                    break;
+            }
+        })
+
+        return data.map(row => {
+            if (typeof row[props.rowKey] === 'undefined') {
+                row[props.rowKey] = uniqueId('row_')
+            }
+            return row
+        })
+    }
 
 
     return <>
@@ -160,7 +198,8 @@ export default function (props: TableProps) {
                       dataSource={dataSource}
                       pagination={pagination}
                       loading={loading}
-                      scroll={props.scroll}
+                      postData={postData}
+                      sticky={sticky}
                       form={{
                           onValuesChange(changedValues) {
                               const key = Object.keys(changedValues)[0]

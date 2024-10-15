@@ -2,6 +2,10 @@ import axios, {AxiosError} from "axios";
 import {routerNavigateTo} from "./helpers";
 import global from "./global";
 
+/**
+ * fetchOptions.noHandle 成功时不处理 url 和 info
+ */
+
 const http = axios.create({})
 
 http.interceptors.request.use(config => {
@@ -30,6 +34,9 @@ http.interceptors.response.use(response => {
         return true
     }
 
+    if (response.config.fetchOptions?.noHandle) {
+        return response
+    }
     const showInfo = checkInfo(response.data)
 
     if (response.data.url) {

@@ -3,7 +3,7 @@ import {lazy, useEffect, useState} from "react";
 import {ReactComponentLike} from "prop-types";
 import {Space} from "antd";
 import container from "../../lib/container";
-import _ from "lodash";
+import upperFirst from "lodash/upperFirst";
 
 export default function (props: {
     actions?: FormActionType[]
@@ -16,7 +16,7 @@ export default function (props: {
     useEffect(() => {
         setComponents(props.actions?.map(a => {
             return {
-                Component: lazy(container.get('Form.Action.' + _.upperFirst(a.type))),
+                Component: lazy(container.get('Form.Action.' + upperFirst(a.type))),
                 props: {
                     ...a,
                 },

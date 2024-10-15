@@ -5,11 +5,10 @@ import {Rules, ValidateError, ValidateFieldsError, Values} from "@rc-component/a
 import {Spin} from "antd";
 import http from "./http";
 import container from "./container";
-import {upperFirst} from "lodash";
+import upperFirst from "lodash/upperFirst";
 import {lazy, Suspense} from "react";
 import global from "./global";
 import {ModalContext} from "../components/ModalContext";
-import {ModalOptions} from "../types";
 
 export function replaceUrl(url: string, params: any) {
     return url.replace(/__([\w]+)__/g, (match, key) => {

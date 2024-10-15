@@ -9,7 +9,7 @@ export default function (props: ColumnReadonlyProps & {
         }
     }
 }) {
-    const [text, setText] = useState<ReactNode>('');
+    const [text, setText] = useState<ReactNode>('-');
 
     useEffect(() => {
         setText(props.dom)
@@ -24,22 +24,21 @@ export default function (props: ColumnReadonlyProps & {
                     value,
                 }
             }).then(res => {
-
-                if (value) {
-                    const findValue = (options: any[], value: any): any => {
-                        for (let i = 0; i < options.length; i++) {
-                            const option = options[i];
-                            if (option.value === value) {
-                                return [option.label]
-                            } else if (option.children) {
-                                return [option.label, ...findValue(option.children, value)]
-                            }
+                if (!value) {
+                    return
+                }
+                const findValue = (options: any[], value: any): any => {
+                    for (let i = 0; i < options.length; i++) {
+                        const option = options[i];
+                        if (option.value === value) {
+                            return [option.label]
+                        } else if (option.children) {
+                            return [option.label, ...findValue(option.children, value)]
                         }
                     }
-
-                    setText(findValue(res.data, value).join(' / '))
-
                 }
+
+                setText(findValue(res.data, value).join(' / '))
 
             })
         }

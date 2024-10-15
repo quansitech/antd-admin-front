@@ -1,9 +1,9 @@
 import {lazy, useEffect, useState} from "react";
 import container from "../../lib/container";
-import _ from "lodash";
 import {ReactComponentLike} from "prop-types";
 import {Space} from "antd";
 import {TableActionProps} from "./Action/types";
+import upperFirst from "lodash/upperFirst";
 
 export default function ({
                              actions,
@@ -20,18 +20,17 @@ export default function ({
     useEffect(() => {
         setComponents(actions.map(a => {
             return {
-                Component: lazy(container.get('Table.Action.' + _.upperFirst(a.type))),
+                Component: lazy(container.get('Table.Action.' + upperFirst(a.type))),
                 props: {
                     ...a,
                 },
             }
         }))
 
-
     }, []);
 
     return <>
-        <Space>
+        <Space wrap={true}>
             {components.map(c => (
                 <c.Component key={c.props.title} {...c.props} selectedRows={selectedRows}></c.Component>
             ))}

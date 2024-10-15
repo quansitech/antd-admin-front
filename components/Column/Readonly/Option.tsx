@@ -1,4 +1,3 @@
-import _ from "lodash";
 import {Component, lazy, useEffect, useState} from "react";
 import {ReactComponentLike} from "prop-types";
 import container from "../../../lib/container";
@@ -6,6 +5,7 @@ import {Space} from "antd";
 import {ColumnReadonlyProps} from "./types";
 import {asyncFilter, handleRules} from "../../../lib/helpers";
 import {Rules} from "@rc-component/async-validator/lib/interface";
+import upperFirst from "lodash/upperFirst";
 
 type ComponentType = {
     component: ReactComponentLike,
@@ -30,7 +30,7 @@ export default ({options, record}: ColumnReadonlyProps & {
                 }
                 return await handleRules(Component.showRules, record)
             }).then((Components: { type: string }[]) => setComponents(Components.map(a => {
-                const c = `Table.Option.${_.upperFirst(a.type)}`
+                const c = `Table.Option.${upperFirst(a.type)}`
                 return {
                     props: {
                         ...a,

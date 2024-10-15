@@ -1,14 +1,16 @@
 import {BetaSchemaForm, ProFormColumnsType, ProFormInstance, ProSkeleton} from "@ant-design/pro-components";
 import type {FormSchema} from "@ant-design/pro-form/es/components/SchemaForm/typing";
 import React, {lazy, Suspense, useEffect, useRef, useState} from "react";
-import _, {upperFirst} from "lodash";
+import upperFirst from "lodash/upperFirst";
 import container from "../lib/container";
 import {FormActionType} from "./Form/Action/types";
 import Actions from "./Form/Actions";
 import {FormContext, SubmitRequestType} from "./FormContext";
 import {Col, Row, Spin} from "antd";
 import http from "../lib/http";
-import {Rule} from "rc-field-form/lib/interface";
+import {RuleObject} from "rc-field-form/lib/interface";
+import customRule from "../lib/customRule";
+import cloneDeep from "lodash/cloneDeep";
 
 export default function (props: FormSchema & {
     actions?: FormActionType[]
@@ -28,9 +30,11 @@ export default function (props: FormSchema & {
     })
 
     useEffect(() => {
-        setColumns((_.cloneDeep(props.columns)?.map((c: ProFormColumnsType & {
+        setColumns((cloneDeep(props.columns)?.map((c: ProFormColumnsType & {
             formItemProps?: {
-                rules?: Rule[]
+                rules?: (RuleObject & {
+                    customType?: string
+                })[]
             }
         }) => {
             // rules
@@ -40,6 +44,14 @@ export default function (props: FormSchema & {
             if (!c.formItemProps?.rules) {
                 c.formItemProps.rules = []
             }
+            c.formItemProps.rules = c.formItemProps.rules.map(rule => {
+                if (rule.customType) {
+                    if (customRule[rule.customType]) {
+                        rule.validator = customRule[rule.customType]
+                    }
+                }
+                return rule
+            })
 
             // item render
             const formItemComponent = 'Column.' + upperFirst(c.valueType as string)

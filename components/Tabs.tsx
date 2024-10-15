@@ -1,9 +1,10 @@
 import {Tabs} from "antd";
 import {lazy, Suspense, useEffect, useState} from "react";
 import type {Tab} from 'rc-tabs/lib/interface';
-import _ from "lodash";
 import container from "../lib/container";
 import {routerNavigateTo} from "../lib/helpers";
+import upperFirst from "lodash/upperFirst";
+import {ProSkeleton} from "@ant-design/pro-components";
 
 type TabProps = {
     title: string,
@@ -33,10 +34,13 @@ export default function (props: TabsPageType) {
                 return {
                     key,
                     label: t.title,
+                    children: <>
+                        <ProSkeleton list={2}></ProSkeleton>
+                    </>
                 }
             }
 
-            const Component = lazy(() => container.get('Tab.Pane.' + _.upperFirst(t.pane?.component)))
+            const Component = lazy(() => container.get('Tab.Pane.' + upperFirst(t.pane?.component)))
 
             return {
                 key,

@@ -15,6 +15,9 @@ export async function customRequest(options: UploadRequestOption & {
         url: options.action,
         method: 'get',
         headers: options.headers,
+        fetchOptions: {
+            noHandle: true
+        },
         params: {
             title: options.file.name,
             hash_id: options.file.hash_id,
@@ -48,6 +51,9 @@ export async function customRequest(options: UploadRequestOption & {
             url: url,
             method: 'post',
             data: formData,
+            fetchOptions: {
+                noHandle: true
+            },
             headers: options.headers,
             onUploadProgress(ev) {
                 options.onProgress && options.onProgress({
@@ -78,8 +84,8 @@ export async function customRequest(options: UploadRequestOption & {
                 url: options.action
             })
         }
+        throw e
     }
-    return
 }
 
 export type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];

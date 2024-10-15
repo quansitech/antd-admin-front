@@ -6,15 +6,17 @@ import {FormContext} from "../../FormContext";
 import {modal, replaceParams, replaceUrl, routerNavigateTo} from "../../../lib/helpers";
 import {ModalContext} from "../../ModalContext";
 import {TableContext} from "../../TableContext";
-import {ModalOptions, RequestOptions} from "../../../types";
 
 export default function (props: FormActionType & {
+    props: any,
+
+    // 操作
     submit?: RequestOptions,
     request?: RequestOptions,
     link?: {
         url: string,
     }
-    props: any,
+    back?: boolean,
     reset?: boolean,
     modal?: ModalOptions,
 }) {
@@ -86,6 +88,10 @@ export default function (props: FormActionType & {
             }
             if (props.reset) {
                 formContext.formRef?.resetFields()
+                return
+            }
+            if (props.back) {
+                history.back()
                 return
             }
         } finally {
