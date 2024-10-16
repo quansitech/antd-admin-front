@@ -42,6 +42,7 @@ export default function (props: TableActionProps & {
                 await http({
                     url: props.request.url,
                     method: props.request.method,
+                    headers: props.request.headers || {},
                     data: data,
                 })
             } finally {

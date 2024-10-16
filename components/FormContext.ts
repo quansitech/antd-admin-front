@@ -1,20 +1,8 @@
 import {ProFormInstance} from "@ant-design/pro-components";
-import {createContext} from "react";
-
-export type DisabledSubmitType = boolean | {
-    reason: string
-}
-export type SubmitRequestType = {
-    url: string,
-    method?: string,
-    data?: any,
-    afterSubmit?: () => void,
-}
+import {createContext, MutableRefObject} from "react";
 
 type FormContextType = {
-    formRef?: ProFormInstance,
-
-    setSubmitRequest?: (request: SubmitRequestType) => void
+    formRef?: MutableRefObject<ProFormInstance | undefined>,
 }
 
 export const FormContext = createContext<FormContextType>({})

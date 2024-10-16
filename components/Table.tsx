@@ -21,6 +21,7 @@ import "./Table.scss"
 import {ModalContext} from "./ModalContext";
 import cloneDeep from "lodash/cloneDeep";
 import uniqueId from "lodash/uniqueId";
+import {commonHandler} from "../lib/schemaHandler";
 
 export type TableProps = ProTableProps<any, any> & {
     columns: ProColumnType[],
@@ -135,6 +136,7 @@ export default function (props: TableProps) {
                 c.initialValue = props.defaultSearchValue[c.dataIndex as string]
             }
 
+            commonHandler(c)
             if (container.schemaHandler[c.valueType as string]) {
                 return container.schemaHandler[c.valueType as string](c) as ProColumnType
             }
@@ -198,6 +200,7 @@ export default function (props: TableProps) {
                       dataSource={dataSource}
                       pagination={pagination}
                       loading={loading}
+                      scroll={{x: true}}
                       postData={postData}
                       sticky={sticky}
                       form={{

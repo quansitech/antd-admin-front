@@ -34,6 +34,13 @@ const uploadTransform = (value?: UploadFile[], _name?: string) => {
     return value
 }
 
+export const commonHandler: Handler = schema => {
+    if (schema.valueEnum) {
+        schema.valueEnum = new Map(schema.valueEnum)
+    }
+    return schema
+}
+
 export const schemaHandler: Record<string, Handler> = {
     dateTimeRange: schema => {
         if (schema.search !== false) {

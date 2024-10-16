@@ -1,7 +1,7 @@
 import {Component, lazy, useEffect, useState} from "react";
 import {ReactComponentLike} from "prop-types";
 import container from "../../../lib/container";
-import {Space} from "antd";
+import {Flex} from "antd";
 import {ColumnReadonlyProps} from "./types";
 import {asyncFilter, handleRules} from "../../../lib/helpers";
 import {Rules} from "@rc-component/async-validator/lib/interface";
@@ -45,14 +45,14 @@ export default ({options, record}: ColumnReadonlyProps & {
 
     return <>
         {
-            <Space>
+            <Flex wrap={true}>
                 {
                     Components.map(Component => {
                         return <Component.component
                             key={Component.props.title} {...Component.props}></Component.component>
                     })
                 }
-            </Space>
+            </Flex>
         }
     </>
 }

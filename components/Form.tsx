@@ -1,33 +1,41 @@
 import {BetaSchemaForm, ProFormColumnsType, ProFormInstance, ProSkeleton} from "@ant-design/pro-components";
 import type {FormSchema} from "@ant-design/pro-form/es/components/SchemaForm/typing";
-import React, {lazy, Suspense, useEffect, useRef, useState} from "react";
+import React, {lazy, Suspense, useContext, useEffect, useRef, useState} from "react";
 import upperFirst from "lodash/upperFirst";
 import container from "../lib/container";
 import {FormActionType} from "./Form/Action/types";
 import Actions from "./Form/Actions";
-import {FormContext, SubmitRequestType} from "./FormContext";
+import {FormContext} from "./FormContext";
 import {Col, Row, Spin} from "antd";
 import http from "../lib/http";
 import {RuleObject} from "rc-field-form/lib/interface";
 import customRule from "../lib/customRule";
 import cloneDeep from "lodash/cloneDeep";
+import {ModalContext} from "./ModalContext";
+import {TableContext} from "./TableContext";
+import {commonHandler} from "../lib/schemaHandler";
+
+type SubmitRequestType = {
+    url: string,
+    method?: string,
+    data?: any,
+    afterSubmit?: () => void,
+    headers?: Record<string, string>
+    afterAction?: string[],
+}
+
 
 export default function (props: FormSchema & {
     actions?: FormActionType[]
     metaTitle?: string,
     columns?: ProFormColumnsType[],
+    submitRequest?: SubmitRequestType
 }) {
 
     const [columns, setColumns] = useState<ProFormColumnsType[]>([])
     const formRef = useRef<ProFormInstance>()
     const [initialized, setInitialized] = useState(false)
-    const [submitRequest, setSubmitRequest] = useState<SubmitRequestType>({
-        url: '',
-        method: 'POST',
-        data: {},
-        afterSubmit: () => {
-        }
-    })
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         setColumns((cloneDeep(props.columns)?.map((c: ProFormColumnsType & {
@@ -84,6 +92,7 @@ export default function (props: FormSchema & {
                     </Suspense>
             }
 
+            commonHandler(c)
             if (container.schemaHandler[c.valueType as string]) {
                 return container.schemaHandler[c.valueType as string](c)
             }
@@ -94,12 +103,48 @@ export default function (props: FormSchema & {
         setInitialized(true)
     }, []);
 
+    const modalContext = useContext(ModalContext)
+    const tableContext = useContext(TableContext)
+
+    const handleAfterAction = async (req?: SubmitRequestType) => {
+        if (req?.afterAction?.includes('tableReload')) {
+            if (modalContext.contexts) {
+                modalContext.setAfterClose(() => {
+                    modalContext.contexts?.tableContext?.actionRef.reload()
+                })
+            }
+            if (tableContext.actionRef) {
+                await tableContext.actionRef.reload()
+            }
+        }
+        if (req?.afterAction?.includes('closeModal') && modalContext.inModal) {
+            modalContext.closeModal()
+        }
+    }
+
+    const onFinish = async (values: any) => {
+        if (props.submitRequest) {
+            setLoading(true)
+            try {
+                await http({
+                    method: props.submitRequest.method,
+                    url: props.submitRequest.url,
+                    data: Object.assign({}, props.submitRequest.data, values),
+                    headers: props.submitRequest.headers,
+                })
+
+                handleAfterAction(props.submitRequest)
+            } finally {
+                setLoading(false)
+            }
+        }
+    }
+
     return <>
         <Row justify={'center'}>
             <Col sm={24} md={22} lg={20}>
                 <FormContext.Provider value={{
-                    formRef: formRef.current,
-                    setSubmitRequest,
+                    formRef: formRef,
                 }}>
                     {!initialized
                         ? <ProSkeleton type={"list"} list={2}></ProSkeleton>
@@ -107,19 +152,14 @@ export default function (props: FormSchema & {
                                           colProps={props.colProps}
                                           readonly={props.readonly}
                                           grid={true}
+                                          loading={loading}
                                           formRef={formRef}
                                           initialValues={props.initialValues}
-                                          onFinish={async (values) => {
-                                              await http({
-                                                  method: submitRequest.method,
-                                                  url: submitRequest.url,
-                                                  data: Object.assign({}, submitRequest.data, values),
-                                              })
-                                              submitRequest.afterSubmit && submitRequest.afterSubmit()
-                                          }}
+                                          onFinish={onFinish}
                                           submitter={{
                                               render: () => [
-                                                  <Actions key={'actions'} actions={props.actions}></Actions>
+                                                  <Actions key={'actions'} loading={loading}
+                                                           actions={props.actions}></Actions>
                                               ]
                                           }}
                         ></BetaSchemaForm>

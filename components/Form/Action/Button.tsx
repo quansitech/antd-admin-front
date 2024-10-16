@@ -1,6 +1,6 @@
 import {FormActionType} from "./types";
 import {Button, Popconfirm} from "antd";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import http from "../../../lib/http";
 import {FormContext} from "../../FormContext";
 import {modal, replaceParams, replaceUrl, routerNavigateTo} from "../../../lib/helpers";
@@ -11,7 +11,9 @@ export default function (props: FormActionType & {
     props: any,
 
     // 操作
-    submit?: RequestOptions,
+    submit?: boolean | {
+        confirm?: string
+    },
     request?: RequestOptions,
     link?: {
         url: string,
@@ -46,25 +48,16 @@ export default function (props: FormActionType & {
             }
 
             if (props.submit) {
-                formContext.setSubmitRequest && formContext.setSubmitRequest({
-                    url: props.submit.url,
-                    method: props.submit.method,
-                    data: props.submit.data,
-                    afterSubmit() {
-                        handleAfterAction(props.submit)
-                    }
-                })
-
-                formContext.formRef?.submit()
-
+                formContext.formRef?.current?.submit()
                 return
             }
             if (props.request) {
                 await http({
                     method: props.request.method,
                     url: props.request.url,
+                    headers: props.request.headers || {},
                     data: replaceParams(props.request.data || {}, {
-                        ...(await formContext.formRef?.getFieldsValue()),
+                        ...(await formContext.formRef?.current?.getFieldsValue()),
                     })
                 })
 
@@ -76,18 +69,18 @@ export default function (props: FormActionType & {
                     ...props.modal,
                     content: {
                         ...props.modal.content,
-                        url: replaceUrl(props.modal.content.url as string, formContext.formRef?.getFieldsValue())
+                        url: replaceUrl(props.modal.content.url as string, formContext.formRef?.current?.getFieldsValue())
                     }
                 })
                 return
             }
 
             if (props.link) {
-                routerNavigateTo(replaceUrl(props.link.url, await formContext.formRef?.getFieldsValue()))
+                routerNavigateTo(replaceUrl(props.link.url, await formContext.formRef?.current?.getFieldsValue()))
                 return
             }
             if (props.reset) {
-                formContext.formRef?.resetFields()
+                formContext.formRef?.current?.resetFields()
                 return
             }
             if (props.back) {
@@ -97,8 +90,13 @@ export default function (props: FormActionType & {
         } finally {
             setLoading(false)
         }
-
     }
+
+    useEffect(() => {
+        if (props.submit) {
+            setLoading(props.loading || false)
+        }
+    }, [props.loading]);
 
     const MyButton = ({onClick}: {
         onClick?: () => void,
@@ -112,10 +110,13 @@ export default function (props: FormActionType & {
         </>
     }
 
+    const confirm = (typeof props.submit === 'object' ? props.submit.confirm : null)
+        || props.request?.confirm
+
     return <>
         {
-            (props.submit?.confirm || props.request?.confirm) ?
-                <Popconfirm title={props.submit?.confirm || props.request?.confirm} onConfirm={onClick}>
+            confirm ?
+                <Popconfirm title={confirm} onConfirm={onClick}>
                     <MyButton></MyButton>
                 </Popconfirm>
                 : <MyButton onClick={onClick}></MyButton>

@@ -4,6 +4,7 @@ type RequestOptions = {
     data?: Record<string, any>,
     confirm?: string | boolean,
     afterAction?: string[],
+    headers?: Record<string, string>,
 }
 
 type Condition = {

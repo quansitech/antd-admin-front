@@ -28,6 +28,7 @@ export default function (props: Props) {
                 await http({
                     method: props.request.method,
                     url: replaceUrl(props.request.url, props.record),
+                    headers: props.request.headers || {},
                     data: props.request.data ? replaceParams(props.request.data, props.record) : null,
                 })
 

@@ -7,6 +7,7 @@ import upperFirst from "lodash/upperFirst";
 
 export default function (props: {
     actions?: FormActionType[]
+    loading?: boolean
 }) {
     const [components, setComponents] = useState<{
         Component: ReactComponentLike,
@@ -27,7 +28,7 @@ export default function (props: {
     return <>
         <Space>
             {components.map(item => (
-                <item.Component key={item.props.title} {...item.props}></item.Component>
+                <item.Component key={item.props.title} loading={props.loading} {...item.props}></item.Component>
             ))}
         </Space>
     </>

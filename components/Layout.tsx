@@ -2,7 +2,7 @@ import {MenuDataItem, PageContainer, ProLayout} from "@ant-design/pro-components
 import {App, Dropdown, Menu, Space} from "antd";
 import type {LayoutProps} from "./LayoutContext";
 import {LayoutContext} from "./LayoutContext";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {usePage} from "@inertiajs/react";
 import {routerNavigateTo} from "../lib/helpers";
 import {MenuInfo} from "rc-menu/lib/interface";
@@ -22,6 +22,7 @@ export default function ({children}: {
 
     const layoutProps = pageProps.layoutProps
     const {modal, notification, message} = App.useApp()
+    const contentRef = useRef<HTMLDivElement>(null)
 
     const [props, setProps] = useState<LayoutProps>({
         title: '',
@@ -134,6 +135,11 @@ export default function ({children}: {
 
         setRoute(r)
 
+        // 设置内容高度
+        if (contentRef.current) {
+            contentRef.current.style.minHeight = (window.innerHeight - 200) + 'px'
+        }
+
     }, [])
 
 
@@ -223,7 +229,7 @@ export default function ({children}: {
             >
 
                 <PageContainer title={props.metaTitle}>
-                    <div>{children}</div>
+                    <div ref={contentRef}>{children}</div>
                 </PageContainer>
             </ProLayout>
         </LayoutContext.Provider>
