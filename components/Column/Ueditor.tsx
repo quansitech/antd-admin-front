@@ -2,17 +2,24 @@ import {ColumnProps} from "./types";
 import {Component} from "react";
 import {createScript, filterObjectKeys} from "../../lib/helpers";
 import {Spin} from "antd";
-import {ModalContext} from "../ModalContext";
+import {ModalContext, ModalContextProps} from "../ModalContext";
 import uniqueId from "lodash/uniqueId";
-import {FormContext} from "../FormContext";
+import {FormContext, FormContextProps} from "../FormContext";
+
+declare global {
+    interface Window {
+        UE: any,
+        UE_LOADING_PROMISE: Promise<any>,
+    }
+}
 
 export default class Ueditor extends Component<ColumnProps & {
     fieldProps: {
         ueditorPath: string,
     }
 }, any> {
-    modalContext = {}
-    formContext = {}
+    modalContext = {} as ModalContextProps
+    formContext = {} as FormContextProps
 
     editor: any = null
     catching = false
@@ -60,6 +67,7 @@ export default class Ueditor extends Component<ColumnProps & {
                         const parser = new DOMParser();
                         const pasteDom = parser.parseFromString(a.html, "text/html");
 
+                        // @ts-ignore
                         const allImgs = domUtils.getElementsByTagName(this.document, "img");
                         const imgs = domUtils.getElementsByTagName(pasteDom, "img");
 
@@ -111,6 +119,7 @@ export default class Ueditor extends Component<ColumnProps & {
              * 抓取微信富文本
              */
             window.UE.plugin.register('insert_richtext', function () {
+                // @ts-ignore
                 const me = this;
 
                 function filter(div: HTMLElement) {
@@ -133,7 +142,7 @@ export default class Ueditor extends Component<ColumnProps & {
 
                             let brs = div.querySelectorAll('div br');
                             for (let i = 0, bi; bi = brs[i++];) {
-                                const pN = bi.parentNode;
+                                const pN = bi.parentNode as HTMLElement;
                                 if (pN) {
                                     if (pN.tagName == 'DIV' && pN.childNodes.length == 1) {
                                         pN.innerHTML = '<p><br/></p>';
@@ -196,7 +205,7 @@ export default class Ueditor extends Component<ColumnProps & {
                             if (br && br.type == 'element' && br.tagName == 'br') {
                                 root.removeChild(br)
                             }
-                            utils.each(me.body.querySelectorAll('div'), function (node) {
+                            utils.each(me.body.querySelectorAll('div'), function (node: HTMLElement) {
                                 if (domUtils.isEmptyBlock(node)) {
                                     domUtils.remove(node, true)
                                 }
@@ -220,6 +229,7 @@ export default class Ueditor extends Component<ColumnProps & {
                             const htmlContent = html.html;
 
                             const address = me.selection.getRange().createAddress(true);
+                            // @ts-ignore
                             me.execCommand('insertHtml', me.getOpt('retainOnlyLabelPasted') === true ? getPureHtml(htmlContent) : htmlContent, true);
                         }
 
