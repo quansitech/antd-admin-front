@@ -14,12 +14,10 @@
     "@inertiajs/react": "^1.2.0",
     "antd": "^5.20.5",
     "antd-img-crop": "^4.23.0",
+    "axios": "^1.7.7",
     "lodash": "^4.17.21",
-    "rc-animate": "^3.1.1",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "vite": "^5.4.2",
-    "axios": "^1.7.7",
     "js-md5": "^0.8.3",
     "prettier": "^3.3.3"
   },
@@ -29,6 +27,9 @@
     "@types/react-dom": "^18.3.0"
   },
   "author": "958691165@qq.com",
-  "license": "ISC",
-  "description": "qscmf antd-admin前端组件"
+  "license": "MIT",
+  "description": "qscmf antd-admin前端组件",
+  "publishConfig": {
+    "access": "public"
+  }
 }
