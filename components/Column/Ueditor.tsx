@@ -4,13 +4,15 @@ import {createScript, filterObjectKeys} from "../../lib/helpers";
 import {Spin} from "antd";
 import {ModalContext} from "../ModalContext";
 import uniqueId from "lodash/uniqueId";
+import {FormContext} from "../FormContext";
 
 export default class Ueditor extends Component<ColumnProps & {
     fieldProps: {
         ueditorPath: string,
     }
 }, any> {
-    static contextType = ModalContext
+    modalContext = {}
+    formContext = {}
 
     editor: any = null
     catching = false
@@ -249,7 +251,7 @@ export default class Ueditor extends Component<ColumnProps & {
                 ...this.props.fieldProps?.config,
                 forcecatchremote: typeof this.props.fieldProps?.config?.forcecatchremote === 'undefined' ? true : this.props.fieldProps.config.forcecatchremote,
             }
-            if (this.context?.inModal) {
+            if (this.modalContext?.inModal) {
                 config.zIndex = 2000
                 config.topOffset = 0
             }
@@ -257,7 +259,7 @@ export default class Ueditor extends Component<ColumnProps & {
             this.editor = window.UE.getEditor(this.state.containerId, config)
             this.editor?.ready(() => {
                 this.editor?.addListener('contentChange', () => {
-                    this.props.onChange?.(this.editor?.getContent())
+                    this.formContext.formRef?.current?.setFieldValue(this.props.dataIndex, this.editor?.getContent())
                 })
                 this.setState({loading: false})
             })
@@ -270,22 +272,33 @@ export default class Ueditor extends Component<ColumnProps & {
     }
 
     render() {
-        return <>
-            <div {...filterObjectKeys(this.props, [
-                'id',
-                'fieldProps',
-                'onChange',
-                'value',
-                'form',
-                'config',
-                'rules',
-                'ueditorPath',
-                'dataIndex',
-            ])} ref={el => this.containerRef = el}>
-                <Spin spinning={this.state.loading}>
-                    <div id={this.state.containerId} style={{width: this.state.width}}/>
-                </Spin>
-            </div>
-        </>;
+        return <ModalContext.Consumer>
+            {
+                modalContext =>
+                    <FormContext.Consumer>
+                        {
+                            formContext => {
+                                this.modalContext = modalContext
+                                this.formContext = formContext
+                                return <div {...filterObjectKeys(this.props, [
+                                    'id',
+                                    'fieldProps',
+                                    'onChange',
+                                    'value',
+                                    'form',
+                                    'config',
+                                    'rules',
+                                    'ueditorPath',
+                                    'dataIndex',
+                                ])} ref={el => this.containerRef = el}>
+                                    <Spin spinning={this.state.loading}>
+                                        <div id={this.state.containerId} style={{width: this.state.width}}/>
+                                    </Spin>
+                                </div>
+                            }
+                        }
+                    </FormContext.Consumer>
+            }
+        </ModalContext.Consumer>
     }
 }
