@@ -103,7 +103,7 @@ export default function (props: ColumnProps & {
     }, []);
 
     useEffect(() => {
-        props.onChange && props.onChange(fileList.map(file => {
+        props.form?.setFieldValue(props.dataIndex, fileList.map(file => {
             if (file.status === 'done') {
                 file.url = file.response.url || file.response.file_url
             }
