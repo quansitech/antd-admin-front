@@ -36,6 +36,7 @@ export default function (props: FormSchema & {
     const formRef = useRef<ProFormInstance>()
     const [initialized, setInitialized] = useState(false)
     const [loading, setLoading] = useState(false)
+    const hiddenField = useRef<Record<string, any>>({})
 
     useEffect(() => {
         setColumns((cloneDeep(props.columns)?.map((c: ProFormColumnsType & {
@@ -60,6 +61,12 @@ export default function (props: FormSchema & {
                 }
                 return rule
             })
+
+            // hideInForm时增加
+            if (c.hideInForm) {
+                hiddenField.current[c.dataIndex as string] = props.initialValues?.[c.dataIndex as string]
+                return null
+            }
 
             // item render
             const formItemComponent = 'Column.' + upperFirst(c.valueType as string)
@@ -98,7 +105,7 @@ export default function (props: FormSchema & {
             }
 
             return c
-        }) || []) as ProFormColumnsType[])
+        }).filter(c => !!c) || []) as ProFormColumnsType[])
 
         setInitialized(true)
     }, []);
@@ -129,7 +136,7 @@ export default function (props: FormSchema & {
                 await http({
                     method: props.submitRequest.method,
                     url: props.submitRequest.url,
-                    data: Object.assign({}, props.submitRequest.data, values),
+                    data: Object.assign({}, hiddenField.current, props.submitRequest.data, values),
                     headers: props.submitRequest.headers,
                 })
 
