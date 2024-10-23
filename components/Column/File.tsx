@@ -133,6 +133,7 @@ export default function (props: ColumnProps & {
     };
 
     const uploader = (<Upload
+        {...props.fieldProps}
         action={props.fieldProps.uploadRequest.policyGetUrl}
         listType={props.listType || 'text'}
         fileList={fileList}
