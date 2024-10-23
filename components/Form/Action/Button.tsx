@@ -84,7 +84,11 @@ export default function (props: FormActionType & {
                 return
             }
             if (props.back) {
-                history.back()
+                if (modalContext.inModal) {
+                    modalContext.closeModal()
+                } else {
+                    history.back()
+                }
                 return
             }
         } finally {
