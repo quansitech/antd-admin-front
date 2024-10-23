@@ -1,5 +1,5 @@
-import {MenuDataItem, PageContainer, ProLayout} from "@ant-design/pro-components";
-import {App, Dropdown, Menu, Space} from "antd";
+import {MenuDataItem, PageContainer, ProConfigProvider, ProLayout} from "@ant-design/pro-components";
+import {App, Button, Dropdown, Menu, Space} from "antd";
 import type {LayoutProps} from "./LayoutContext";
 import {LayoutContext} from "./LayoutContext";
 import {useEffect, useRef, useState} from "react";
@@ -11,6 +11,7 @@ import http from "../lib/http";
 import {Route} from '@ant-design/pro-layout/lib/typing';
 import global from "../lib/global";
 import assign from "lodash/assign";
+import {MoonOutlined, SunOutlined} from "@ant-design/icons";
 
 export default function ({children}: {
     children: React.ReactNode
@@ -35,6 +36,7 @@ export default function ({children}: {
         logo: '',
         userMenu: [],
     })
+    const [theme, setTheme] = useState<'light' | 'realDark'>('light')
 
     const assignProps = (newProps: LayoutProps) => {
         setProps(assign(props, newProps))
@@ -168,70 +170,83 @@ export default function ({children}: {
         }
     }
 
+    const actionsRender = () => <>
+        <Space>
+            <Button type={'text'} onClick={() => {
+                setTheme(theme === 'light' ? 'realDark' : 'light')
+            }}>
+                {theme === 'realDark' ? <MoonOutlined/> : <SunOutlined/>}
+            </Button>
+        </Space>
+    </>
+
     return <>
         <LayoutContext.Provider value={{
             assignProps,
             props,
         }}>
-            <ProLayout title={props.title}
-                       loading={props.loading}
-                       layout="mix"
-                       route={route}
-                       fixSiderbar={true}
-                       logo={props.logo}
-                       headerContentRender={headerContentRender}
-                       pageTitleRender={p => pageTitle}
-                       footerRender={() => <>
-                           <Space>
-                               <a href="https://www.quansitech.com/" target={'_blank'}>全思科技</a>
-                               <a href="https://github.com/quansitech/" target={'_blank'}>Github</a>
-                           </Space>
-                       </>}
-                       avatarProps={{
-                           title: 'admin',
-                           render(p, dom) {
-                               return <>
-                                   <Dropdown menu={{
-                                       items: props.userMenu?.map(menu => {
-                                           return {
-                                               label: menu.title,
-                                               key: menu.url,
-                                               onClick() {
-                                                   switch (menu.type) {
-                                                       case 'open':
-                                                           window.open(menu.url)
-                                                           break;
-                                                       case 'nav':
-                                                           routerNavigateTo(menu.url)
-                                                           break
-                                                       case 'ajax':
-                                                           http.get(menu.url).then(() => {
-                                                               window.location.reload()
-                                                           })
-                                                           break
+            <ProConfigProvider dark={theme === 'realDark'}>
+                <ProLayout title={props.title}
+                           loading={props.loading}
+                           layout="mix"
+                           actionsRender={actionsRender}
+                           route={route}
+                           fixSiderbar={true}
+                           logo={props.logo}
+                           headerContentRender={headerContentRender}
+                           pageTitleRender={p => pageTitle}
+                           footerRender={() => <>
+                               <Space>
+                                   <a href="https://www.quansitech.com/" target={'_blank'}>全思科技</a>
+                                   <a href="https://github.com/quansitech/" target={'_blank'}>Github</a>
+                               </Space>
+                           </>}
+                           avatarProps={{
+                               title: 'admin',
+                               render(p, dom) {
+                                   return <>
+                                       <Dropdown menu={{
+                                           items: props.userMenu?.map(menu => {
+                                               return {
+                                                   label: menu.title,
+                                                   key: menu.url,
+                                                   onClick() {
+                                                       switch (menu.type) {
+                                                           case 'open':
+                                                               window.open(menu.url)
+                                                               break;
+                                                           case 'nav':
+                                                               routerNavigateTo(menu.url)
+                                                               break
+                                                           case 'ajax':
+                                                               http.get(menu.url).then(() => {
+                                                                   window.location.reload()
+                                                               })
+                                                               break
+                                                       }
                                                    }
                                                }
-                                           }
-                                       }) || [],
-                                   }}>
-                                       {dom}
-                                   </Dropdown>
-                               </>
-                           }
-                       }}
-                       menuProps={{
-                           activeKey: props.menuActiveKey as string,
-                           selectedKeys: [props.menuActiveKey as string],
-                           openKeys: openKeys,
-                           onClick: onMenuClick,
-                           onOpenChange: setOpenKeys
-                       }}
-            >
+                                           }) || [],
+                                       }}>
+                                           {dom}
+                                       </Dropdown>
+                                   </>
+                               }
+                           }}
+                           menuProps={{
+                               activeKey: props.menuActiveKey as string,
+                               selectedKeys: [props.menuActiveKey as string],
+                               openKeys: openKeys,
+                               onClick: onMenuClick,
+                               onOpenChange: setOpenKeys
+                           }}
+                >
 
-                <PageContainer title={props.metaTitle}>
-                    <div ref={contentRef}>{children}</div>
-                </PageContainer>
-            </ProLayout>
+                    <PageContainer title={props.metaTitle}>
+                        <div ref={contentRef}>{children}</div>
+                    </PageContainer>
+                </ProLayout>
+            </ProConfigProvider>
         </LayoutContext.Provider>
     </>
 }
