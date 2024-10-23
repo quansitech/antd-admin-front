@@ -9,6 +9,7 @@ type Props = TableColumnOptionProps & {
     href?: string,
     request?: RequestOptions,
     modal?: ModalOptions,
+    modalByField?: string,
     danger?: boolean
 }
 
@@ -47,6 +48,15 @@ export default function (props: Props) {
                     content: {
                         ...props.modal.content,
                         url,
+                    },
+                })
+            }
+            if (props.modalByField) {
+                const m = props.record[props.modalByField]
+                await modal({
+                    ...m,
+                    contexts: {
+                        tableContext,
                     },
                 })
             }
