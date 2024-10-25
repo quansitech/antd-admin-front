@@ -266,6 +266,13 @@ export default class Ueditor extends Component<ColumnProps & {
 
             this.editor = window.UE.getEditor(this.state.containerId, config)
             this.editor?.ready(() => {
+                const value = this.props.config.value
+                if (value) {
+                    const div = document.createElement('div')
+                    div.innerHTML = value
+                    this.editor?.setContent(div.innerText || '')
+                }
+
                 this.editor?.addListener('contentChange', () => {
                     this.props.form?.setFieldValue(this.props.dataIndex, this.editor?.getContent())
                 })
