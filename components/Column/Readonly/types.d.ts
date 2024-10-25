@@ -6,4 +6,5 @@ export type ColumnReadonlyProps = {
     entity: any,
     schema: ProSchema,
     record?: any,
+    index: number,
 }

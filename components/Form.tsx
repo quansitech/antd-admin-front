@@ -29,7 +29,8 @@ export default function (props: FormSchema & {
     actions?: FormActionType[]
     metaTitle?: string,
     columns?: ProFormColumnsType[],
-    submitRequest?: SubmitRequestType
+    submitRequest?: SubmitRequestType,
+    extraRenderValues?: Record<string, any>,
 }) {
 
     const [columns, setColumns] = useState<ProFormColumnsType[]>([])
@@ -152,6 +153,7 @@ export default function (props: FormSchema & {
             <Col sm={24} md={22} lg={20}>
                 <FormContext.Provider value={{
                     formRef: formRef,
+                    extraRenderValues: props.extraRenderValues,
                 }}>
                     {!initialized
                         ? <ProSkeleton type={"list"} list={2}></ProSkeleton>

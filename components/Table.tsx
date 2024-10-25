@@ -34,10 +34,10 @@ export type TableProps = ProTableProps<any, any> & {
     actions: TableActionProps[],
     searchUrl: string,
     search?: boolean,
+    extraRenderValues?: Record<string, any>[],
 }
 
 export default function (props: TableProps) {
-
 
     const request = async (params: Record<string, any> & {
         pageSize: number,
@@ -107,10 +107,12 @@ export default function (props: TableProps) {
             const renderComponent = 'Column.Readonly.' + upperFirst(c.valueType as string)
             if (container.check(renderComponent)) {
                 const Component = lazy(container.get(renderComponent))
-                c.render = (dom, record, _, action) =>
+                c.render = (dom, record, index, action) =>
                     <Suspense fallback={<Spin/>}>
                         <Component {...c}
+                                   schema={c}
                                    key={c.title as string}
+                                   index={index}
                                    record={record}
                         ></Component>
                     </Suspense>
@@ -124,6 +126,7 @@ export default function (props: TableProps) {
                     <Suspense fallback={<Spin/>}>
                         <Component config={config}
                                    form={form}
+                                   index={schema.index}
                                    schema={schema}
                                    fieldProps={c.fieldProps}
                                    key={c.title as string}
@@ -190,6 +193,7 @@ export default function (props: TableProps) {
             editableKeys: editableKeys,
             actionRef: actionRef.current,
             formRef: formRef.current,
+            extraRenderValues: props.extraRenderValues,
         }}>
             {!initialized && <ProSkeleton type={"list"} list={2}></ProSkeleton>}
             <ProTable rowKey={props.rowKey}

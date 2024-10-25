@@ -1,13 +1,14 @@
 import {Alert, Button, Spin, Tooltip, Upload, UploadFile, UploadProps} from "antd";
-import React, {ReactNode, useEffect, useState} from "react";
+import React, {ReactNode, useContext, useEffect, useState} from "react";
 import {beforeUpload, customRequest} from "../../lib/upload";
-import http from "../../lib/http";
 import {ColumnProps} from "./types";
 import {UploadListType} from "antd/es/upload/interface";
 import {DndContext, DragEndEvent, PointerSensor, useSensor} from '@dnd-kit/core';
 import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy,} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import {RcFile} from "antd/lib/upload";
+import {FormContext} from "../FormContext";
+import {TableContext} from "../TableContext";
 
 
 interface DraggableUploadListItemProps {
@@ -49,7 +50,6 @@ export default function (props: ColumnProps & {
             policyGetUrl: string,
         },
         maxCount?: number,
-        loadUrl: string,
     }
 
     uploadButton?: (fileList: UploadFile[]) => ReactNode,
@@ -62,6 +62,8 @@ export default function (props: ColumnProps & {
 
     const [loading, setLoading] = useState(true);
     const [fileList, setFileList] = useState<UploadFile[]>([]);
+    const formContext = useContext(FormContext);
+    const tableContext = useContext(TableContext);
 
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
@@ -72,34 +74,29 @@ export default function (props: ColumnProps & {
     };
 
     useEffect(() => {
-        const value = props.value || props.config.value
-        if (value && props.fieldProps.loadUrl) {
-            http({
-                url: props.fieldProps.loadUrl,
-                params: {
-                    ids: value
-                },
-                method: 'get',
-            }).then(res => {
-                setFileList(res.data.map((item: any) => {
-                    return {
-                        uid: item.id,
-                        status: 'done',
-                        url: item.url,
-                        name: item.name,
-                        hash_id: item.hash_id,
-                        response: {
-                            file_id: item.id,
-                            url: item.url,
-                        }
-                    }
-                }))
-                setLoading(false)
-            })
-
-        } else {
-            setLoading(false)
+        let extraRenderValue = [];
+        if (formContext && formContext.extraRenderValues) {
+            extraRenderValue = formContext.extraRenderValues[props.dataIndex as string] ?? []
+        } else if (tableContext && tableContext.extraRenderValues) {
+            console.log(111)
+            extraRenderValue = tableContext.extraRenderValues[props.index as number]?.[props.schema.dataIndex as string] ?? []
         }
+
+        setFileList(extraRenderValue.map((item: any) => {
+            return {
+                uid: item.id,
+                status: 'done',
+                url: item.url,
+                name: item.name,
+                hash_id: item.hash_id,
+                response: {
+                    file_id: item.id,
+                    url: item.url,
+                }
+            }
+        }))
+
+        setLoading(false)
     }, []);
 
     useEffect(() => {

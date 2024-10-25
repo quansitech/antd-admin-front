@@ -12,8 +12,8 @@ type ComponentType = {
     props: any,
 }
 
-export default ({options, record}: ColumnReadonlyProps & {
-    options?: {
+export default ({actions, record}: ColumnReadonlyProps & {
+    actions?: {
         type: string,
         title: string,
         showRules?: Rules,
@@ -23,8 +23,8 @@ export default ({options, record}: ColumnReadonlyProps & {
     const [Components, setComponents] = useState<ComponentType[]>([]);
 
     useEffect(() => {
-        if (options) {
-            asyncFilter(options, async (Component) => {
+        if (actions) {
+            asyncFilter(actions, async (Component) => {
                 if (!Component.showRules) {
                     return true
                 }

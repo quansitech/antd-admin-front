@@ -9,6 +9,7 @@ type TableContextValue = {
     editableKeys: React.Key[],
     actionRef?: ActionType,
     formRef?: FormInstance,
+    extraRenderValues?: Record<string, any>[],
 }
 
 export const TableContext = createContext({} as TableContextValue)

@@ -8,6 +8,7 @@ export type ColumnProps = {
     onChange?: <T = any>(value: T) => void;
     onBlur?: <T = any>(event: T) => void;
     schema?: ProSchema<Entity, ExtraProps, ComponentsType, ValueType>,
+    index?: number,
     config: {
         onSelect?: (value: any) => void;
         onChange?: <T = any>(value: T) => void;
