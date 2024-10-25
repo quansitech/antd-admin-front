@@ -1,4 +1,5 @@
 import {schemaHandler} from "./schemaHandler";
+import {routerNavigateTo} from "./helpers";
 
 const components: Record<string, any> = {}
 
@@ -19,6 +20,7 @@ const container = {
         return !!components[name]
     },
     schemaHandler,
+    routerNavigateTo,
 };
 
 function autoRegister(prefix: string, components: Record<string, () => Promise<any>>) {
