@@ -1,8 +1,10 @@
-import {usePage} from "@inertiajs/react";
+import {Head, usePage} from "@inertiajs/react";
 import {useEffect, useState} from "react";
 import {PageProps} from "@inertiajs/core/types/types";
 import New from "./Layout/New";
 import {PageContainer} from "@ant-design/pro-components"
+import {App} from "antd";
+import global from "../lib/global";
 
 export default function ({children}: {
     children: React.ReactNode
@@ -13,6 +15,7 @@ export default function ({children}: {
             enableNewLayout?: boolean
         }
     } = usePage().props
+    const {modal, notification, message} = App.useApp()
     const [enableNewLayout, setEnableNewLayout] = useState(false)
     const [pageTitle, setPageTitle] = useState('')
 
@@ -20,6 +23,10 @@ export default function ({children}: {
         if (pageProps.layoutProps?.enableNewLayout) {
             setEnableNewLayout(true)
         }
+
+        global.modal = modal
+        global.notification = notification
+        global.message = message
     }, [])
 
     useEffect(() => {
@@ -30,6 +37,7 @@ export default function ({children}: {
         {enableNewLayout
             ? <New children={children}></New>
             : <>
+                <Head title={pageTitle}></Head>
                 <PageContainer title={pageTitle}>
                     {children}
                 </PageContainer>

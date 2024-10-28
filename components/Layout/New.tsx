@@ -1,5 +1,5 @@
 import {MenuDataItem, PageContainer, ProConfigProvider, ProLayout} from "@ant-design/pro-components";
-import {App, Button, Dropdown, Menu, Space} from "antd";
+import {Button, Dropdown, Menu, Space} from "antd";
 import type {LayoutProps} from "../LayoutContext";
 import {LayoutContext} from "../LayoutContext";
 import {useEffect, useRef, useState} from "react";
@@ -9,7 +9,6 @@ import {MenuInfo} from "rc-menu/lib/interface";
 import http from "../../lib/http";
 // @ts-ignore
 import {Route} from '@ant-design/pro-layout/lib/typing';
-import global from "../../lib/global";
 import assign from "lodash/assign";
 import {MoonOutlined, SunOutlined} from "@ant-design/icons";
 
@@ -22,7 +21,6 @@ export default function ({children}: {
     }>().props
 
     const layoutProps = pageProps.layoutProps
-    const {modal, notification, message} = App.useApp()
     const contentRef = useRef<HTMLDivElement>(null)
 
     const [props, setProps] = useState<LayoutProps>({
@@ -102,10 +100,6 @@ export default function ({children}: {
 
     useEffect(() => {
         console.log(pageProps)
-
-        global.modal = modal
-        global.notification = notification
-        global.message = message
 
         setProps({
             title: layoutProps.title || '',
