@@ -85,9 +85,9 @@ export default function ({children}: {
 
         const title = props.title || layoutProps.title
         if (pageProps.layoutProps?.metaTitle) {
-            setPageTitle(pageProps.layoutProps.metaTitle + ' - ' + title)
+            setPageTitle(pageProps.layoutProps.metaTitle + ' | ' + title)
             assignProps({
-                metaTitle: pageProps.layoutProps.metaTitle + ' - ' + title
+                metaTitle: pageProps.layoutProps.metaTitle + ' | ' + title
             })
         } else {
             setPageTitle(title as string)
@@ -95,11 +95,10 @@ export default function ({children}: {
                 metaTitle: title
             })
         }
-    }, [pageProps]);
+    }, [pageProps.layoutProps]);
 
 
     useEffect(() => {
-        console.log(pageProps)
 
         setProps({
             title: layoutProps.title || '',

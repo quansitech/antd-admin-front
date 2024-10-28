@@ -13,13 +13,17 @@ export default function ({children}: {
         layoutProps?: {
             metaTitle?: string,
             enableNewLayout?: boolean
+            title?: string,
         }
     } = usePage().props
     const {modal, notification, message} = App.useApp()
     const [enableNewLayout, setEnableNewLayout] = useState(false)
     const [pageTitle, setPageTitle] = useState('')
+    const [siteTitle, setSiteTitle] = useState('')
 
     useEffect(() => {
+        console.log(pageProps)
+
         if (pageProps.layoutProps?.enableNewLayout) {
             setEnableNewLayout(true)
         }
@@ -30,14 +34,15 @@ export default function ({children}: {
     }, [])
 
     useEffect(() => {
-        setPageTitle(pageProps.layoutProps?.metaTitle as string)
+        setPageTitle(pageProps.layoutProps?.metaTitle || '')
+        pageProps.layoutProps?.title && setSiteTitle(pageProps.layoutProps?.title + ' 后台管理')
     }, [pageProps.layoutProps]);
 
     return <>
         {enableNewLayout
             ? <New children={children}></New>
             : <>
-                <Head title={pageTitle}></Head>
+                <Head title={pageTitle + ' | ' + siteTitle}></Head>
                 <PageContainer title={pageTitle}>
                     {children}
                 </PageContainer>
