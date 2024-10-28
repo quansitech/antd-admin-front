@@ -35,14 +35,14 @@ export default function ({children}: {
 
     useEffect(() => {
         setPageTitle(pageProps.layoutProps?.metaTitle || '')
-        pageProps.layoutProps?.title && setSiteTitle(pageProps.layoutProps?.title + ' 后台管理')
+        pageProps.layoutProps?.title && setSiteTitle(pageProps.layoutProps?.title + '')
     }, [pageProps.layoutProps]);
 
     return <>
         {enableNewLayout
-            ? <New children={children}></New>
+            ? <New pageTitle={pageTitle} siteTitle={siteTitle} children={children}></New>
             : <>
-                <Head title={pageTitle + ' | ' + siteTitle}></Head>
+                <Head title={pageTitle + ' | ' + siteTitle + ' 后台管理'}></Head>
                 <PageContainer title={pageTitle}>
                     {children}
                 </PageContainer>

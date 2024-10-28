@@ -12,8 +12,10 @@ import {Route} from '@ant-design/pro-layout/lib/typing';
 import assign from "lodash/assign";
 import {MoonOutlined, SunOutlined} from "@ant-design/icons";
 
-export default function ({children}: {
-    children: React.ReactNode
+export default function ({children, pageTitle, siteTitle}: {
+    children: React.ReactNode,
+    pageTitle: string,
+    siteTitle: string,
 }) {
 
     const pageProps = usePage<{
@@ -50,7 +52,6 @@ export default function ({children}: {
     }
 
     const [openKeys, setOpenKeys] = useState<string[]>([])
-    const [pageTitle, setPageTitle] = useState<string>('')
     const [route, setRoute] = useState<Route>()
 
     useEffect(() => {
@@ -85,12 +86,10 @@ export default function ({children}: {
 
         const title = props.title || layoutProps.title
         if (pageProps.layoutProps?.metaTitle) {
-            setPageTitle(pageProps.layoutProps.metaTitle + ' | ' + title)
             assignProps({
                 metaTitle: pageProps.layoutProps.metaTitle + ' | ' + title
             })
         } else {
-            setPageTitle(title as string)
             assignProps({
                 metaTitle: title
             })
@@ -179,7 +178,7 @@ export default function ({children}: {
             props,
         }}>
             <ProConfigProvider dark={theme === 'realDark'}>
-                <ProLayout title={props.title}
+                <ProLayout title={siteTitle}
                            loading={props.loading}
                            layout="mix"
                            actionsRender={actionsRender}
@@ -187,7 +186,7 @@ export default function ({children}: {
                            fixSiderbar={true}
                            logo={props.logo}
                            headerContentRender={headerContentRender}
-                           pageTitleRender={p => pageTitle}
+                           pageTitleRender={p => `${pageTitle} | ${siteTitle} 后台管理`}
                            footerRender={() => <>
                                <Space>
                                    <a href="https://www.quansitech.com/" target={'_blank'}>全思科技</a>
@@ -235,7 +234,7 @@ export default function ({children}: {
                            }}
                 >
 
-                    <PageContainer title={props.metaTitle}>
+                    <PageContainer title={pageTitle}>
                         <div ref={contentRef}>{children}</div>
                     </PageContainer>
                 </ProLayout>
