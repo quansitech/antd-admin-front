@@ -271,6 +271,7 @@ export default class Ueditor extends Component<ColumnProps & {
                     const div = document.createElement('div')
                     div.innerHTML = value
                     this.editor?.setContent(div.innerText || '')
+                    this.props.form?.setFieldValue(this.props.dataIndex, this.editor?.getContent())
                 }
 
                 this.editor?.addListener('contentChange', () => {
