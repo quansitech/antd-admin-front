@@ -1,8 +1,8 @@
 import React, {useContext, useState} from "react";
-import {modal, replaceParams, replaceUrl, routerNavigateTo} from "../../../lib/helpers";
+import {modalShow, replaceParams, replaceUrl, routerNavigateTo} from "../../../../lib/helpers";
 import {Button, Popconfirm, Spin} from "antd";
-import {TableContext} from "../../TableContext";
-import http from "../../../lib/http";
+import {TableContext} from "../../../TableContext";
+import http from "../../../../lib/http";
 import {TableColumnOptionProps} from "./types";
 
 type Props = TableColumnOptionProps & {
@@ -40,7 +40,7 @@ export default function (props: Props) {
                 if (props.modal.content.url) {
                     url = replaceUrl(props.modal.content.url, props.record)
                 }
-                await modal({
+                await modalShow({
                     ...props.modal,
                     contexts: {
                         tableContext,
@@ -53,7 +53,7 @@ export default function (props: Props) {
             }
             if (props.modalByField) {
                 const m = props.record[props.modalByField]
-                await modal({
+                await modalShow({
                     ...m,
                     contexts: {
                         tableContext,

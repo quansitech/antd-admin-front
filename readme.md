@@ -110,7 +110,7 @@ container.register('Table.Column.Action.组件名', () => import('[组件路径]
 ```tsx
 // [组件.tsx]
 
-import {TableColumnOptionProps} from "@quansitech/antd-admin/compontents/Table/Column/Option/types";
+import {TableColumnOptionProps} from "@quansitech/antd-admin/compontents/Column/Readonly/Action/types";
 
 export default function (props: TableColumnOptionProps) {
     <a onClick={onClick}>{props.title}</a>
@@ -120,9 +120,9 @@ export default function (props: TableColumnOptionProps) {
 
 import container from "@quansitech/antd-admin/lib/container";
 
-container.register('Table.Column.Option.组件名', () => import('[组件路径]'));
+container.register('Column.Readonly.Action.组件名', () => import('[组件路径]'));
 
 ```
 
-- 若要补充组件库，请把组件放``` compontents/Table/Column/Option/ ``` 目录下
+- 若要补充组件库，请把组件放``` compontents/Column/Readonly/Action/ ``` 目录下
 

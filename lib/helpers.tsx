@@ -91,7 +91,7 @@ export function createScript(url: string) {
     })
 }
 
-export async function modal(options: ModalOptions) {
+export async function modalShow(options: ModalOptions) {
     let props = options.content.props
     if (options.content.url) {
         const res = await http({

@@ -54,9 +54,9 @@ function autoRegister(prefix: string, components: Record<string, () => Promise<a
 
 // -------- 表格 -----------
 {
-    // options render
-    const optionsRender = import.meta.glob('../components/Table/Option/*.tsx')
-    autoRegister('Table.Option.', optionsRender)
+    // column.action render
+    const optionsRender = import.meta.glob('../components/Column/Readonly/Action/*.tsx')
+    autoRegister('Column.Readonly.Action.', optionsRender)
 
     // action render
     const actionRender = import.meta.glob('../components/Table/Action/*.tsx')

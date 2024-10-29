@@ -3,7 +3,7 @@ import {Button, Popconfirm} from "antd";
 import {useContext, useEffect, useState} from "react";
 import http from "../../../lib/http";
 import {FormContext} from "../../FormContext";
-import {modal, replaceParams, replaceUrl, routerNavigateTo} from "../../../lib/helpers";
+import {modalShow, replaceParams, replaceUrl, routerNavigateTo} from "../../../lib/helpers";
 import {ModalContext} from "../../ModalContext";
 import {TableContext} from "../../TableContext";
 
@@ -65,7 +65,7 @@ export default function (props: FormActionType & {
                 return
             }
             if (props.modal) {
-                await modal({
+                await modalShow({
                     ...props.modal,
                     content: {
                         ...props.modal.content,

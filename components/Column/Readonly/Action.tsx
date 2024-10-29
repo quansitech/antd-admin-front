@@ -30,7 +30,7 @@ export default ({actions, record}: ColumnReadonlyProps & {
                 }
                 return await handleRules(Component.showRules, record)
             }).then((Components: { type: string }[]) => setComponents(Components.map(a => {
-                const c = `Table.Option.${upperFirst(a.type)}`
+                const c = `Column.Readonly.Action.${upperFirst(a.type)}`
                 return {
                     props: {
                         ...a,

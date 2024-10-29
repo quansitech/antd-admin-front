@@ -2,7 +2,7 @@ import {Button, Popconfirm} from "antd";
 import {useContext, useEffect, useState} from "react";
 import {TableContext} from "../../TableContext";
 import http from "../../../lib/http";
-import {modal, routerNavigateTo} from "../../../lib/helpers";
+import {modalShow, routerNavigateTo} from "../../../lib/helpers";
 import {TableActionProps} from "./types";
 
 export default function (props: TableActionProps & {
@@ -52,7 +52,7 @@ export default function (props: TableActionProps & {
         }
 
         if (props.modal) {
-            await modal(props.modal)
+            await modalShow(props.modal)
             return
         }
 
