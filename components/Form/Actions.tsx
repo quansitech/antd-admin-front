@@ -1,7 +1,7 @@
 import {FormActionType} from "./Action/types";
 import {lazy, useEffect, useState} from "react";
 import {ReactComponentLike} from "prop-types";
-import {Space} from "antd";
+import {Badge, Space} from "antd";
 import container from "../../lib/container";
 import upperFirst from "lodash/upperFirst";
 
@@ -28,7 +28,11 @@ export default function (props: {
     return <>
         <Space>
             {components.map(item => (
-                <item.Component key={item.props.title} loading={props.loading} {...item.props}></item.Component>
+                item.props.badge ?
+                    <Badge key={item.props.title} count={item.props.badge} style={{zIndex: 100}}>
+                        <item.Component loading={props.loading} {...item.props}></item.Component>
+                    </Badge> :
+                    <item.Component key={item.props.title} loading={props.loading} {...item.props}></item.Component>
             ))}
         </Space>
     </>

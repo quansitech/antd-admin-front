@@ -1,11 +1,12 @@
 import {Component, lazy, useEffect, useState} from "react";
 import {ReactComponentLike} from "prop-types";
 import container from "../../../lib/container";
-import {Flex} from "antd";
+import {Badge, Flex} from "antd";
 import {ColumnReadonlyProps} from "./types";
 import {asyncFilter, handleRules} from "../../../lib/helpers";
 import {Rules} from "@rc-component/async-validator/lib/interface";
 import upperFirst from "lodash/upperFirst";
+import {TableColumnActionProps} from "./Action/types";
 
 type ComponentType = {
     component: ReactComponentLike,
@@ -17,6 +18,7 @@ export default ({actions, record}: ColumnReadonlyProps & {
         type: string,
         title: string,
         showRules?: Rules,
+        badge?: any,
     }[],
 }) => {
 
@@ -29,12 +31,19 @@ export default ({actions, record}: ColumnReadonlyProps & {
                     return true
                 }
                 return await handleRules(Component.showRules, record)
-            }).then((Components: { type: string }[]) => setComponents(Components.map(a => {
+            }).then((Components: TableColumnActionProps[]) => setComponents(Components.map(a => {
+                let badge = a.badge
+                const matches = (badge + '').match(/^__(\w+)__$/)
+                if (matches) {
+                    badge = record[matches[1]]
+                }
+
                 const c = `Column.Readonly.Action.${upperFirst(a.type)}`
                 return {
                     props: {
                         ...a,
                         record,
+                        badge,
                     },
                     component: lazy(container.get(c)),
                 }
@@ -47,10 +56,23 @@ export default ({actions, record}: ColumnReadonlyProps & {
         {
             <Flex wrap={true}>
                 {
-                    Components.map(Component => {
-                        return <Component.component
-                            key={Component.props.title} {...Component.props}></Component.component>
-                    })
+                    Components.map(Component => (
+                        Component.props.badge ?
+                            <Badge key={Component.props.title}
+                                   count={Component.props.badge}
+                                   offset={[-12, 6]}
+                                   size={'small'}
+                                   styles={{
+                                       indicator: {
+                                           zIndex: 100,
+                                           padding: '0 4px',
+                                       }
+                                   }}>
+                                <Component.component
+                                    key={Component.props.title} {...Component.props}></Component.component>
+                            </Badge> :
+                            <Component.component key={Component.props.title} {...Component.props}></Component.component>
+                    ))
                 }
             </Flex>
         }

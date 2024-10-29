@@ -4,4 +4,5 @@ export type TableActionProps = {
     props?: Record<string, any>,
     relateSelection?: boolean,
     selectedRows?: any[],
+    badge?: string | number,
 }
