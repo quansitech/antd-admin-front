@@ -58,10 +58,6 @@ export async function asyncFilter(arr: any[], predicate: (item: any) => PromiseL
         .then((results) => arr.filter((_v, index) => results[index]))
 }
 
-export function modalShow(type: string, props: any) {
-
-}
-
 export function filterObjectKeys(obj: Record<string, any>, keysToKeep: string[]) {
     if (typeof obj !== 'object' || !obj) {
         return obj;
@@ -113,7 +109,7 @@ export async function modal(options: ModalOptions) {
     if (!props) {
         throw new Error('modal props is empty')
     }
-    const Component = lazy(() => container.get('Modal.' + upperFirst(options.content.type)))
+    const Component = lazy(() => container.get('Modal.' + upperFirst(props.type)))
 
     let afterClose = () => {
     }
