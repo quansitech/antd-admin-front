@@ -130,8 +130,16 @@ export default function ({children, pageTitle, siteTitle}: {
         setRoute(r)
 
         // 设置内容高度
-        if (contentRef.current) {
-            contentRef.current.style.minHeight = (window.innerHeight - 200) + 'px'
+        function onResize() {
+            if (contentRef.current) {
+                contentRef.current.style.minHeight = Math.max(window.innerHeight - 200, 200) + 'px'
+            }
+        }
+
+        onResize()
+        window.addEventListener('resize', onResize)
+        return () => {
+            window.removeEventListener('resize', onResize)
         }
 
     }, [])
