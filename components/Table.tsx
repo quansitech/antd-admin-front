@@ -241,7 +241,7 @@ export default function (props: TableProps) {
                                               ...newSelectedRows.filter(item => !selectedRows.find(s => s[props.rowKey] == item[props.rowKey]))
                                           ])
                                       } else {
-                                          setSelectedRows(selectedRows.filter(item => !props.dataSource.find(dr => dr[props.rowKey] == item[props.rowKey])))
+                                          setSelectedRows(selectedRows.filter(item => !dataSource.find(dr => dr[props.rowKey] == item[props.rowKey])))
                                       }
                                       break;
                                   case 'none':
