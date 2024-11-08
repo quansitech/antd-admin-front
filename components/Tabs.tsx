@@ -3,7 +3,7 @@ import {lazy, Suspense, useEffect, useState} from "react";
 import type {Tab} from 'rc-tabs/lib/interface';
 import container from "../lib/container";
 import {routerNavigateTo} from "../lib/helpers";
-import {upperFirst} from "lodash";
+import {upperFirst} from "es-toolkit";
 import {ProSkeleton} from "@ant-design/pro-components";
 
 type TabProps = {

@@ -9,7 +9,7 @@ import {
 } from "@ant-design/pro-components";
 import type {SortOrder} from "antd/lib/table/interface";
 import {TablePaginationConfig} from "antd/es/table";
-import {cloneDeep, isArray, uniqueId, upperFirst} from "lodash"
+import {cloneDeep, isArray, uniqueId, upperFirst} from "es-toolkit/compat"
 import {TableContext} from "./TableContext";
 import ToolbarActions from "./Table/ToolbarActions";
 import container from "../lib/container";

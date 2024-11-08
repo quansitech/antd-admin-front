@@ -5,7 +5,7 @@ import {Badge, Flex} from "antd";
 import {ColumnReadonlyProps} from "./types";
 import {asyncFilter, handleRules} from "../../../lib/helpers";
 import {Rules} from "@rc-component/async-validator/lib/interface";
-import {upperFirst} from "lodash";
+import {upperFirst} from "es-toolkit";
 import {TableColumnActionProps} from "./Action/types";
 
 type ComponentType = {

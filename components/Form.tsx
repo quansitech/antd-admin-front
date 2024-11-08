@@ -1,7 +1,7 @@
 import {BetaSchemaForm, ProFormColumnsType, ProFormInstance, ProSkeleton} from "@ant-design/pro-components";
 import type {FormSchema} from "@ant-design/pro-form/es/components/SchemaForm/typing";
 import React, {lazy, Suspense, useContext, useEffect, useRef, useState} from "react";
-import {cloneDeep, upperFirst} from "lodash";
+import {cloneDeep, upperFirst} from "es-toolkit";
 import container from "../lib/container";
 import {FormActionType} from "./Form/Action/types";
 import Actions from "./Form/Actions";
