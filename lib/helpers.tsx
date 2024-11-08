@@ -5,7 +5,7 @@ import {Rules, ValidateError, ValidateFieldsError, Values} from "@rc-component/a
 import {Spin} from "antd";
 import http from "./http";
 import container from "./container";
-import upperFirst from "lodash/upperFirst";
+import {upperFirst} from "lodash";
 import {lazy, Suspense} from "react";
 import global from "./global";
 import {ModalContext} from "../components/ModalContext";

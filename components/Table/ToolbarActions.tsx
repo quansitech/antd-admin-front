@@ -3,7 +3,7 @@ import container from "../../lib/container";
 import {ReactComponentLike} from "prop-types";
 import {Badge, Space} from "antd";
 import {TableActionProps} from "./Action/types";
-import upperFirst from "lodash/upperFirst";
+import {upperFirst} from "lodash";
 
 export default function ({
                              actions,

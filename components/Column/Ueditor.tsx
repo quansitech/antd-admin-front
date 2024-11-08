@@ -3,7 +3,7 @@ import {Component} from "react";
 import {createScript, filterObjectKeys} from "../../lib/helpers";
 import {Spin} from "antd";
 import {ModalContext, ModalContextProps} from "../ModalContext";
-import uniqueId from "lodash/uniqueId";
+import {uniqueId} from "lodash";
 
 declare global {
     interface Window {

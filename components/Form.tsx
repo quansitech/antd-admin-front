@@ -1,19 +1,18 @@
 import {BetaSchemaForm, ProFormColumnsType, ProFormInstance, ProSkeleton} from "@ant-design/pro-components";
 import type {FormSchema} from "@ant-design/pro-form/es/components/SchemaForm/typing";
 import React, {lazy, Suspense, useContext, useEffect, useRef, useState} from "react";
-import upperFirst from "lodash/upperFirst";
+import {cloneDeep, upperFirst} from "lodash";
 import container from "../lib/container";
 import {FormActionType} from "./Form/Action/types";
 import Actions from "./Form/Actions";
 import {FormContext} from "./FormContext";
 import {Col, Row, Spin} from "antd";
 import http from "../lib/http";
-import {RuleObject} from "rc-field-form/lib/interface";
 import customRule from "../lib/customRule";
-import cloneDeep from "lodash/cloneDeep";
 import {ModalContext} from "./ModalContext";
 import {TableContext} from "./TableContext";
 import {commonHandler} from "../lib/schemaHandler";
+import {Rule} from "antd/es/form";
 
 type SubmitRequestType = {
     url: string,
@@ -42,7 +41,7 @@ export default function (props: FormSchema & {
     useEffect(() => {
         setColumns((cloneDeep(props.columns)?.map((c: ProFormColumnsType & {
             formItemProps?: {
-                rules?: (RuleObject & {
+                rules?: (Rule & {
                     customType?: string
                 })[]
             }
@@ -55,10 +54,8 @@ export default function (props: FormSchema & {
                 c.formItemProps.rules = []
             }
             c.formItemProps.rules = c.formItemProps.rules.map(rule => {
-                if (rule.customType) {
-                    if (customRule[rule.customType]) {
-                        rule.validator = customRule[rule.customType]
-                    }
+                if (rule.customType && customRule[rule.customType]) {
+                    rule.validator = customRule[rule.customType]
                 }
                 return rule
             })

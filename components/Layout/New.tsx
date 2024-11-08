@@ -9,7 +9,7 @@ import {MenuInfo} from "rc-menu/lib/interface";
 import http from "../../lib/http";
 // @ts-ignore
 import {Route} from '@ant-design/pro-layout/lib/typing';
-import assign from "lodash/assign";
+import {assign} from "lodash";
 import {MoonOutlined, SunOutlined} from "@ant-design/icons";
 
 export default function ({children, pageTitle, siteTitle}: {

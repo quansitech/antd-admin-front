@@ -3,7 +3,7 @@ import {lazy, useEffect, useState} from "react";
 import {ReactComponentLike} from "prop-types";
 import {Badge, Space} from "antd";
 import container from "../../lib/container";
-import upperFirst from "lodash/upperFirst";
+import {upperFirst} from "lodash";
 
 export default function (props: {
     actions?: FormActionType[]
