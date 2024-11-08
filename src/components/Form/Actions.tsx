@@ -1,5 +1,5 @@
 import {FormActionType} from "./Action/types";
-import {lazy, useEffect, useState} from "react";
+import React, {lazy, useEffect, useState} from "react";
 import {ReactComponentLike} from "prop-types";
 import {Badge, Space} from "antd";
 import container from "../../lib/container";
@@ -17,7 +17,7 @@ export default function (props: {
     useEffect(() => {
         setComponents(props.actions?.map(a => {
             return {
-                Component: lazy(container.get('Form.Action.' + upperFirst(a.type))),
+                Component: container.get('Form.Action.' + upperFirst(a.type)),
                 props: {
                     ...a,
                 },

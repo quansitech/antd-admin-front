@@ -16,7 +16,7 @@ import container from "../lib/container";
 import {TableActionProps} from "./Table/Action/types";
 import http from "../lib/http";
 import {Spin} from "antd";
-import "./Table.scss"
+// import "./Table.scss"
 import {ModalContext} from "./ModalContext";
 import {commonHandler} from "../lib/schemaHandler";
 
@@ -93,6 +93,7 @@ export default function (props: TableProps) {
     const modalContext = useContext(ModalContext)
 
     useEffect(() => {
+        // @ts-ignore
         setPagination(props.pagination as TablePaginationConfig || false)
         setDataSource(postData(props.dataSource))
 
@@ -103,24 +104,21 @@ export default function (props: TableProps) {
             // 列render
             const renderComponent = 'Column.Readonly.' + upperFirst(c.valueType as string)
             if (container.check(renderComponent)) {
-                const Component = lazy(container.get(renderComponent))
+                const Component = container.get(renderComponent)
                 c.render = (dom, record, index, action) =>
-                    <Suspense fallback={<Spin/>}>
                         <Component {...c}
                                    schema={c}
                                    key={c.title as string}
                                    index={index}
                                    record={record}
                         ></Component>
-                    </Suspense>
             }
 
             // 列查询及编辑render
             const formItemComponent = 'Column.' + upperFirst(c.valueType as string)
             if (container.check(formItemComponent)) {
-                const Component = lazy(container.get(formItemComponent))
+                const Component = container.get(formItemComponent)
                 c.renderFormItem = (schema, config, form) => (
-                    <Suspense fallback={<Spin/>}>
                         <Component config={config}
                                    form={form}
                                    index={schema.index}
@@ -128,7 +126,6 @@ export default function (props: TableProps) {
                                    fieldProps={c.fieldProps}
                                    key={c.title as string}
                         ></Component>
-                    </Suspense>
                 )
             }
 

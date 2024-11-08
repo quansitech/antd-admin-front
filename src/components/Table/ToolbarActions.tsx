@@ -1,4 +1,4 @@
-import {lazy, useEffect, useState} from "react";
+import React, {lazy, useEffect, useState} from "react";
 import container from "../../lib/container";
 import {ReactComponentLike} from "prop-types";
 import {Badge, Space} from "antd";
@@ -20,7 +20,7 @@ export default function ({
     useEffect(() => {
         setComponents(actions.map(a => {
             return {
-                Component: lazy(container.get('Table.Action.' + upperFirst(a.type))),
+                Component: container.get('Table.Action.' + upperFirst(a.type)),
                 props: {
                     ...a,
                 },

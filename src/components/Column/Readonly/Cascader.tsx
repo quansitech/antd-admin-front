@@ -1,5 +1,5 @@
 import {ColumnReadonlyProps} from "./types";
-import {ReactNode, useEffect, useState} from "react";
+import React, {ReactNode, useEffect, useState} from "react";
 import http from "../../../lib/http";
 
 export default function (props: ColumnReadonlyProps & {

@@ -1,6 +1,6 @@
 import {ColumnProps} from "./types";
 import {Cascader} from "antd";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import http from "../../lib/http";
 
 export default function (props: ColumnProps) {

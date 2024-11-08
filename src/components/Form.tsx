@@ -54,7 +54,9 @@ export default function (props: FormSchema & {
                 c.formItemProps.rules = []
             }
             c.formItemProps.rules = c.formItemProps.rules.map(rule => {
+                // @ts-ignore
                 if (rule.customType && customRule[rule.customType]) {
+                    // @ts-ignore
                     rule.validator = customRule[rule.customType]
                 }
                 return rule
@@ -69,32 +71,28 @@ export default function (props: FormSchema & {
             // item render
             const formItemComponent = 'Column.' + upperFirst(c.valueType as string)
             if (container.check(formItemComponent)) {
-                const Component = lazy(container.get(formItemComponent))
+                const Component = container.get(formItemComponent)
                 c.renderFormItem = (schema, config, form) =>
-                    <Suspense fallback={<Spin/>}>
-                        <Component config={config}
-                                   form={form}
-                                   fieldProps={c.fieldProps}
-                                   key={c.title as string}
-                                   rules={c.formItemProps?.rules}
-                                   dataIndex={c.dataIndex}
-                        ></Component>
-                    </Suspense>
+                    <Component config={config}
+                               form={form}
+                               fieldProps={c.fieldProps}
+                               key={c.title as string}
+                               rules={c.formItemProps?.rules}
+                               dataIndex={c.dataIndex}
+                    ></Component>
             }
             // readonly render
             const readonlyComponent = 'Column.Readonly.' + upperFirst(c.valueType as string)
             if (container.check(readonlyComponent)) {
-                const Component = lazy(container.get(readonlyComponent))
+                const Component = container.get(readonlyComponent)
                 c.render = (dom, entity, index, action, schema) =>
-                    <Suspense fallback={<Spin/>}>
-                        <Component key={c.title as string}
-                                   entity={entity}
-                                   index={index}
-                                   action={action}
-                                   schema={schema}
-                                   dom={dom}
-                        ></Component>
-                    </Suspense>
+                    <Component key={c.title as string}
+                               entity={entity}
+                               index={index}
+                               action={action}
+                               schema={schema}
+                               dom={dom}
+                    ></Component>
             }
 
             commonHandler(c)

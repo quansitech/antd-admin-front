@@ -1,6 +1,6 @@
 import {Button, ButtonProps, Space} from "antd";
 import {TableContext} from "../../TableContext";
-import {useContext, useState} from "react";
+import React, {useContext, useState} from "react";
 import http from "../../../lib/http";
 import {TableActionProps} from "./types";
 

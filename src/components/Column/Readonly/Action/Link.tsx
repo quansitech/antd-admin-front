@@ -3,9 +3,9 @@ import {modalShow, replaceParams, replaceUrl, routerNavigateTo} from "../../../.
 import {Button, Popconfirm, Spin} from "antd";
 import {TableContext} from "../../../TableContext";
 import http from "../../../../lib/http";
-import {TableColumnOptionProps} from "./types";
+import {TableColumnActionProps} from "./types";
 
-type Props = TableColumnOptionProps & {
+type Props = TableColumnActionProps & {
     href?: string,
     request?: RequestOptions,
     modal?: ModalOptions,

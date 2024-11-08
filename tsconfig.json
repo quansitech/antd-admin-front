@@ -1,20 +1,21 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
-    "target": "es2017",
-    "module": "ESNext",
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
+    "moduleResolution": "node",
+    "jsx": "react",
+    "module": "commonjs",
+    "target": "es5",
+    "allowJs": false,
+    "noUnusedLocals": false,
+    "preserveConstEnums": true,
     "skipLibCheck": true,
-    "jsx": "preserve",
-    "moduleResolution": "node"
+    "sourceMap": true,
+    "inlineSources": true,
+    "declaration": true,
+    "experimentalDecorators": true,
+    "downlevelIteration": true,
+    "lib": ["ESNext", "DOM"]
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["./src/**/*.ts", "./src/**/*.tsx", "./src/**/*.d.ts"],
+  "exclude": ["./src/__tests__/*", "./esm/*", "./lib/*"],
 }

@@ -3,9 +3,12 @@
   "version": "1.1.1",
   "type": "module",
   "files": [
-    "components",
-    "lib"
+    "dist"
   ],
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json"
+  },
   "dependencies": {
     "@ant-design/pro-components": "^2.7.15",
     "@inertiajs/react": "^1.2.0",
@@ -13,13 +16,16 @@
     "antd-img-crop": "^4.23.0",
     "axios": "^1.7.7",
     "es-toolkit": "^1.26.1",
+    "js-md5": "^0.8.3",
     "react": "^18.3.0",
-    "react-dom": "^18.3.0",
-    "js-md5": "^0.8.3"
+    "react-dom": "^18.3.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.0",
-    "@types/react-dom": "^18.3.0"
+    "@types/react-dom": "^18.3.0",
+    "father": "^4.5.1",
+    "sass-embedded": "^1.80.6",
+    "typescript": "^5.6.3"
   },
   "author": "958691165@qq.com",
   "license": "MIT",

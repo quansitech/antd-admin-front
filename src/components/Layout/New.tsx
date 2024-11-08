@@ -2,7 +2,7 @@ import {MenuDataItem, PageContainer, ProConfigProvider, ProLayout} from "@ant-de
 import {Button, Dropdown, Menu, Space} from "antd";
 import type {LayoutProps} from "../LayoutContext";
 import {LayoutContext} from "../LayoutContext";
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {usePage} from "@inertiajs/react";
 import {routerNavigateTo} from "../../lib/helpers";
 import {MenuInfo} from "rc-menu/lib/interface";
@@ -11,15 +11,12 @@ import http from "../../lib/http";
 import {Route} from '@ant-design/pro-layout/lib/typing';
 import {MoonOutlined, SunOutlined} from "@ant-design/icons";
 
-export default function ({children, pageTitle, siteTitle}: {
+export default function ({children, pageTitle, siteTitle, pageProps}: {
     children: React.ReactNode,
     pageTitle: string,
     siteTitle: string,
+    pageProps: any
 }) {
-
-    const pageProps = usePage<{
-        layoutProps: LayoutProps,
-    }>().props
 
     const layoutProps = pageProps.layoutProps
     const contentRef = useRef<HTMLDivElement>(null)

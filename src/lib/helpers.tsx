@@ -5,7 +5,7 @@ import {Rules, ValidateError, ValidateFieldsError, Values} from "@rc-component/a
 import {Spin} from "antd";
 import http from "./http";
 import container from "./container";
-import {lazy, Suspense} from "react";
+import React, {lazy, Suspense} from "react";
 import global from "./global";
 import {ModalContext} from "../components/ModalContext";
 
@@ -108,7 +108,7 @@ export async function modalShow(options: ModalOptions) {
     if (!props) {
         throw new Error('modal props is empty')
     }
-    const Component = lazy(() => container.get('Modal.' + upperFirst(props.type)))
+    const Component =container.get('Modal.' + upperFirst(props.type))
 
     let afterClose = () => {
     }
@@ -119,7 +119,6 @@ export async function modalShow(options: ModalOptions) {
         destroyOnClose: true,
         footer: null,
         content: (
-            <Suspense fallback={<Spin/>}>
                 <ModalContext.Provider value={{
                     inModal: true,
                     closeModal: () => {
@@ -132,7 +131,6 @@ export async function modalShow(options: ModalOptions) {
                 }}>
                     <Component {...props} />
                 </ModalContext.Provider>
-            </Suspense>
         ),
         afterClose: () => {
             afterClose && afterClose()

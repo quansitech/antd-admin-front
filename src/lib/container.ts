@@ -1,5 +1,7 @@
 import {schemaHandler} from "./schemaHandler";
 import {routerNavigateTo} from "./helpers";
+import Table from "../components/Table";
+import Form from "../components/Form";
 
 const components: Record<string, any> = {}
 
@@ -23,43 +25,47 @@ const container = {
     routerNavigateTo,
 };
 
-function autoRegister(prefix: string, components: Record<string, () => Promise<any>>) {
+function autoRegister(prefix: string, components: Record<string, (() => Promise<any>) | any>) {
     for (const [key, value] of Object.entries(components)) {
         const name = key.split('/').pop()?.split('.').shift()
-        container.register(prefix + name, value)
+        container.register(prefix + name, value.default)
     }
 }
 
 // -------- 通用 -----------
 {
-    const columnRender = import.meta.glob('../components/Column/*.tsx')
+    //todo const columnRender = import.meta.glob('../components/Column/*.tsx', {eager: true})
+    const columnRender = []
     autoRegister('Column.', columnRender)
 
     // readonly render
-    const columnReadonlyRender = import.meta.glob('../components/Column/Readonly/*.tsx')
+    //todo const columnReadonlyRender = import.meta.glob('../components/Column/Readonly/*.tsx', {eager: true})
+    const columnReadonlyRender = []
     autoRegister('Column.Readonly.', columnReadonlyRender)
 }
 
 // -------- 弹窗 -----------
 {
-    container.register('Modal.Table', import('../components/Table'))
-    container.register('Modal.Form', import('../components/Form'))
+    container.register('Modal.Table', Table)
+    container.register('Modal.Form', Form)
 }
 
 // -------- Tabs -----------
 {
-    container.register('Tab.Pane.Table', import('../components/Table'))
-    container.register('Tab.Pane.Form', import('../components/Form'))
+    container.register('Tab.Pane.Table', Table)
+    container.register('Tab.Pane.Form', Form)
 }
 
 // -------- 表格 -----------
 {
     // column.action render
-    const optionsRender = import.meta.glob('../components/Column/Readonly/Action/*.tsx')
+    //todo const optionsRender = import.meta.glob('../components/Column/Readonly/Action/*.tsx', {eager: true})
+    const optionsRender = []
     autoRegister('Column.Readonly.Action.', optionsRender)
 
     // action render
-    const actionRender = import.meta.glob('../components/Table/Action/*.tsx')
+    // todo const actionRender = import.meta.glob('../components/Table/Action/*.tsx', {eager: true})
+    const actionRender = []
     autoRegister('Table.Action.', actionRender)
 }
 
@@ -67,18 +73,9 @@ function autoRegister(prefix: string, components: Record<string, () => Promise<a
 {
 
     // formAction render
-    const formActionRender = import.meta.glob('../components/Form/Action/*.tsx')
+    // todo const formActionRender = import.meta.glob('../components/Form/Action/*.tsx', {eager: true})
+    const formActionRender = []
     autoRegister('Form.Action.', formActionRender)
 }
-
-
-;((globalThis: any) => {
-    if (globalThis.$qsContainer) {
-        return;
-    }
-
-    globalThis.$qsContainer = container
-
-})(window)
 
 export default container

@@ -1,5 +1,5 @@
 import {Tabs} from "antd";
-import {lazy, Suspense, useEffect, useState} from "react";
+import React, {lazy, Suspense, useEffect, useState} from "react";
 import type {Tab} from 'rc-tabs/lib/interface';
 import container from "../lib/container";
 import {routerNavigateTo} from "../lib/helpers";
@@ -40,15 +40,13 @@ export default function (props: TabsPageType) {
                 }
             }
 
-            const Component = lazy(() => container.get('Tab.Pane.' + upperFirst(t.pane?.component)))
+            const Component = container.get('Tab.Pane.' + upperFirst(t.pane?.component))
 
             return {
                 key,
                 label: t.title,
                 children: <>
-                    <Suspense>
                         <Component {...t.pane.props}></Component>
-                    </Suspense>
                 </>
             }
         }))

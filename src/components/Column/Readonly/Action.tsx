@@ -1,4 +1,4 @@
-import {Component, lazy, useEffect, useState} from "react";
+import React, {Component, lazy, useEffect, useState} from "react";
 import {ReactComponentLike} from "prop-types";
 import container from "../../../lib/container";
 import {Badge, Flex} from "antd";
@@ -45,7 +45,7 @@ export default ({actions, record}: ColumnReadonlyProps & {
                         record,
                         badge,
                     },
-                    component: lazy(container.get(c)),
+                    component: container.get(c),
                 }
             })))
         }

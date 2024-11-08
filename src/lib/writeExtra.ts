@@ -8,7 +8,7 @@ export default function () {
         throw new Error('Please run `composer install` first.');
     }
 
-    const installed = JSON.parse(fs.readFileSync(process.cwd() + '/vendor/composer/installed.json'))
+    const installed = JSON.parse(fs.readFileSync(process.cwd() + '/vendor/composer/installed.json').toString())
     const extras = installed.packages.filter(p => !!p.extra?.qscmf?.['antd-admin']).map(p => ({
         name: p.name,
         path: p['install-path'],
@@ -16,7 +16,7 @@ export default function () {
     }));
 
     const extra_script = `
-import container from "@quansitech/antd-admin/lib/container.ts";
+import {container} from "@quansitech/antd-admin";
 
 ${extras.map(e => {
         const cs = [];

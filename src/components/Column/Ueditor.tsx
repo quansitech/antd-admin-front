@@ -1,5 +1,5 @@
 import {ColumnProps} from "./types";
-import {Component} from "react";
+import React, {Component} from "react";
 import {createScript, filterObjectKeys} from "../../lib/helpers";
 import {Spin} from "antd";
 import {ModalContext, ModalContextProps} from "../ModalContext";
