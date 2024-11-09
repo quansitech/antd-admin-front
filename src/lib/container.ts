@@ -2,6 +2,11 @@ import {schemaHandler} from "./schemaHandler";
 import {routerNavigateTo} from "./helpers";
 import Table from "../components/Table";
 import Form from "../components/Form";
+import column from '../components/Column';
+import columnReadonly from '../components/Column/Readonly';
+import columnReadonlyAction from '../components/Column/Readonly/Action/index';
+import tableAction from '../components/Table/Action';
+import formAction from '../components/Form/Action';
 
 const components: Record<string, any> = {}
 
@@ -25,23 +30,19 @@ const container = {
     routerNavigateTo,
 };
 
-function autoRegister(prefix: string, components: Record<string, (() => Promise<any>) | any>) {
+async function autoRegister(prefix: string, components: Record<string, any>) {
     for (const [key, value] of Object.entries(components)) {
         const name = key.split('/').pop()?.split('.').shift()
-        container.register(prefix + name, value.default)
+        container.register(prefix + name, value)
     }
 }
 
 // -------- 通用 -----------
 {
-    //todo const columnRender = import.meta.glob('../components/Column/*.tsx', {eager: true})
-    const columnRender = []
-    autoRegister('Column.', columnRender)
+    autoRegister('Column.', column)
 
     // readonly render
-    //todo const columnReadonlyRender = import.meta.glob('../components/Column/Readonly/*.tsx', {eager: true})
-    const columnReadonlyRender = []
-    autoRegister('Column.Readonly.', columnReadonlyRender)
+    autoRegister('Column.Readonly.', columnReadonly)
 }
 
 // -------- 弹窗 -----------
@@ -59,23 +60,17 @@ function autoRegister(prefix: string, components: Record<string, (() => Promise<
 // -------- 表格 -----------
 {
     // column.action render
-    //todo const optionsRender = import.meta.glob('../components/Column/Readonly/Action/*.tsx', {eager: true})
-    const optionsRender = []
-    autoRegister('Column.Readonly.Action.', optionsRender)
+    autoRegister('Column.Readonly.Action.', columnReadonlyAction)
 
     // action render
-    // todo const actionRender = import.meta.glob('../components/Table/Action/*.tsx', {eager: true})
-    const actionRender = []
-    autoRegister('Table.Action.', actionRender)
+    autoRegister('Table.Action.', tableAction)
 }
 
 // -------- 表单 -----------
 {
 
     // formAction render
-    // todo const formActionRender = import.meta.glob('../components/Form/Action/*.tsx', {eager: true})
-    const formActionRender = []
-    autoRegister('Form.Action.', formActionRender)
+    autoRegister('Form.Action.', formAction)
 }
 
 export default container

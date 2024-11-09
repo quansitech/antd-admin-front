@@ -3,7 +3,7 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "jsx": "react",
-    "module": "commonjs",
+    "module": "ES2015",
     "target": "es5",
     "allowJs": false,
     "noUnusedLocals": false,

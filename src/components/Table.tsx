@@ -16,7 +16,7 @@ import container from "../lib/container";
 import {TableActionProps} from "./Table/Action/types";
 import http from "../lib/http";
 import {Spin} from "antd";
-// import "./Table.scss"
+import "./Table.scss"
 import {ModalContext} from "./ModalContext";
 import {commonHandler} from "../lib/schemaHandler";
 

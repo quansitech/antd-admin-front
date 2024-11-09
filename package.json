@@ -7,7 +7,7 @@
   ],
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc --project tsconfig.build.json"
+    "build": "father build"
   },
   "dependencies": {
     "@ant-design/pro-components": "^2.7.15",
