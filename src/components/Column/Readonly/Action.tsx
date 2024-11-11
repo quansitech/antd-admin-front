@@ -45,7 +45,7 @@ export default ({actions, record}: ColumnReadonlyProps & {
                         record,
                         badge,
                     },
-                    component: container.get(c),
+                    component: lazy(() => container.get(c)),
                 }
             })))
         }

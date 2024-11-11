@@ -1,4 +1,4 @@
-import React, {lazy, Suspense, useContext, useEffect, useRef, useState} from "react";
+import React, {lazy, useContext, useEffect, useRef, useState} from "react";
 import {
     ActionType,
     FormInstance,
@@ -15,7 +15,6 @@ import ToolbarActions from "./Table/ToolbarActions";
 import container from "../lib/container";
 import {TableActionProps} from "./Table/Action/types";
 import http from "../lib/http";
-import {Spin} from "antd";
 import "./Table.scss"
 import {ModalContext} from "./ModalContext";
 import {commonHandler} from "../lib/schemaHandler";
@@ -104,7 +103,7 @@ export default function (props: TableProps) {
             // 列render
             const renderComponent = 'Column.Readonly.' + upperFirst(c.valueType as string)
             if (container.check(renderComponent)) {
-                const Component = container.get(renderComponent)
+                const Component = lazy(() => container.get(renderComponent))
                 c.render = (dom, record, index, action) =>
                         <Component {...c}
                                    schema={c}
@@ -117,7 +116,7 @@ export default function (props: TableProps) {
             // 列查询及编辑render
             const formItemComponent = 'Column.' + upperFirst(c.valueType as string)
             if (container.check(formItemComponent)) {
-                const Component = container.get(formItemComponent)
+                const Component = lazy(() => container.get(formItemComponent))
                 c.renderFormItem = (schema, config, form) => (
                         <Component config={config}
                                    form={form}

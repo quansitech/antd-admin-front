@@ -40,13 +40,15 @@ export default function (props: TabsPageType) {
                 }
             }
 
-            const Component = container.get('Tab.Pane.' + upperFirst(t.pane?.component))
+            const Component = lazy(() => container.get('Tab.Pane.' + upperFirst(t.pane?.component)))
 
             return {
                 key,
                 label: t.title,
                 children: <>
+                    <Suspense fallback={<ProSkeleton list={2}></ProSkeleton>}>
                         <Component {...t.pane.props}></Component>
+                    </Suspense>
                 </>
             }
         }))

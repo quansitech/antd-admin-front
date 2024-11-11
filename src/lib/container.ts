@@ -1,7 +1,5 @@
 import {schemaHandler} from "./schemaHandler";
 import {routerNavigateTo} from "./helpers";
-import Table from "../components/Table";
-import Form from "../components/Form";
 import column from '../components/Column';
 import columnReadonly from '../components/Column/Readonly';
 import columnReadonlyAction from '../components/Column/Readonly/Action/index';
@@ -47,14 +45,14 @@ async function autoRegister(prefix: string, components: Record<string, any>) {
 
 // -------- 弹窗 -----------
 {
-    container.register('Modal.Table', Table)
-    container.register('Modal.Form', Form)
+    container.register('Modal.Table', import('../components/Table'))
+    container.register('Modal.Form', import('../components/Form'))
 }
 
 // -------- Tabs -----------
 {
-    container.register('Tab.Pane.Table', Table)
-    container.register('Tab.Pane.Form', Form)
+    container.register('Tab.Pane.Table', import('../components/Table'))
+    container.register('Tab.Pane.Form', import('../components/Form'))
 }
 
 // -------- 表格 -----------

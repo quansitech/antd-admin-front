@@ -20,7 +20,7 @@ export default function ({
     useEffect(() => {
         setComponents(actions.map(a => {
             return {
-                Component: container.get('Table.Action.' + upperFirst(a.type)),
+                Component: lazy(() => container.get('Table.Action.' + upperFirst(a.type))),
                 props: {
                     ...a,
                 },

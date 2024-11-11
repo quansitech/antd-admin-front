@@ -1,11 +1,6 @@
-import Cascader from "./Cascader";
-import File from "./File";
-import Image from "./Image";
-import Ueditor from "./Ueditor";
-
 export default {
-    Cascader,
-    File,
-    Image,
-    Ueditor,
+    Cascader: import('./Cascader'),
+    File: import('./File'),
+    Image: import('./Image'),
+    Ueditor: import('./Ueditor'),
 }

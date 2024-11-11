@@ -17,7 +17,7 @@ export default function (props: {
     useEffect(() => {
         setComponents(props.actions?.map(a => {
             return {
-                Component: container.get('Form.Action.' + upperFirst(a.type)),
+                Component: lazy(() => container.get('Form.Action.' + upperFirst(a.type))),
                 props: {
                     ...a,
                 },

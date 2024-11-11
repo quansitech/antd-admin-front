@@ -71,7 +71,7 @@ export default function (props: FormSchema & {
             // item render
             const formItemComponent = 'Column.' + upperFirst(c.valueType as string)
             if (container.check(formItemComponent)) {
-                const Component = container.get(formItemComponent)
+                const Component = lazy(() => container.get(formItemComponent))
                 c.renderFormItem = (schema, config, form) =>
                     <Component config={config}
                                form={form}
@@ -84,15 +84,17 @@ export default function (props: FormSchema & {
             // readonly render
             const readonlyComponent = 'Column.Readonly.' + upperFirst(c.valueType as string)
             if (container.check(readonlyComponent)) {
-                const Component = container.get(readonlyComponent)
+                const Component = lazy(() => container.get(readonlyComponent))
                 c.render = (dom, entity, index, action, schema) =>
-                    <Component key={c.title as string}
-                               entity={entity}
-                               index={index}
-                               action={action}
-                               schema={schema}
-                               dom={dom}
-                    ></Component>
+                    <Suspense fallback={<Spin/>}>
+                        <Component key={c.title as string}
+                                   entity={entity}
+                                   index={index}
+                                   action={action}
+                                   schema={schema}
+                                   dom={dom}
+                        ></Component>
+                    </Suspense>
             }
 
             commonHandler(c)

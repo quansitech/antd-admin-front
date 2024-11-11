@@ -3,7 +3,6 @@ import {Button, Dropdown, Menu, Space} from "antd";
 import type {LayoutProps} from "../LayoutContext";
 import {LayoutContext} from "../LayoutContext";
 import React, {useEffect, useRef, useState} from "react";
-import {usePage} from "@inertiajs/react";
 import {routerNavigateTo} from "../../lib/helpers";
 import {MenuInfo} from "rc-menu/lib/interface";
 import http from "../../lib/http";

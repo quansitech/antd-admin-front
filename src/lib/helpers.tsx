@@ -2,10 +2,9 @@ import {router} from "@inertiajs/react";
 import {VisitOptions} from "@inertiajs/core/types/types";
 import Schema from '@rc-component/async-validator';
 import {Rules, ValidateError, ValidateFieldsError, Values} from "@rc-component/async-validator/lib/interface";
-import {Spin} from "antd";
 import http from "./http";
 import container from "./container";
-import React, {lazy, Suspense} from "react";
+import React, {lazy} from "react";
 import global from "./global";
 import {ModalContext} from "../components/ModalContext";
 
@@ -108,7 +107,7 @@ export async function modalShow(options: ModalOptions) {
     if (!props) {
         throw new Error('modal props is empty')
     }
-    const Component =container.get('Modal.' + upperFirst(props.type))
+    const Component = lazy(() => container.get('Modal.' + upperFirst(props.type)))
 
     let afterClose = () => {
     }
