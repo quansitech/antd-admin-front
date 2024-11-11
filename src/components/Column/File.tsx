@@ -59,7 +59,6 @@ export default function (props: ColumnProps & {
         dom: JSX.Element,
     }) => ReactNode
 }) {
-
     const [loading, setLoading] = useState(true);
     const [fileList, setFileList] = useState<UploadFile[]>([]);
     const formContext = useContext(FormContext);

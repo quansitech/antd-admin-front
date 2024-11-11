@@ -1,6 +1,6 @@
-import {BetaSchemaForm, ProFormColumnsType, ProFormInstance, ProSkeleton} from "@ant-design/pro-components";
+import {BetaSchemaForm, ProFormColumnsType, ProFormInstance} from "@ant-design/pro-components";
 import type {FormSchema} from "@ant-design/pro-form/es/components/SchemaForm/typing";
-import React, {lazy, Suspense, useContext, useEffect, useRef, useState} from "react";
+import React, {lazy, Suspense, useContext, useMemo, useRef, useState} from "react";
 import {cloneDeep, upperFirst} from "es-toolkit";
 import container from "../lib/container";
 import {FormActionType} from "./Form/Action/types";
@@ -32,14 +32,12 @@ export default function (props: FormSchema & {
     extraRenderValues?: Record<string, any>,
 }) {
 
-    const [columns, setColumns] = useState<ProFormColumnsType[]>([])
     const formRef = useRef<ProFormInstance>()
-    const [initialized, setInitialized] = useState(false)
     const [loading, setLoading] = useState(false)
     const hiddenField = useRef<Record<string, any>>({})
 
-    useEffect(() => {
-        setColumns((cloneDeep(props.columns)?.map((c: ProFormColumnsType & {
+    const columns = useMemo(() => {
+        return (cloneDeep<ProFormColumnsType[]>(props.columns)?.map((c: ProFormColumnsType & {
             formItemProps?: {
                 rules?: (Rule & {
                     customType?: string
@@ -73,13 +71,15 @@ export default function (props: FormSchema & {
             if (container.check(formItemComponent)) {
                 const Component = lazy(() => container.get(formItemComponent))
                 c.renderFormItem = (schema, config, form) =>
-                    <Component config={config}
-                               form={form}
-                               fieldProps={c.fieldProps}
-                               key={c.title as string}
-                               rules={c.formItemProps?.rules}
-                               dataIndex={c.dataIndex}
-                    ></Component>
+                    <Suspense fallback={<Spin/>}>
+                        <Component config={config}
+                                   form={form}
+                                   fieldProps={c.fieldProps}
+                                   key={c.title as string}
+                                   rules={c.formItemProps?.rules}
+                                   dataIndex={c.dataIndex}
+                        ></Component>
+                    </Suspense>
             }
             // readonly render
             const readonlyComponent = 'Column.Readonly.' + upperFirst(c.valueType as string)
@@ -103,10 +103,8 @@ export default function (props: FormSchema & {
             }
 
             return c
-        }).filter(c => !!c) || []) as ProFormColumnsType[])
-
-        setInitialized(true)
-    }, []);
+        }).filter(c => !!c) || []) as ProFormColumnsType[]
+    }, [props.columns])
 
     const modalContext = useContext(ModalContext)
     const tableContext = useContext(TableContext)
@@ -152,24 +150,22 @@ export default function (props: FormSchema & {
                     formRef: formRef,
                     extraRenderValues: props.extraRenderValues,
                 }}>
-                    {!initialized
-                        ? <ProSkeleton type={"list"} list={2}></ProSkeleton>
-                        : <BetaSchemaForm columns={columns}
-                                          colProps={props.colProps}
-                                          readonly={props.readonly}
-                                          grid={true}
-                                          loading={loading}
-                                          formRef={formRef}
-                                          initialValues={props.initialValues}
-                                          onFinish={onFinish}
-                                          submitter={{
-                                              render: () => [
-                                                  <Actions key={'actions'} loading={loading}
-                                                           actions={props.actions}></Actions>
-                                              ]
-                                          }}
-                        ></BetaSchemaForm>
-                    }
+                    {
+                        <BetaSchemaForm columns={columns}
+                                        colProps={props.colProps}
+                                        readonly={props.readonly}
+                                        grid={true}
+                                        loading={loading}
+                                        formRef={formRef}
+                                        initialValues={props.initialValues}
+                                        onFinish={onFinish}
+                                        submitter={{
+                                            render: () => [
+                                                <Actions key={'actions'} loading={loading}
+                                                         actions={props.actions}></Actions>
+                                            ]
+                                        }}
+                        ></BetaSchemaForm>}
                 </FormContext.Provider>
             </Col>
         </Row>

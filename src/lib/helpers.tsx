@@ -4,9 +4,10 @@ import Schema from '@rc-component/async-validator';
 import {Rules, ValidateError, ValidateFieldsError, Values} from "@rc-component/async-validator/lib/interface";
 import http from "./http";
 import container from "./container";
-import React, {lazy} from "react";
+import React from "react";
 import global from "./global";
 import {ModalContext} from "../components/ModalContext";
+import {ModalFuncProps} from "antd";
 
 export function replaceUrl(url: string, params: any) {
     return url.replace(/__([\w]+)__/g, (match, key) => {
@@ -107,7 +108,7 @@ export async function modalShow(options: ModalOptions) {
     if (!props) {
         throw new Error('modal props is empty')
     }
-    const Component = lazy(() => container.get('Modal.' + upperFirst(props.type)))
+    const Component = container.get('Modal.' + upperFirst(props.type))
 
     let afterClose = () => {
     }
@@ -134,7 +135,7 @@ export async function modalShow(options: ModalOptions) {
         afterClose: () => {
             afterClose && afterClose()
         },
-    })
+    } as ModalFuncProps)
     return {
         destroy: modal.destroy,
         update: modal.update,

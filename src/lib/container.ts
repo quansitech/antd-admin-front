@@ -5,6 +5,9 @@ import columnReadonly from '../components/Column/Readonly';
 import columnReadonlyAction from '../components/Column/Readonly/Action/index';
 import tableAction from '../components/Table/Action';
 import formAction from '../components/Form/Action';
+import Table from "../components/Table";
+import Form from "../components/Form";
+import Tabs from "../components/Form";
 
 const components: Record<string, any> = {}
 
@@ -45,14 +48,15 @@ async function autoRegister(prefix: string, components: Record<string, any>) {
 
 // -------- 弹窗 -----------
 {
-    container.register('Modal.Table', import('../components/Table'))
-    container.register('Modal.Form', import('../components/Form'))
+    container.register('Modal.Table', Table)
+    container.register('Modal.Form', Form)
+    container.register('Modal.Tabs', Tabs)
 }
 
 // -------- Tabs -----------
 {
-    container.register('Tab.Pane.Table', import('../components/Table'))
-    container.register('Tab.Pane.Form', import('../components/Form'))
+    container.register('Tab.Pane.Table', Table)
+    container.register('Tab.Pane.Form', Form)
 }
 
 // -------- 表格 -----------

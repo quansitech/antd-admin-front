@@ -1,12 +1,5 @@
-import React, {lazy, useContext, useEffect, useRef, useState} from "react";
-import {
-    ActionType,
-    FormInstance,
-    ProColumnType,
-    ProSkeleton,
-    ProTable,
-    ProTableProps
-} from "@ant-design/pro-components";
+import React, {lazy, useContext, useEffect, useMemo, useRef, useState} from "react";
+import {ActionType, FormInstance, ProColumnType, ProTable, ProTableProps} from "@ant-design/pro-components";
 import type {SortOrder} from "antd/lib/table/interface";
 import {TablePaginationConfig} from "antd/es/table";
 import {cloneDeep, isArray, uniqueId, upperFirst} from "es-toolkit/compat"
@@ -80,7 +73,6 @@ export default function (props: TableProps) {
     const formRef = useRef<FormInstance>()
     const actionRef = useRef<ActionType>()
     const [editableKeys, setEditableKeys] = useState<React.Key[]>(() => [])
-    const [columns, setColumns] = useState<ProColumnType[]>([])
     const [selectedRows, setSelectedRows] = useState<any[]>([])
     const [editableValues, setEditableValues] = useState<Record<string, any>[]>([])
     const [loading, setLoading] = useState(false)
@@ -89,15 +81,8 @@ export default function (props: TableProps) {
     const [dataSource, setDataSource] = useState<any[]>([])
     const [sticky, setSticky] = useState<TableProps['sticky']>(true)
 
-    const modalContext = useContext(ModalContext)
-
-    useEffect(() => {
-        // @ts-ignore
-        setPagination(props.pagination as TablePaginationConfig || false)
-        setDataSource(postData(props.dataSource))
-
-        // 重新定义列
-        setColumns(cloneDeep(props.columns)?.map((c: ProColumnType) => {
+    const columns = useMemo(() => {
+        return cloneDeep(props.columns)?.map((c: ProColumnType) => {
             c.key = c.dataIndex as string
 
             // 列render
@@ -105,12 +90,12 @@ export default function (props: TableProps) {
             if (container.check(renderComponent)) {
                 const Component = lazy(() => container.get(renderComponent))
                 c.render = (dom, record, index, action) =>
-                        <Component {...c}
-                                   schema={c}
-                                   key={c.title as string}
-                                   index={index}
-                                   record={record}
-                        ></Component>
+                    <Component {...c}
+                               schema={c}
+                               key={c.title as string}
+                               index={index}
+                               record={record}
+                    ></Component>
             }
 
             // 列查询及编辑render
@@ -118,13 +103,13 @@ export default function (props: TableProps) {
             if (container.check(formItemComponent)) {
                 const Component = lazy(() => container.get(formItemComponent))
                 c.renderFormItem = (schema, config, form) => (
-                        <Component config={config}
-                                   form={form}
-                                   index={schema.index}
-                                   schema={schema}
-                                   fieldProps={c.fieldProps}
-                                   key={c.title as string}
-                        ></Component>
+                    <Component config={config}
+                               form={form}
+                               index={schema.index}
+                               schema={schema}
+                               fieldProps={c.fieldProps}
+                               key={c.title as string}
+                    ></Component>
                 )
             }
 
@@ -138,7 +123,15 @@ export default function (props: TableProps) {
             }
 
             return c
-        }))
+        })
+    }, [props.columns])
+
+    const modalContext = useContext(ModalContext)
+
+    useEffect(() => {
+        // @ts-ignore
+        setPagination(props.pagination as TablePaginationConfig || false)
+        setDataSource(postData(props.dataSource))
 
         setLoading(false)
         setInitialized(true)
@@ -188,87 +181,88 @@ export default function (props: TableProps) {
             formRef: formRef.current,
             extraRenderValues: props.extraRenderValues,
         }}>
-            {!initialized && <ProSkeleton type={"list"} list={2}></ProSkeleton>}
-            <ProTable rowKey={props.rowKey}
-                      style={{display: initialized ? 'block' : 'none'}}
-                      tableClassName={'qs-antd-table'}
-                      columns={columns}
-                      onDataSourceChange={setDataSource}
-                      dataSource={dataSource}
-                      pagination={pagination}
-                      loading={loading}
-                      scroll={{x: true}}
-                      postData={postData}
-                      sticky={sticky}
-                      form={{
-                          onValuesChange(changedValues) {
-                              const key = Object.keys(changedValues)[0]
-                              const c = columns.find(c => c.dataIndex === key) as ProColumnType & {
-                                  searchOnChange: boolean
+            {initialized &&
+                <ProTable rowKey={props.rowKey}
+                          style={{display: initialized ? 'block' : 'none'}}
+                          tableClassName={'qs-antd-table'}
+                          columns={columns}
+                          onDataSourceChange={setDataSource}
+                          dataSource={dataSource}
+                          pagination={pagination}
+                          loading={loading}
+                          scroll={{x: true}}
+                          postData={postData}
+                          sticky={sticky}
+                          form={{
+                              onValuesChange(changedValues) {
+                                  const key = Object.keys(changedValues)[0]
+                                  const c = columns.find(c => c.dataIndex === key) as ProColumnType & {
+                                      searchOnChange: boolean
+                                  }
+                                  if (!c) {
+                                      return
+                                  }
+                                  // 是否立即搜索
+                                  if (c.searchOnChange) {
+                                      formRef.current?.submit()
+                                  }
                               }
-                              if (!c) {
-                                  return
+                          }}
+                          rowSelection={props.rowSelection && {
+                              alwaysShowAlert: false,
+                              selectedRowKeys: selectedRows.map(item => item[props.rowKey]),
+                              onSelect(record, selected) {
+                                  if (selected) {
+                                      setSelectedRows([...selectedRows, record])
+                                  } else {
+                                      setSelectedRows(selectedRows.filter(item => item[props.rowKey] !== record[props.rowKey]))
+                                  }
+                              },
+                              onChange(selectedRowKeys, newSelectedRows, info) {
+                                  switch (info.type) {
+                                      case 'all':
+                                          if (newSelectedRows.length) {
+                                              setSelectedRows([
+                                                  ...selectedRows,
+                                                  ...newSelectedRows.filter(item => !selectedRows.find(s => s[props.rowKey] == item[props.rowKey]))
+                                              ])
+                                          } else {
+                                              setSelectedRows(selectedRows.filter(item => !dataSource.find(dr => dr[props.rowKey] == item[props.rowKey])))
+                                          }
+                                          break;
+                                      case 'none':
+                                          setSelectedRows([])
+                                          break;
+                                  }
+                              },
+                          }}
+                          toolbar={{
+                              filter: true,
+                          }}
+                          toolBarRender={(action) => [
+                              <ToolbarActions key={'actions'} actions={props.actions}
+                                              selectedRows={selectedRows}></ToolbarActions>
+                          ]}
+                          editable={{
+                              type: 'multiple',
+                              editableKeys: editableKeys,
+                              onChange: setEditableKeys,
+                              onValuesChange(record) {
+                                  setEditableValues([
+                                      ...editableValues.filter(item => item[props.rowKey] !== record[props.rowKey]),
+                                      record
+                                  ])
                               }
-                              // 是否立即搜索
-                              if (c.searchOnChange) {
-                                  formRef.current?.submit()
-                              }
-                          }
-                      }}
-                      rowSelection={props.rowSelection && {
-                          alwaysShowAlert: false,
-                          selectedRowKeys: selectedRows.map(item => item[props.rowKey]),
-                          onSelect(record, selected) {
-                              if (selected) {
-                                  setSelectedRows([...selectedRows, record])
-                              } else {
-                                  setSelectedRows(selectedRows.filter(item => item[props.rowKey] !== record[props.rowKey]))
-                              }
-                          },
-                          onChange(selectedRowKeys, newSelectedRows, info) {
-                              switch (info.type) {
-                                  case 'all':
-                                      if (newSelectedRows.length) {
-                                          setSelectedRows([
-                                              ...selectedRows,
-                                              ...newSelectedRows.filter(item => !selectedRows.find(s => s[props.rowKey] == item[props.rowKey]))
-                                          ])
-                                      } else {
-                                          setSelectedRows(selectedRows.filter(item => !dataSource.find(dr => dr[props.rowKey] == item[props.rowKey])))
-                                      }
-                                      break;
-                                  case 'none':
-                                      setSelectedRows([])
-                                      break;
-                              }
-                          },
-                      }}
-                      toolbar={{
-                          filter: true,
-                      }}
-                      toolBarRender={(action) => [
-                          <ToolbarActions key={'actions'} actions={props.actions}
-                                          selectedRows={selectedRows}></ToolbarActions>
-                      ]}
-                      editable={{
-                          type: 'multiple',
-                          editableKeys: editableKeys,
-                          onChange: setEditableKeys,
-                          onValuesChange(record) {
-                              setEditableValues([
-                                  ...editableValues.filter(item => item[props.rowKey] !== record[props.rowKey]),
-                                  record
-                              ])
-                          }
-                      }}
-                      cardBordered
-                      manualRequest={true}
-                      request={request}
-                      formRef={formRef}
-                      actionRef={actionRef}
-                      search={props.search}
-                      dateFormatter={props.dateFormatter}
-            ></ProTable>
+                          }}
+                          cardBordered
+                          manualRequest={true}
+                          request={request}
+                          formRef={formRef}
+                          actionRef={actionRef}
+                          search={props.search}
+                          dateFormatter={props.dateFormatter}
+                ></ProTable>
+            }
 
         </TableContext.Provider>
     </>
