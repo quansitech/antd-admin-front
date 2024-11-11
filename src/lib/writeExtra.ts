@@ -21,7 +21,7 @@ import {container} from "@quansitech/antd-admin";
 ${extras.map(e => {
         const cs = [];
         for (const componentKey in e.component) {
-            cs.push(`container.register('${componentKey}', () => import('../../../vendor${path.join('/', e.path, e.component[componentKey])}'));`)
+            cs.push(`container.register('${componentKey}', import('../../../vendor${path.join('/', e.path, e.component[componentKey])}'));`)
         }
         return cs.join('\n');
     })}
