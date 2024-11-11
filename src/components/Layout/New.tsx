@@ -9,6 +9,7 @@ import http from "../../lib/http";
 // @ts-ignore
 import {Route} from '@ant-design/pro-layout/lib/typing';
 import {MoonOutlined, SunOutlined} from "@ant-design/icons";
+import {Head} from "@inertiajs/react";
 
 export default function ({children, pageTitle, siteTitle, pageProps}: {
     children: React.ReactNode,

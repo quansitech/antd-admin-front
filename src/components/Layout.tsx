@@ -1,10 +1,10 @@
-import {Head} from "@inertiajs/react";
 import React, {useEffect, useState} from "react";
 import {GlobalEvent} from "@inertiajs/core/types/types";
 import New from "./Layout/New";
-import {PageContainer} from "@ant-design/pro-components"
 import {App} from "antd";
 import global from "../lib/global";
+import Blank from "./Layout/Blank";
+import {Head} from "@inertiajs/react";
 
 export default function ({children}: {
     children: React.ReactNode
@@ -42,14 +42,10 @@ export default function ({children}: {
     }, [])
 
     return <>
+        <Head title={pageTitle + ' | ' + siteTitle + ' 后台管理'}></Head>
         {enableNewLayout
             ? <New pageProps={pageProps} pageTitle={pageTitle} siteTitle={siteTitle} children={children}></New>
-            : <>
-                <Head title={pageTitle + ' | ' + siteTitle + ' 后台管理'}></Head>
-                <PageContainer title={pageTitle}>
-                    {children}
-                </PageContainer>
-            </>
+            : <Blank pageTitle={pageTitle} children={children}></Blank>
         }
     </>
 }
