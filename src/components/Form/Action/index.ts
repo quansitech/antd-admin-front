@@ -1,3 +1,3 @@
 export default {
-    Button: import('./Button'),
+    Button: () => import('./Button'),
 }

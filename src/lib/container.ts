@@ -5,9 +5,8 @@ import columnReadonly from '../components/Column/Readonly';
 import columnReadonlyAction from '../components/Column/Readonly/Action/index';
 import tableAction from '../components/Table/Action';
 import formAction from '../components/Form/Action';
-import Table from "../components/Table";
-import Form from "../components/Form";
-import Tabs from "../components/Form";
+import {lazy} from "react";
+import {lowerFirst} from "lodash";
 
 const components: Record<string, any> = {}
 
@@ -16,7 +15,7 @@ const container = {
         if (this.check(name)) {
             throw new Error(`Component ${name} already registered`)
         }
-        components[name] = componentLoader
+        components[name] = lazy(componentLoader)
     },
     get(name: string) {
         if (!this.check(name)) {
@@ -26,6 +25,19 @@ const container = {
     },
     check(name: string) {
         return !!components[name]
+    },
+    list(prefix: string) {
+        prefix = prefix.replace(/\.$/, '')
+        const keys = Object.keys(components)
+            .filter(key => {
+                return key.match(new RegExp(`^${prefix}\\.\\w+$`))
+            })
+            .map(key => key.replace(new RegExp(`^${prefix}\\.`), ''))
+
+        return keys.reduce((acc, key) => {
+            acc[lowerFirst(key)] = this.get(prefix + '.' + key)
+            return acc
+        }, {} as Record<string, any>)
     },
     schemaHandler,
     routerNavigateTo,
@@ -48,15 +60,15 @@ async function autoRegister(prefix: string, components: Record<string, any>) {
 
 // -------- 弹窗 -----------
 {
-    container.register('Modal.Table', Table)
-    container.register('Modal.Form', Form)
-    container.register('Modal.Tabs', Tabs)
+    container.register('Modal.Table', () => import('../components/Table'))
+    container.register('Modal.Form', () => import('../components/Form'))
+    container.register('Modal.Tabs', () => import('../components/Tabs'))
 }
 
 // -------- Tabs -----------
 {
-    container.register('Tab.Pane.Table', Table)
-    container.register('Tab.Pane.Form', Form)
+    container.register('Tab.Pane.Table', () => import('../components/Table'))
+    container.register('Tab.Pane.Form', () => import('../components/Form'))
 }
 
 // -------- 表格 -----------

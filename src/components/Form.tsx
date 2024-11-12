@@ -1,18 +1,19 @@
-import {BetaSchemaForm, ProFormColumnsType, ProFormInstance} from "@ant-design/pro-components";
+import {BetaSchemaForm, ProFormColumnsType, ProFormInstance, ProProvider} from "@ant-design/pro-components";
 import type {FormSchema} from "@ant-design/pro-form/es/components/SchemaForm/typing";
-import React, {lazy, Suspense, useContext, useMemo, useRef, useState} from "react";
-import {cloneDeep, upperFirst} from "es-toolkit";
+import React, {useContext, useMemo, useRef, useState} from "react";
+import {cloneDeep} from "es-toolkit";
 import container from "../lib/container";
 import {FormActionType} from "./Form/Action/types";
 import Actions from "./Form/Actions";
 import {FormContext} from "./FormContext";
-import {Col, Row, Spin} from "antd";
+import {Col, Row} from "antd";
 import http from "../lib/http";
 import customRule from "../lib/customRule";
 import {ModalContext} from "./ModalContext";
 import {TableContext} from "./TableContext";
 import {commonHandler} from "../lib/schemaHandler";
 import {Rule} from "antd/es/form";
+import {getProValueTypeMap} from "../lib/helpers";
 
 type SubmitRequestType = {
     url: string,
@@ -30,14 +31,19 @@ export default function (props: FormSchema & {
     columns?: ProFormColumnsType[],
     submitRequest?: SubmitRequestType,
     extraRenderValues?: Record<string, any>,
+    readonly?: boolean,
+    initialValues?: any,
+    colProps?: any,
 }) {
-
     const formRef = useRef<ProFormInstance>()
     const [loading, setLoading] = useState(false)
     const hiddenField = useRef<Record<string, any>>({})
 
     const columns = useMemo(() => {
         return (cloneDeep<ProFormColumnsType[]>(props.columns)?.map((c: ProFormColumnsType & {
+            hideInForm: boolean,
+            dataIndex: string,
+            valueType?: string,
             formItemProps?: {
                 rules?: (Rule & {
                     customType?: string
@@ -66,37 +72,6 @@ export default function (props: FormSchema & {
                 return null
             }
 
-            // item render
-            const formItemComponent = 'Column.' + upperFirst(c.valueType as string)
-            if (container.check(formItemComponent)) {
-                const Component = lazy(() => container.get(formItemComponent))
-                c.renderFormItem = (schema, config, form) =>
-                    <Suspense fallback={<Spin/>}>
-                        <Component config={config}
-                                   form={form}
-                                   fieldProps={c.fieldProps}
-                                   key={c.title as string}
-                                   rules={c.formItemProps?.rules}
-                                   dataIndex={c.dataIndex}
-                        ></Component>
-                    </Suspense>
-            }
-            // readonly render
-            const readonlyComponent = 'Column.Readonly.' + upperFirst(c.valueType as string)
-            if (container.check(readonlyComponent)) {
-                const Component = lazy(() => container.get(readonlyComponent))
-                c.render = (dom, entity, index, action, schema) =>
-                    <Suspense fallback={<Spin/>}>
-                        <Component key={c.title as string}
-                                   entity={entity}
-                                   index={index}
-                                   action={action}
-                                   schema={schema}
-                                   dom={dom}
-                        ></Component>
-                    </Suspense>
-            }
-
             commonHandler(c)
             if (container.schemaHandler[c.valueType as string]) {
                 return container.schemaHandler[c.valueType as string](c)
@@ -117,6 +92,7 @@ export default function (props: FormSchema & {
                 })
             }
             if (tableContext.actionRef) {
+                // @ts-ignore
                 await tableContext.actionRef.reload()
             }
         }
@@ -143,6 +119,8 @@ export default function (props: FormSchema & {
         }
     }
 
+    const values = useContext(ProProvider);
+
     return <>
         <Row justify={'center'}>
             <Col sm={24} md={22} lg={20}>
@@ -150,7 +128,10 @@ export default function (props: FormSchema & {
                     formRef: formRef,
                     extraRenderValues: props.extraRenderValues,
                 }}>
-                    {
+                    <ProProvider.Provider value={{
+                        ...values,
+                        valueTypeMap: getProValueTypeMap()
+                    }}>
                         <BetaSchemaForm columns={columns}
                                         colProps={props.colProps}
                                         readonly={props.readonly}
@@ -165,7 +146,8 @@ export default function (props: FormSchema & {
                                                          actions={props.actions}></Actions>
                                             ]
                                         }}
-                        ></BetaSchemaForm>}
+                        ></BetaSchemaForm>
+                    </ProProvider.Provider>
                 </FormContext.Provider>
             </Col>
         </Row>

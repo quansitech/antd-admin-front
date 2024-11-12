@@ -4,10 +4,11 @@ import Schema from '@rc-component/async-validator';
 import {Rules, ValidateError, ValidateFieldsError, Values} from "@rc-component/async-validator/lib/interface";
 import http from "./http";
 import container from "./container";
-import React from "react";
+import React, {Suspense} from "react";
 import global from "./global";
 import {ModalContext} from "../components/ModalContext";
 import {ModalFuncProps} from "antd";
+import {uniq} from "lodash";
 
 export function replaceUrl(url: string, params: any) {
     return url.replace(/__([\w]+)__/g, (match, key) => {
@@ -119,18 +120,20 @@ export async function modalShow(options: ModalOptions) {
         destroyOnClose: true,
         footer: null,
         content: (
-                <ModalContext.Provider value={{
-                    inModal: true,
-                    closeModal: () => {
-                        modal?.destroy()
-                    },
-                    contexts: options.contexts,
-                    setAfterClose(callback: () => void) {
-                        afterClose = callback
-                    }
-                }}>
+            <ModalContext.Provider value={{
+                inModal: true,
+                closeModal: () => {
+                    modal?.destroy()
+                },
+                contexts: options.contexts,
+                setAfterClose(callback: () => void) {
+                    afterClose = callback
+                }
+            }}>
+                <Suspense>
                     <Component {...props} />
-                </ModalContext.Provider>
+                </Suspense>
+            </ModalContext.Provider>
         ),
         afterClose: () => {
             afterClose && afterClose()
@@ -144,4 +147,42 @@ export async function modalShow(options: ModalOptions) {
 
 export function upperFirst(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+export function getProValueTypeMap() {
+    const columnKeys = Object.keys(container.list('Column.'))
+    const readonlyKeys = Object.keys(container.list('Column.Readonly.'))
+
+    const types = uniq(columnKeys.concat(readonlyKeys))
+    return types.reduce((map, type) => {
+        map[type] = {
+            render(text, props) {
+                const renderComponent = 'Column.Readonly.' + upperFirst(type as string)
+                if (container.check(renderComponent)) {
+                    const Component = container.get(renderComponent)
+                    return <Suspense>
+                        <Component {...props} />
+                    </Suspense>
+                }
+
+                return <>
+                    {text}
+                </>
+            },
+            renderFormItem(text, props) {
+                const renderComponent = 'Column.' + upperFirst(type as string)
+                if (container.check(renderComponent)) {
+                    const Component = container.get(renderComponent)
+                    return <Suspense>
+                        <Component {...props} />
+                    </Suspense>
+                }
+
+                return <>
+                    {text}
+                </>
+            }
+        }
+        return map
+    }, {} as Record<string, any>)
 }

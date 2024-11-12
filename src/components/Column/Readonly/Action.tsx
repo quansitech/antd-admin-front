@@ -1,4 +1,4 @@
-import React, {Component, lazy, useEffect, useState} from "react";
+import React, {Component, useEffect, useState} from "react";
 import {ReactComponentLike} from "prop-types";
 import container from "../../../lib/container";
 import {Badge, Flex} from "antd";
@@ -13,7 +13,7 @@ type ComponentType = {
     props: any,
 }
 
-export default ({actions, record}: ColumnReadonlyProps & {
+export default (props: ColumnReadonlyProps & {
     actions?: {
         type: string,
         title: string,
@@ -21,6 +21,8 @@ export default ({actions, record}: ColumnReadonlyProps & {
         badge?: any,
     }[],
 }) => {
+    const actions = props.fieldProps.actions
+    const record = props.record
 
     const [Components, setComponents] = useState<ComponentType[]>([]);
 
@@ -45,7 +47,7 @@ export default ({actions, record}: ColumnReadonlyProps & {
                         record,
                         badge,
                     },
-                    component: lazy(() => container.get(c)),
+                    component: container.get(c),
                 }
             })))
         }

@@ -1,8 +1,15 @@
-import React, {lazy, useContext, useEffect, useMemo, useRef, useState} from "react";
-import {ActionType, FormInstance, ProColumnType, ProTable, ProTableProps} from "@ant-design/pro-components";
+import React, {useContext, useEffect, useMemo, useRef, useState} from "react";
+import {
+    ActionType,
+    FormInstance,
+    ProColumnType,
+    ProProvider,
+    ProTable,
+    ProTableProps
+} from "@ant-design/pro-components";
 import type {SortOrder} from "antd/lib/table/interface";
 import {TablePaginationConfig} from "antd/es/table";
-import {cloneDeep, isArray, uniqueId, upperFirst} from "es-toolkit/compat"
+import {cloneDeep, isArray, uniqueId} from "es-toolkit/compat"
 import {TableContext} from "./TableContext";
 import ToolbarActions from "./Table/ToolbarActions";
 import container from "../lib/container";
@@ -11,6 +18,7 @@ import http from "../lib/http";
 import "./Table.scss"
 import {ModalContext} from "./ModalContext";
 import {commonHandler} from "../lib/schemaHandler";
+import {getProValueTypeMap} from "../lib/helpers";
 
 export type TableProps = ProTableProps<any, any> & {
     columns: ProColumnType[],
@@ -24,6 +32,8 @@ export type TableProps = ProTableProps<any, any> & {
     searchUrl: string,
     search?: boolean,
     extraRenderValues?: Record<string, any>[],
+    rowSelection: boolean,
+    dateFormatter: string,
 }
 
 export default function (props: TableProps) {
@@ -53,13 +63,16 @@ export default function (props: TableProps) {
                 headers: {
                     'X-Table-Search': '1'
                 }
-            })
+            } as any)
 
             if (res.data.pagination) {
                 setPagination({
                     ...res.data.pagination,
                     current: params.current,
                 })
+            }
+            if (res.data.extraRenderValues) {
+                setExtraRenderValues(res.data.extraRenderValues)
             }
             return {
                 data: res.data.dataSource || [],
@@ -76,42 +89,20 @@ export default function (props: TableProps) {
     const [selectedRows, setSelectedRows] = useState<any[]>([])
     const [editableValues, setEditableValues] = useState<Record<string, any>[]>([])
     const [loading, setLoading] = useState(false)
-    const [initialized, setInitialized] = useState(false)
     const [pagination, setPagination] = useState<TablePaginationConfig>()
     const [dataSource, setDataSource] = useState<any[]>([])
     const [sticky, setSticky] = useState<TableProps['sticky']>(true)
+    const [extraRenderValues, setExtraRenderValues] = useState([])
 
     const columns = useMemo(() => {
-        return cloneDeep(props.columns)?.map((c: ProColumnType) => {
+        return cloneDeep(props.columns)?.map((c: ProColumnType & {
+            key: string,
+            dataIndex: string,
+            valueType?: string,
+            formItemProps?: {},
+            initialValue: any,
+        }) => {
             c.key = c.dataIndex as string
-
-            // 列render
-            const renderComponent = 'Column.Readonly.' + upperFirst(c.valueType as string)
-            if (container.check(renderComponent)) {
-                const Component = lazy(() => container.get(renderComponent))
-                c.render = (dom, record, index, action) =>
-                    <Component {...c}
-                               schema={c}
-                               key={c.title as string}
-                               index={index}
-                               record={record}
-                    ></Component>
-            }
-
-            // 列查询及编辑render
-            const formItemComponent = 'Column.' + upperFirst(c.valueType as string)
-            if (container.check(formItemComponent)) {
-                const Component = lazy(() => container.get(formItemComponent))
-                c.renderFormItem = (schema, config, form) => (
-                    <Component config={config}
-                               form={form}
-                               index={schema.index}
-                               schema={schema}
-                               fieldProps={c.fieldProps}
-                               key={c.title as string}
-                    ></Component>
-                )
-            }
 
             if (props.defaultSearchValue?.[c.dataIndex as string] !== undefined) {
                 c.initialValue = props.defaultSearchValue[c.dataIndex as string]
@@ -132,9 +123,9 @@ export default function (props: TableProps) {
         // @ts-ignore
         setPagination(props.pagination as TablePaginationConfig || false)
         setDataSource(postData(props.dataSource))
+        setExtraRenderValues(props.extraRenderValues)
 
         setLoading(false)
-        setInitialized(true)
 
         if (!modalContext.inModal) {
             setSticky({
@@ -149,7 +140,10 @@ export default function (props: TableProps) {
             return data
         }
 
-        props.columns.map(column => {
+        columns.map((column: ProColumnType & {
+            valueType?: string,
+            dataIndex: string,
+        }) => {
             switch (column.valueType) {
                 case 'dateTime':
                     data = data.map(row => {
@@ -171,6 +165,7 @@ export default function (props: TableProps) {
         })
     }
 
+    const values = useContext(ProProvider);
 
     return <>
         <TableContext.Provider value={{
@@ -179,11 +174,14 @@ export default function (props: TableProps) {
             editableKeys: editableKeys,
             actionRef: actionRef.current,
             formRef: formRef.current,
-            extraRenderValues: props.extraRenderValues,
+            extraRenderValues: extraRenderValues,
+            dataSource: dataSource,
         }}>
-            {initialized &&
+            <ProProvider.Provider value={{
+                ...values,
+                valueTypeMap: getProValueTypeMap()
+            }}>
                 <ProTable rowKey={props.rowKey}
-                          style={{display: initialized ? 'block' : 'none'}}
                           tableClassName={'qs-antd-table'}
                           columns={columns}
                           onDataSourceChange={setDataSource}
@@ -204,6 +202,7 @@ export default function (props: TableProps) {
                                   }
                                   // 是否立即搜索
                                   if (c.searchOnChange) {
+                                      // @ts-ignore
                                       formRef.current?.submit()
                                   }
                               }
@@ -262,8 +261,7 @@ export default function (props: TableProps) {
                           search={props.search}
                           dateFormatter={props.dateFormatter}
                 ></ProTable>
-            }
-
+            </ProProvider.Provider>
         </TableContext.Provider>
     </>
 }

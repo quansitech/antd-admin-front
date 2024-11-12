@@ -1,5 +1,5 @@
 import {Tabs} from "antd";
-import React, {useEffect, useMemo, useState} from "react";
+import React, {Suspense, useEffect, useMemo, useState} from "react";
 import type {Tab} from 'rc-tabs/lib/interface';
 import container from "../lib/container";
 import {routerNavigateTo} from "../lib/helpers";
@@ -40,7 +40,9 @@ export default function (props: TabsPageType) {
                 key,
                 label: t.title,
                 children: <>
-                    <Component {...t.pane.props}></Component>
+                    <Suspense>
+                        <Component {...t.pane.props}></Component>
+                    </Suspense>
                 </>
             }
         }) as Tab[]

@@ -10,6 +10,7 @@ type TableContextValue = {
     actionRef?: ActionType,
     formRef?: FormInstance,
     extraRenderValues?: Record<string, any>[],
+    dataSource: any[],
 }
 
 export const TableContext = createContext({} as TableContextValue)

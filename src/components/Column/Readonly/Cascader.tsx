@@ -12,13 +12,13 @@ export default function (props: ColumnReadonlyProps & {
     const [text, setText] = useState<ReactNode>('-');
 
     useEffect(() => {
-        setText(props.dom)
-        const value = props.entity.value
+        setText(props.fieldProps.value)
+        const value = props.fieldProps.value
 
         // 远程获取数据
-        if (props.schema.fieldProps?.loadDataUrl) {
+        if (props.fieldProps?.loadDataUrl) {
             http({
-                url: props.schema.fieldProps.loadDataUrl,
+                url: props.fieldProps.loadDataUrl,
                 method: 'get',
                 params: {
                     value,
@@ -45,7 +45,7 @@ export default function (props: ColumnReadonlyProps & {
 
     }, []);
 
-    return <div className={props.entity.className}>
+    return <div>
         {text}
     </div>
 }

@@ -1,3 +1,3 @@
 export default {
-    Link: import('./Link'),
+    Link: () => import('./Link'),
 }

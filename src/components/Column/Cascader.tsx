@@ -8,8 +8,8 @@ export default function (props: ColumnProps) {
     const [values, setValues] = useState<any>()
 
     useEffect(() => {
-        const value = props.config.value
-        setOptions(props.config.options as []);
+        const value = props.fieldProps.value
+        setOptions(props.fieldProps.options || [] as []);
 
         // 远程获取数据
         if (props.fieldProps.loadDataUrl) {
@@ -61,11 +61,11 @@ export default function (props: ColumnProps) {
     const onChange = (values: any[]) => {
         setValues(values)
         if (!values?.length) {
-            props.form.setFieldValue(props.dataIndex, undefined)
+            props.fieldProps?.onChange(props.dataIndex, undefined)
             return
         }
         const value = values[values.length - 1]
-        props.form.setFieldValue(props.dataIndex, value)
+        props.fieldProps?.onChange(props.dataIndex, value)
     }
 
     return <div className={props.className}>

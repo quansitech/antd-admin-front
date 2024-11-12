@@ -21,7 +21,7 @@ export default function ({children}: {
         global.notification = notification
         global.message = message
 
-        const listener = (e: GlobalEvent<'navigate'>)=>{
+        const listener = (e: GlobalEvent<'navigate'>) => {
             setPageProps(e.detail.page.props)
             // @ts-ignore
             if (e.detail.page.props.layoutProps?.enableNewLayout) {
@@ -36,7 +36,7 @@ export default function ({children}: {
 
         document.addEventListener('inertia:navigate', listener)
 
-        return ()=>{
+        return () => {
             document.removeEventListener('inertia:navigate', listener)
         }
     }, [])

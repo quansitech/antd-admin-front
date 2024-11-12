@@ -1,6 +1,6 @@
 import {ColumnProps} from "./types";
 import React, {Component} from "react";
-import {createScript, filterObjectKeys} from "../../lib/helpers";
+import {createScript} from "../../lib/helpers";
 import {Spin} from "antd";
 import {ModalContext, ModalContextProps} from "../ModalContext";
 import {uniqueId} from "es-toolkit/compat";
@@ -32,15 +32,6 @@ export default class Ueditor extends Component<ColumnProps & {
     componentDidMount() {
         this.setState({
             width: this.containerRef?.offsetWidth ? `${this.containerRef?.offsetWidth}px` : '100%'
-        })
-
-        this.props.rules?.push({
-            validator: async (rule: any, value: any) => {
-                if (this.catching) {
-                    throw new Error('正在抓取图片')
-                }
-                return true
-            },
         })
 
         if (!window.UE && !window.UE_LOADING_PROMISE) {
@@ -266,16 +257,16 @@ export default class Ueditor extends Component<ColumnProps & {
 
             this.editor = window.UE.getEditor(this.state.containerId, config)
             this.editor?.ready(() => {
-                const value = this.props.config.value
+                const value = this.props.fieldProps.value
                 if (value) {
                     const div = document.createElement('div')
                     div.innerHTML = value
                     this.editor?.setContent(div.innerText || '')
-                    this.props.form?.setFieldValue(this.props.dataIndex, this.editor?.getContent())
+                    this.props.fieldProps.onChange(this.editor?.getContent())
                 }
 
                 this.editor?.addListener('contentChange', () => {
-                    this.props.form?.setFieldValue(this.props.dataIndex, this.editor?.getContent())
+                    this.props.fieldProps.onChange(this.editor?.getContent())
                 })
                 this.setState({loading: false})
             })
@@ -292,17 +283,7 @@ export default class Ueditor extends Component<ColumnProps & {
             {
                 modalContext => {
                     this.modalContext = modalContext
-                    return <div {...filterObjectKeys(this.props, [
-                        'id',
-                        'fieldProps',
-                        'onChange',
-                        'value',
-                        'form',
-                        'config',
-                        'rules',
-                        'ueditorPath',
-                        'dataIndex',
-                    ])} ref={el => this.containerRef = el}>
+                    return <div ref={el => this.containerRef = el}>
                         <Spin spinning={this.state.loading}>
                             <div id={this.state.containerId} style={{width: this.state.width}}/>
                         </Spin>

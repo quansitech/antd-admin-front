@@ -86,7 +86,7 @@ export const schemaHandler: Record<string, Handler> = {
         schema.formItemProps.rules.push({
             validator: uploadValidator,
         })
-
+        schema.fieldProps.dataIndex = schema.dataIndex
         return {
             ...schema,
             transform: uploadTransform,
@@ -96,10 +96,36 @@ export const schemaHandler: Record<string, Handler> = {
         schema.formItemProps.rules.push({
             validator: uploadValidator,
         })
+        schema.fieldProps.dataIndex = schema.dataIndex
 
         return {
             ...schema,
             transform: uploadTransform,
+        }
+    },
+
+    action: schema => {
+        schema.fieldProps = {actions: schema.actions}
+        return schema
+    },
+
+    ueditor: schema => {
+        if (!schema.formItemProps) {
+            schema.formItemProps = {}
+        }
+        if (!schema.fieldProps.rules) {
+            schema.fieldProps.rules = []
+        }
+        // schema.formItemProps.rules.push({
+        //     validator: async (rule: any, value: any) => {
+        //         if (this.catching) {
+        //             throw new Error('正在抓取图片')
+        //         }
+        //         return true
+        //     }
+        // })
+        return {
+            ...schema
         }
     },
 

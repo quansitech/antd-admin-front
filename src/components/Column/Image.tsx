@@ -56,7 +56,6 @@ export default function (props: ColumnProps & {
 
     return <>
         <File {...props}
-
               uploadButton={uploadButton}
               listType={'picture-card'}
               onPreview={handlePreview}

@@ -75,12 +75,12 @@ export default function (props: ColumnProps & {
     useEffect(() => {
         let extraRenderValue = [];
         if (formContext && formContext.extraRenderValues) {
-            extraRenderValue = formContext.extraRenderValues[props.dataIndex as string] ?? []
+            extraRenderValue = formContext.extraRenderValues[props.fieldProps.dataIndex as string] ?? []
         } else if (tableContext && tableContext.extraRenderValues) {
-            console.log(111)
-            extraRenderValue = tableContext.extraRenderValues[props.index as number]?.[props.schema.dataIndex as string] ?? []
+            const key = tableContext.getTableProps().rowKey
+            const index = tableContext.dataSource.findIndex(item => item[key] === props.record[key])
+            extraRenderValue = tableContext.extraRenderValues[index]?.[props.fieldProps.dataIndex as string] ?? []
         }
-
         setFileList(extraRenderValue.map((item: any) => {
             return {
                 uid: item.id,
@@ -99,12 +99,13 @@ export default function (props: ColumnProps & {
     }, []);
 
     useEffect(() => {
-        props.form?.setFieldValue(props.dataIndex, fileList.map(file => {
+        const values = fileList.map(file => {
             if (file.status === 'done') {
                 file.url = file.response.url || file.response.file_url
             }
             return file
-        }))
+        })
+        props.fieldProps?.onChange(values)
     }, [fileList]);
 
     const uploadButton = (
@@ -128,21 +129,22 @@ export default function (props: ColumnProps & {
         }
     };
 
-    const uploader = (<Upload
-        {...props.fieldProps}
-        action={props.fieldProps.uploadRequest.policyGetUrl}
-        listType={props.listType || 'text'}
-        fileList={fileList}
-        itemRender={(originNode, file) => (
-            <DraggableUploadListItem originNode={originNode} file={file}/>
-        )}
-        onPreview={props.onPreview || handlePreview}
-        onChange={({fileList}) => setFileList(fileList)}
-        beforeUpload={(f, fl) => beforeUpload(f, fl, fileList)}
-        customRequest={customRequest as UploadProps['customRequest']}
-    >
-        {props.uploadButton ? props.uploadButton(fileList) : uploadButton}
-    </Upload>)
+    const uploader = (
+        <Upload {...props.fieldProps}
+                action={props.fieldProps.uploadRequest.policyGetUrl}
+                listType={props.listType || 'text'}
+                fileList={fileList}
+                itemRender={(originNode, file) => (
+                    <DraggableUploadListItem originNode={originNode} file={file}/>
+                )}
+                onPreview={props.onPreview || handlePreview}
+                onChange={({fileList}) => setFileList(fileList)}
+                beforeUpload={(f, fl) => beforeUpload(f, fl, fileList)}
+                customRequest={customRequest as UploadProps['customRequest']}
+        >
+            {props.uploadButton ? props.uploadButton(fileList) : uploadButton}
+        </Upload>
+    )
 
     return <>
         {props.fieldProps?.uploadRequest
