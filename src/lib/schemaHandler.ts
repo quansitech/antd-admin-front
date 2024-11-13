@@ -113,17 +113,18 @@ export const schemaHandler: Record<string, Handler> = {
         if (!schema.formItemProps) {
             schema.formItemProps = {}
         }
-        if (!schema.fieldProps.rules) {
-            schema.fieldProps.rules = []
+        if (!schema.formItemProps.rules) {
+            schema.formItemProps.rules = []
         }
-        // schema.formItemProps.rules.push({
-        //     validator: async (rule: any, value: any) => {
-        //         if (this.catching) {
-        //             throw new Error('正在抓取图片')
-        //         }
-        //         return true
-        //     }
-        // })
+        schema.formItemProps.rules.push({
+            validator: async (rule, value) => {
+                if (value.slice(0, 7) === '[抓取图片中]') {
+                    throw new Error('请等待图片抓取完成')
+                }
+
+                return true
+            },
+        })
         return {
             ...schema
         }

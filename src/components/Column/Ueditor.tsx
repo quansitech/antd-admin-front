@@ -20,14 +20,12 @@ export default class Ueditor extends Component<ColumnProps & {
     modalContext = {} as ModalContextProps
 
     editor: any = null
-    catching = false
     containerRef: HTMLElement | null = null
     state = {
         loading: true,
         containerId: uniqueId('ueditor_'),
         width: '',
     }
-
 
     componentDidMount() {
         this.setState({
@@ -49,6 +47,7 @@ export default class Ueditor extends Component<ColumnProps & {
             let that = this
             window.UE.plugins['forceCatchRemoteImg'] = function () {
                 if (this.options.forcecatchremote) {
+                    // @ts-ignore
                     this.addListener("afterpaste", function (t: any, a: any) {
                         const load_src = that.props.fieldProps.ueditorPath + '/img/load.gif';
                         const domUtils = window.UE.dom.domUtils;
@@ -89,13 +88,13 @@ export default class Ueditor extends Component<ColumnProps & {
 
                         if (catchGo) {
                             //     $('.submit').trigger('startHandlePostData', '正在抓取图片');
-                            that.catching = true
+                            that.props.fieldProps.onChange('[抓取图片中]' + that.editor?.getContent().replace(/^\[抓取图片中]/, ''))
                             that.props.dataIndex && that.props.form?.validateFields([that.props.dataIndex])
                         }
                     });
 
                     this.addListener("catchremotesuccess", function () {
-                        that.catching = false
+                        that.props.fieldProps.onChange(that.editor?.getContent().replace(/^\[抓取图片中]/, ''))
                         that.props.dataIndex && that.props.form?.validateFields([that.props.dataIndex])
                         //     $('.submit').trigger('endHandlePostData');
                     });
@@ -236,7 +235,7 @@ export default class Ueditor extends Component<ColumnProps & {
 
                             me.fireEvent('catchremoteimage');
 
-                            that.catching = true
+                            that.props.fieldProps.onChange('[抓取图片中]' + that.editor?.getContent().replace(/^\[抓取图片中]/, ''))
                             that.props.dataIndex && that.props.form?.validateFields([that.props.dataIndex])
                             // $('.submit').trigger('startHandlePostData', '正在抓取图片');
                         },
