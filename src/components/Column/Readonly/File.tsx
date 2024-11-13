@@ -4,7 +4,6 @@ import React, {useContext, useEffect, useState} from "react";
 import {FormContext} from "../../FormContext";
 import {UploadListType} from "antd/es/upload/interface";
 import {TableContext} from "../../TableContext";
-import {FileType} from "../../../lib/upload";
 
 export default function (props: ColumnReadonlyProps & {
     listType?: UploadListType,
@@ -37,7 +36,7 @@ export default function (props: ColumnReadonlyProps & {
                     url: item.url,
                 }
             }
-        }) as FileType[])
+        }) as UploadFile[])
 
         setLoading(false)
     }, []);

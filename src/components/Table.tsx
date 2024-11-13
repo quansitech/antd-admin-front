@@ -1,12 +1,5 @@
 import React, {useContext, useEffect, useMemo, useRef, useState} from "react";
-import {
-    ActionType,
-    FormInstance,
-    ProColumnType,
-    ProProvider,
-    ProTable,
-    ProTableProps
-} from "@ant-design/pro-components";
+import {ActionType, FormInstance, ProColumnType, ProTable, ProTableProps} from "@ant-design/pro-components";
 import type {SortOrder} from "antd/lib/table/interface";
 import {TablePaginationConfig} from "antd/es/table";
 import {cloneDeep, isArray, uniqueId} from "es-toolkit/compat"
@@ -18,7 +11,6 @@ import http from "../lib/http";
 import "./Table.scss"
 import {ModalContext} from "./ModalContext";
 import {commonHandler} from "../lib/schemaHandler";
-import {getProValueTypeMap} from "../lib/helpers";
 
 export type TableProps = ProTableProps<any, any> & {
     columns: ProColumnType[],
@@ -165,7 +157,6 @@ export default function (props: TableProps) {
         })
     }
 
-    const values = useContext(ProProvider);
 
     return <>
         <TableContext.Provider value={{
@@ -177,91 +168,86 @@ export default function (props: TableProps) {
             extraRenderValues: extraRenderValues,
             dataSource: dataSource,
         }}>
-            <ProProvider.Provider value={{
-                ...values,
-                valueTypeMap: getProValueTypeMap()
-            }}>
-                <ProTable rowKey={props.rowKey}
-                          tableClassName={'qs-antd-table'}
-                          columns={columns}
-                          onDataSourceChange={setDataSource}
-                          dataSource={dataSource}
-                          pagination={pagination}
-                          loading={loading}
-                          scroll={{x: true}}
-                          postData={postData}
-                          sticky={sticky}
-                          form={{
-                              onValuesChange(changedValues) {
-                                  const key = Object.keys(changedValues)[0]
-                                  const c = columns.find(c => c.dataIndex === key) as ProColumnType & {
-                                      searchOnChange: boolean
-                                  }
-                                  if (!c) {
-                                      return
-                                  }
-                                  // 是否立即搜索
-                                  if (c.searchOnChange) {
-                                      // @ts-ignore
-                                      formRef.current?.submit()
-                                  }
+            <ProTable rowKey={props.rowKey}
+                      tableClassName={'qs-antd-table'}
+                      columns={columns}
+                      onDataSourceChange={setDataSource}
+                      dataSource={dataSource}
+                      pagination={pagination}
+                      loading={loading}
+                      scroll={{x: true}}
+                      postData={postData}
+                      sticky={sticky}
+                      form={{
+                          onValuesChange(changedValues) {
+                              const key = Object.keys(changedValues)[0]
+                              const c = columns.find(c => c.dataIndex === key) as ProColumnType & {
+                                  searchOnChange: boolean
                               }
-                          }}
-                          rowSelection={props.rowSelection && {
-                              alwaysShowAlert: false,
-                              selectedRowKeys: selectedRows.map(item => item[props.rowKey]),
-                              onSelect(record, selected) {
-                                  if (selected) {
-                                      setSelectedRows([...selectedRows, record])
-                                  } else {
-                                      setSelectedRows(selectedRows.filter(item => item[props.rowKey] !== record[props.rowKey]))
-                                  }
-                              },
-                              onChange(selectedRowKeys, newSelectedRows, info) {
-                                  switch (info.type) {
-                                      case 'all':
-                                          if (newSelectedRows.length) {
-                                              setSelectedRows([
-                                                  ...selectedRows,
-                                                  ...newSelectedRows.filter(item => !selectedRows.find(s => s[props.rowKey] == item[props.rowKey]))
-                                              ])
-                                          } else {
-                                              setSelectedRows(selectedRows.filter(item => !dataSource.find(dr => dr[props.rowKey] == item[props.rowKey])))
-                                          }
-                                          break;
-                                      case 'none':
-                                          setSelectedRows([])
-                                          break;
-                                  }
-                              },
-                          }}
-                          toolbar={{
-                              filter: true,
-                          }}
-                          toolBarRender={(action) => [
-                              <ToolbarActions key={'actions'} actions={props.actions}
-                                              selectedRows={selectedRows}></ToolbarActions>
-                          ]}
-                          editable={{
-                              type: 'multiple',
-                              editableKeys: editableKeys,
-                              onChange: setEditableKeys,
-                              onValuesChange(record) {
-                                  setEditableValues([
-                                      ...editableValues.filter(item => item[props.rowKey] !== record[props.rowKey]),
-                                      record
-                                  ])
+                              if (!c) {
+                                  return
                               }
-                          }}
-                          cardBordered
-                          manualRequest={true}
-                          request={request}
-                          formRef={formRef}
-                          actionRef={actionRef}
-                          search={props.search}
-                          dateFormatter={props.dateFormatter}
-                ></ProTable>
-            </ProProvider.Provider>
+                              // 是否立即搜索
+                              if (c.searchOnChange) {
+                                  // @ts-ignore
+                                  formRef.current?.submit()
+                              }
+                          }
+                      }}
+                      rowSelection={props.rowSelection && {
+                          alwaysShowAlert: false,
+                          selectedRowKeys: selectedRows.map(item => item[props.rowKey]),
+                          onSelect(record, selected) {
+                              if (selected) {
+                                  setSelectedRows([...selectedRows, record])
+                              } else {
+                                  setSelectedRows(selectedRows.filter(item => item[props.rowKey] !== record[props.rowKey]))
+                              }
+                          },
+                          onChange(selectedRowKeys, newSelectedRows, info) {
+                              switch (info.type) {
+                                  case 'all':
+                                      if (newSelectedRows.length) {
+                                          setSelectedRows([
+                                              ...selectedRows,
+                                              ...newSelectedRows.filter(item => !selectedRows.find(s => s[props.rowKey] == item[props.rowKey]))
+                                          ])
+                                      } else {
+                                          setSelectedRows(selectedRows.filter(item => !dataSource.find(dr => dr[props.rowKey] == item[props.rowKey])))
+                                      }
+                                      break;
+                                  case 'none':
+                                      setSelectedRows([])
+                                      break;
+                              }
+                          },
+                      }}
+                      toolbar={{
+                          filter: true,
+                      }}
+                      toolBarRender={(action) => [
+                          <ToolbarActions key={'actions'} actions={props.actions}
+                                          selectedRows={selectedRows}></ToolbarActions>
+                      ]}
+                      editable={{
+                          type: 'multiple',
+                          editableKeys: editableKeys,
+                          onChange: setEditableKeys,
+                          onValuesChange(record) {
+                              setEditableValues([
+                                  ...editableValues.filter(item => item[props.rowKey] !== record[props.rowKey]),
+                                  record
+                              ])
+                          }
+                      }}
+                      cardBordered
+                      manualRequest={true}
+                      request={request}
+                      formRef={formRef}
+                      actionRef={actionRef}
+                      search={props.search}
+                      dateFormatter={props.dateFormatter}
+            ></ProTable>
         </TableContext.Provider>
     </>
 }

@@ -1,37 +1,82 @@
 import React, {useEffect, useState} from "react";
 import {GlobalEvent} from "@inertiajs/core/types/types";
 import New from "./Layout/New";
-import {App} from "antd";
+import {App, App as AntdApp} from "antd";
 import global from "../lib/global";
 import Blank from "./Layout/Blank";
-import {Head} from "@inertiajs/react";
+import {Head, usePage} from "@inertiajs/react";
+import {ProConfigProvider} from "@ant-design/pro-components";
+import {getProValueTypeMap} from "../lib/helpers";
+import type {LayoutProps} from "./LayoutContext";
+import {LayoutContext} from "./LayoutContext";
 
-export default function ({children}: {
-    children: React.ReactNode
-}) {
+function ChildApp(props: any) {
     const {modal, notification, message} = App.useApp()
-    const [enableNewLayout, setEnableNewLayout] = useState(false)
-    const [pageTitle, setPageTitle] = useState('')
-    const [siteTitle, setSiteTitle] = useState('')
-    const [pageProps, setPageProps] = useState({} as any)
 
     useEffect(() => {
 
         global.modal = modal
         global.notification = notification
         global.message = message
+    }, [])
+
+    return <>
+        {props.enableNewLayout
+            ? <New {...props}></New>
+            : <Blank {...props}></Blank>
+        }
+    </>
+}
+
+export default function (props: any) {
+
+    const [darkMode, setDarkMode] = useState(false)
+    const [enableNewLayout, setEnableNewLayout] = useState(false)
+    const [pageTitle, setPageTitle] = useState('')
+    const [siteTitle, setSiteTitle] = useState('')
+
+    const pageProps = usePage<any>().props
+
+    const [layoutProps, setLayoutProps] = useState<LayoutProps>({
+        title: '',
+        metaTitle: '',
+        topMenuActiveKey: '',
+        menuActiveKey: '',
+        loading: false,
+        topMenu: [],
+        menuList: [],
+        logo: '',
+        userMenu: [],
+    })
+
+    const assignProps = (newProps: LayoutProps) => {
+        setLayoutProps(Object.assign(layoutProps, newProps))
+    }
+
+    useEffect(() => {
+        setLayoutProps({
+            title: pageProps.layoutProps?.title || '',
+            metaTitle: '',
+            topMenuActiveKey: pageProps.layoutProps?.topMenuActiveKey,
+            menuActiveKey: pageProps.layoutProps?.menuActiveKey,
+            loading: false,
+            topMenu: pageProps.layoutProps?.topMenu,
+            menuList: pageProps.layoutProps?.menuList,
+            logo: pageProps.layoutProps?.logo,
+            userMenu: pageProps.layoutProps?.userMenu,
+        })
 
         const listener = (e: GlobalEvent<'navigate'>) => {
-            setPageProps(e.detail.page.props)
-            // @ts-ignore
-            if (e.detail.page.props.layoutProps?.enableNewLayout) {
-                setEnableNewLayout(true)
-            }
 
             // @ts-ignore
             setPageTitle(e.detail.page.props.layoutProps?.metaTitle || '')
             // @ts-ignore
             e.detail.page.props.layoutProps?.title && setSiteTitle(e.detail.page.props.layoutProps?.title + '')
+
+            // @ts-ignore
+            if (e.detail.page.props.layoutProps?.enableNewLayout) {
+                setEnableNewLayout(true)
+            }
         }
 
         document.addEventListener('inertia:navigate', listener)
@@ -39,13 +84,24 @@ export default function ({children}: {
         return () => {
             document.removeEventListener('inertia:navigate', listener)
         }
-    }, [])
+    }, []);
 
     return <>
         <Head title={pageTitle + ' | ' + siteTitle + ' 后台管理'}></Head>
-        {enableNewLayout
-            ? <New pageProps={pageProps} pageTitle={pageTitle} siteTitle={siteTitle} children={children}></New>
-            : <Blank pageTitle={pageTitle} children={children}></Blank>
-        }
+
+        <LayoutContext.Provider value={{
+            assignProps,
+            props: layoutProps,
+        }}>
+            <ProConfigProvider valueTypeMap={getProValueTypeMap()} dark={darkMode}>
+                <AntdApp>
+                    <ChildApp {...props}
+                              setDarkMode={setDarkMode}
+                              pageTitle={pageTitle}
+                              siteTitle={siteTitle}
+                              enableNewLayout={enableNewLayout}></ChildApp>
+                </AntdApp>
+            </ProConfigProvider>
+        </LayoutContext.Provider>
     </>
 }

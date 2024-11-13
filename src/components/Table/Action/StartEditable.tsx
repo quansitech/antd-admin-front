@@ -21,7 +21,6 @@ export default function (props: TableActionProps & {
     }
 
     const onCancelClick = () => {
-        console.log(tableContext)
         const rowKey = tableContext.getTableProps().rowKey
         tableContext.getTableProps().dataSource.map(item => {
             tableContext.actionRef?.cancelEditable(item[rowKey])

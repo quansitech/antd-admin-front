@@ -1,4 +1,4 @@
-import {BetaSchemaForm, ProFormColumnsType, ProFormInstance, ProProvider} from "@ant-design/pro-components";
+import {BetaSchemaForm, ProFormColumnsType, ProFormInstance} from "@ant-design/pro-components";
 import type {FormSchema} from "@ant-design/pro-form/es/components/SchemaForm/typing";
 import React, {useContext, useMemo, useRef, useState} from "react";
 import {cloneDeep} from "es-toolkit";
@@ -13,7 +13,6 @@ import {ModalContext} from "./ModalContext";
 import {TableContext} from "./TableContext";
 import {commonHandler} from "../lib/schemaHandler";
 import {Rule} from "antd/es/form";
-import {getProValueTypeMap} from "../lib/helpers";
 
 type SubmitRequestType = {
     url: string,
@@ -119,7 +118,6 @@ export default function (props: FormSchema & {
         }
     }
 
-    const values = useContext(ProProvider);
 
     return <>
         <Row justify={'center'}>
@@ -128,26 +126,21 @@ export default function (props: FormSchema & {
                     formRef: formRef,
                     extraRenderValues: props.extraRenderValues,
                 }}>
-                    <ProProvider.Provider value={{
-                        ...values,
-                        valueTypeMap: getProValueTypeMap()
-                    }}>
-                        <BetaSchemaForm columns={columns}
-                                        colProps={props.colProps}
-                                        readonly={props.readonly}
-                                        grid={true}
-                                        loading={loading}
-                                        formRef={formRef}
-                                        initialValues={props.initialValues}
-                                        onFinish={onFinish}
-                                        submitter={{
-                                            render: () => [
-                                                <Actions key={'actions'} loading={loading}
-                                                         actions={props.actions}></Actions>
-                                            ]
-                                        }}
-                        ></BetaSchemaForm>
-                    </ProProvider.Provider>
+                    <BetaSchemaForm columns={columns}
+                                    colProps={props.colProps}
+                                    readonly={props.readonly}
+                                    grid={true}
+                                    loading={loading}
+                                    formRef={formRef}
+                                    initialValues={props.initialValues}
+                                    onFinish={onFinish}
+                                    submitter={{
+                                        render: () => [
+                                            <Actions key={'actions'} loading={loading}
+                                                     actions={props.actions}></Actions>
+                                        ]
+                                    }}
+                    ></BetaSchemaForm>
                 </FormContext.Provider>
             </Col>
         </Row>

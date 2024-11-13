@@ -1,48 +1,37 @@
-import {MenuDataItem, PageContainer, ProConfigProvider, ProLayout} from "@ant-design/pro-components";
-import {Button, Dropdown, Menu, Space} from "antd";
-import type {LayoutProps} from "../LayoutContext";
+import {MenuDataItem, PageContainer, ProLayout, ProProvider} from "@ant-design/pro-components";
+import {Button, Dropdown, Menu, MenuProps, Space} from "antd";
 import {LayoutContext} from "../LayoutContext";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
 import {routerNavigateTo} from "../../lib/helpers";
 import {MenuInfo} from "rc-menu/lib/interface";
 import http from "../../lib/http";
 // @ts-ignore
 import {Route} from '@ant-design/pro-layout/lib/typing';
 import {MoonOutlined, SunOutlined} from "@ant-design/icons";
-import {Head} from "@inertiajs/react";
+import {usePage} from "@inertiajs/react";
 
-export default function ({children, pageTitle, siteTitle, pageProps}: {
+export default function ({children, pageTitle, siteTitle, setDarkMode}: {
     children: React.ReactNode,
     pageTitle: string,
     siteTitle: string,
-    pageProps: any
+    setDarkMode: (darkMode: boolean) => void
 }) {
-
-    const layoutProps = pageProps.layoutProps
     const contentRef = useRef<HTMLDivElement>(null)
+    const layoutContext = useContext(LayoutContext)
+    const pageProps = usePage<any>().props
+    const layoutProps = useMemo(() => {
+        return {
+            ...layoutContext.props
+        }
+    }, [layoutContext.props])
 
-    const [props, setProps] = useState<LayoutProps>({
-        title: '',
-        metaTitle: '',
-        topMenuActiveKey: '',
-        menuActiveKey: '',
-        loading: false,
-        topMenu: [],
-        menuList: [],
-        logo: '',
-        userMenu: [],
-    })
-    const [theme, setTheme] = useState<'light' | 'realDark'>('light')
-
-    const assignProps = (newProps: LayoutProps) => {
-        setProps(Object.assign(props, newProps))
-    }
+    const assignProps = layoutContext.assignProps
 
     const headerContentRender = () => {
         return <>
-            <Menu items={props.topMenu}
+            <Menu items={layoutContext.props.topMenu}
                   mode={'horizontal'}
-                  activeKey={props.topMenuActiveKey}
+                  activeKey={layoutContext.props.topMenuActiveKey}
             />
         </>
     }
@@ -66,21 +55,21 @@ export default function ({children, pageTitle, siteTitle, pageProps}: {
             return []
         }
 
-        if (!props.menuActiveKey) {
+        if (!layoutContext.props.menuActiveKey) {
             return
         }
-        setOpenKeys(findKeyPath(props.menuActiveKey, props.menuList || []))
+        setOpenKeys(findKeyPath(layoutContext.props.menuActiveKey, layoutContext.props.menuList || []))
 
-    }, [props.menuActiveKey]);
+    }, [layoutContext.props.menuActiveKey]);
 
-    useEffect(() => {
+    useCallback(() => {
         if (pageProps.layoutProps?.menuActiveKey) {
             assignProps({
                 menuActiveKey: pageProps.layoutProps.menuActiveKey
             })
         }
 
-        const title = props.title || layoutProps.title
+        const title = layoutContext.props.title || layoutProps.title
         if (pageProps.layoutProps?.metaTitle) {
             assignProps({
                 metaTitle: pageProps.layoutProps.metaTitle + ' | ' + title
@@ -94,18 +83,6 @@ export default function ({children, pageTitle, siteTitle, pageProps}: {
 
 
     useEffect(() => {
-
-        setProps({
-            title: layoutProps.title || '',
-            metaTitle: '',
-            topMenuActiveKey: layoutProps.topMenuActiveKey,
-            menuActiveKey: layoutProps.menuActiveKey,
-            loading: false,
-            topMenu: layoutProps.topMenu,
-            menuList: layoutProps.menuList,
-            logo: layoutProps.logo,
-            userMenu: layoutProps.userMenu,
-        })
 
         const r = {
             key: '/',
@@ -143,7 +120,7 @@ export default function ({children, pageTitle, siteTitle, pageProps}: {
 
     const onMenuClick = (info: MenuInfo) => {
         const keyPath = info.keyPath.reverse()
-        let menu: MenuDataItem | undefined = props.menuList?.find(menu => menu.key === keyPath[0]);
+        let menu: MenuDataItem | undefined = layoutContext.props.menuList?.find(menu => menu.key === keyPath[0]);
         for (let i = 1; i < keyPath.length; i++) {
             menu = menu?.children?.find(m => m.key === keyPath[i])
         }
@@ -166,83 +143,80 @@ export default function ({children, pageTitle, siteTitle, pageProps}: {
         }
     }
 
-    const actionsRender = () => <>
-        <Space>
-            <Button type={'text'} onClick={() => {
-                setTheme(theme === 'light' ? 'realDark' : 'light')
-            }}>
-                {theme === 'realDark' ? <MoonOutlined/> : <SunOutlined/>}
-            </Button>
-        </Space>
-    </>
+    const proContext = useContext(ProProvider)
+
+    const actionsRender = () => {
+        return <>
+            <Space>
+                <Button type={'text'} onClick={() => {
+                    setDarkMode(!proContext.dark)
+                }}>
+                    {proContext.dark ? <MoonOutlined/> : <SunOutlined/>}
+                </Button>
+            </Space>
+        </>
+    }
 
     return <>
-        <LayoutContext.Provider value={{
-            assignProps,
-            props,
-        }}>
-            <ProConfigProvider dark={theme === 'realDark'}>
-                <ProLayout title={siteTitle}
-                           loading={props.loading}
-                           layout="mix"
-                           actionsRender={actionsRender}
-                           route={route}
-                           fixSiderbar={true}
-                           logo={props.logo}
-                           headerContentRender={headerContentRender}
-                           pageTitleRender={p => `${pageTitle} | ${siteTitle} 后台管理`}
-                           footerRender={() => <>
-                               <Space>
-                                   <a href="https://www.quansitech.com/" target={'_blank'}>全思科技</a>
-                                   <a href="https://github.com/quansitech/" target={'_blank'}>Github</a>
-                               </Space>
-                           </>}
-                           avatarProps={{
-                               title: 'admin',
-                               render(p, dom) {
-                                   return <>
-                                       <Dropdown menu={{
-                                           items: props.userMenu?.map(menu => {
-                                               return {
-                                                   label: menu.title,
-                                                   key: menu.url,
-                                                   onClick() {
-                                                       switch (menu.type) {
-                                                           case 'open':
-                                                               window.open(menu.url)
-                                                               break;
-                                                           case 'nav':
-                                                               routerNavigateTo(menu.url)
-                                                               break
-                                                           case 'ajax':
-                                                               http.get(menu.url).then(() => {
-                                                                   window.location.reload()
-                                                               })
-                                                               break
-                                                       }
-                                                   }
+        <ProLayout title={siteTitle}
+                   loading={layoutContext.props.loading}
+                   layout="mix"
+                   actionsRender={actionsRender}
+                   route={route}
+                   fixSiderbar={true}
+                   logo={layoutContext.props.logo}
+                   headerContentRender={headerContentRender}
+                   pageTitleRender={p => `${pageTitle} | ${siteTitle} 后台管理`}
+                   footerRender={() => <>
+                       <Space>
+                           <a href="https://www.quansitech.com/" target={'_blank'}>全思科技</a>
+                           <a href="https://github.com/quansitech/" target={'_blank'}>Github</a>
+                       </Space>
+                   </>}
+                   avatarProps={{
+                       title: 'admin',
+                       render(p, dom) {
+                           return <>
+                               <Dropdown menu={{
+                                   items: layoutContext.props.userMenu?.map(menu => {
+                                       return {
+                                           label: menu.title,
+                                           key: menu.url,
+                                           onClick() {
+                                               switch (menu.type) {
+                                                   case 'open':
+                                                       window.open(menu.url)
+                                                       break;
+                                                   case 'nav':
+                                                       routerNavigateTo(menu.url)
+                                                       break
+                                                   case 'ajax':
+                                                       http.get(menu.url).then(() => {
+                                                           window.location.reload()
+                                                       })
+                                                       break
                                                }
-                                           }) || [],
-                                       }}>
-                                           {dom}
-                                       </Dropdown>
-                                   </>
-                               }
-                           }}
-                           menuProps={{
-                               activeKey: props.menuActiveKey as string,
-                               selectedKeys: [props.menuActiveKey as string],
-                               openKeys: openKeys,
-                               onClick: onMenuClick,
-                               onOpenChange: setOpenKeys
-                           }}
-                >
+                                           }
+                                       }
+                                   }) || [],
+                               }}>
+                                   {dom}
+                               </Dropdown>
+                           </>
+                       }
+                   }}
+                   menuProps={{
+                       activeKey: layoutContext.props.menuActiveKey as string,
+                       selectedKeys: [layoutContext.props.menuActiveKey as string],
+                       openKeys: openKeys,
+                       onClick: onMenuClick,
+                       onOpenChange: setOpenKeys
+                   } as MenuProps}
+        >
 
-                    <PageContainer title={pageTitle}>
-                        <div ref={contentRef}>{children}</div>
-                    </PageContainer>
-                </ProLayout>
-            </ProConfigProvider>
-        </LayoutContext.Provider>
+            <PageContainer title={pageTitle}>
+                <div ref={contentRef}>{children}</div>
+            </PageContainer>
+        </ProLayout>
     </>
 }
