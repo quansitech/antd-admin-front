@@ -9,6 +9,7 @@ export default function (props: TableActionProps & {
     saveRequest: {
         url: string,
         method: string,
+        data?: Record<string, any>,
     },
 }) {
     const tableContext = useContext(TableContext)
@@ -31,12 +32,26 @@ export default function (props: TableActionProps & {
 
     const onSaveClick = async () => {
         setLoading(true)
+        let data: Record<string, any[]> | Record<string, any>[] = tableContext.getEditedValues()
+        if (props.saveRequest.data) {
+            data = {}
+            for (const dataKey in props.saveRequest.data) {
+                data[dataKey] = []
+                const match = props.saveRequest.data[dataKey].match(/^__(\w+)__$/)
+                if (!match) {
+                    continue
+                }
+                tableContext.getEditedValues().forEach(item => {
+                    data[dataKey].push(item[match[1]])
+                })
+            }
+        }
 
         try {
             await http({
                 method: props.saveRequest.method,
                 url: props.saveRequest.url,
-                data: tableContext.getEditedValues(),
+                data: data,
             })
 
             await tableContext.actionRef?.reload()
