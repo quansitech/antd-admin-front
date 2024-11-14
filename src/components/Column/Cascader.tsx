@@ -66,7 +66,7 @@ export default function (props: ColumnProps) {
             return
         }
         const value = values[values.length - 1]
-        props.fieldProps?.onChange(props.dataIndex, value)
+        props.fieldProps?.onChange(value)
     }
 
     return <div className={props.className}>

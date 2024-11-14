@@ -284,7 +284,7 @@ export default class Ueditor extends Component<ColumnProps & {
                     this.modalContext = modalContext
                     return <div ref={el => this.containerRef = el}>
                         <Spin spinning={this.state.loading}>
-                            <div id={this.state.containerId} style={{width: this.state.width}}/>
+                            <textarea id={this.state.containerId} style={{width: this.state.width}}/>
                         </Spin>
                     </div>
                 }
