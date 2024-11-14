@@ -1,7 +1,5 @@
 import {router} from "@inertiajs/react";
 import {VisitOptions} from "@inertiajs/core/types/types";
-import Schema from '@rc-component/async-validator';
-import {Rules, ValidateError, ValidateFieldsError, Values} from "@rc-component/async-validator/lib/interface";
 import http from "./http";
 import container from "./container";
 import React, {Suspense} from "react";
@@ -37,39 +35,6 @@ export function routerNavigateTo(url: string, config?: VisitOptions) {
         ...config,
     })
 }
-
-export function handleRules(dataRules: Rules, data: any) {
-    return new Promise(resolve => {
-        const validator = new Schema(dataRules);
-        validator.validate(data, (errors: ValidateError[] | null, fields: ValidateFieldsError | Values) => {
-            if (errors) {
-                resolve(false);
-                return;
-            }
-            resolve(true);
-        })
-
-    })
-
-}
-
-export async function asyncFilter(arr: any[], predicate: (item: any) => PromiseLike<any>) {
-    return await Promise.all(arr.map(predicate))
-        .then((results) => arr.filter((_v, index) => results[index]))
-}
-
-export function filterObjectKeys(obj: Record<string, any>, keysToKeep: string[]) {
-    if (typeof obj !== 'object' || !obj) {
-        return obj;
-    }
-    return Object.keys(obj)
-        .filter(key => !keysToKeep.includes(key))
-        .reduce((newObj, key) => {
-            newObj[key] = obj[key];
-            return newObj;
-        }, {} as Record<string, any>);
-}
-
 
 export function createScript(url: string) {
     let scriptTags = window.document.querySelectorAll('script')
@@ -194,7 +159,24 @@ export function handleCondition(condition: Condition, data: any) {
             return data[condition.field] == condition.value;
         case 'neq':
         case '!=':
+        case '<>':
             return data[condition.field] != condition.value;
+        case 'gt':
+        case '>':
+            return data[condition.field] > condition.value;
+        case 'gte':
+        case '>=':
+            return data[condition.field] >= condition.value;
+        case 'lt':
+        case '<':
+            return data[condition.field] < condition.value;
+        case 'elt':
+        case '<=':
+            return data[condition.field] <= condition.value;
+        case 'in':
+            return data[condition.field] && condition.value.includes(data[condition.field]);
+        case 'not in':
+            return data[condition.field] && !condition.value.includes(data[condition.field]);
     }
     return false
 }

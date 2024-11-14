@@ -15,6 +15,8 @@ http.interceptors.request.use(config => {
     return config
 })
 
+let timer;
+
 http.interceptors.response.use(response => {
     const checkInfo = (data: { status?: number, info?: string }) => {
         if (!data?.info) {
@@ -40,8 +42,12 @@ http.interceptors.response.use(response => {
     const showInfo = checkInfo(response.data)
 
     if (response.data.url) {
-        setTimeout(() => {
+        if (timer) {
+            clearTimeout(timer)
+        }
+        timer = setTimeout(() => {
             routerNavigateTo(response.data.url)
+            timer = null
         }, showInfo ? 2000 : 0)
     }
     if (response.data.status == 0) {

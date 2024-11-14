@@ -32,21 +32,19 @@ export default function (props: any) {
 
     const [darkMode, setDarkMode] = useState(false)
     const [enableNewLayout, setEnableNewLayout] = useState(false)
-    const [pageTitle, setPageTitle] = useState('')
-    const [siteTitle, setSiteTitle] = useState('')
 
     const pageProps = usePage<any>().props
 
     const [layoutProps, setLayoutProps] = useState<LayoutProps>({
-        title: '',
+        title: pageProps.layoutProps?.title || '',
         metaTitle: '',
-        topMenuActiveKey: '',
-        menuActiveKey: '',
+        topMenuActiveKey: pageProps.layoutProps?.topMenuActiveKey,
+        menuActiveKey: pageProps.layoutProps?.menuActiveKey,
         loading: false,
-        topMenu: [],
-        menuList: [],
-        logo: '',
-        userMenu: [],
+        topMenu: pageProps.layoutProps?.topMenu,
+        menuList: pageProps.layoutProps?.menuList,
+        logo: pageProps.layoutProps?.logo,
+        userMenu: pageProps.layoutProps?.userMenu,
     })
 
     const assignProps = (newProps: LayoutProps) => {
@@ -56,28 +54,20 @@ export default function (props: any) {
     useEffect(() => {
         console.log('props=>', pageProps)
 
-        setLayoutProps({
-            title: pageProps.layoutProps?.title || '',
-            metaTitle: '',
-            topMenuActiveKey: pageProps.layoutProps?.topMenuActiveKey,
-            menuActiveKey: pageProps.layoutProps?.menuActiveKey,
-            loading: false,
-            topMenu: pageProps.layoutProps?.topMenu,
-            menuList: pageProps.layoutProps?.menuList,
-            logo: pageProps.layoutProps?.logo,
-            userMenu: pageProps.layoutProps?.userMenu,
-        })
+        if (pageProps.layoutProps?.enableNewLayout) {
+            setEnableNewLayout(true)
+        }
 
         const listener = (e: GlobalEvent<'navigate'>) => {
+            const layoutProps = e.detail.page.props.layoutProps as LayoutProps
 
-            // @ts-ignore
-            setPageTitle(e.detail.page.props.layoutProps?.metaTitle || '')
-            // @ts-ignore
-            e.detail.page.props.layoutProps?.title && setSiteTitle(e.detail.page.props.layoutProps?.title + '')
-
-            // @ts-ignore
-            if (e.detail.page.props.layoutProps?.enableNewLayout) {
-                setEnableNewLayout(true)
+            assignProps({
+                metaTitle: layoutProps?.metaTitle || ''
+            })
+            if (layoutProps?.title) {
+                assignProps({
+                    title: layoutProps?.title
+                })
             }
         }
 
@@ -89,7 +79,7 @@ export default function (props: any) {
     }, []);
 
     return <>
-        <Head title={pageTitle + ' | ' + siteTitle + ' 后台管理'}></Head>
+        <Head title={layoutProps.metaTitle + ' | ' + layoutProps.title + ' 后台管理'}></Head>
 
         <LayoutContext.Provider value={{
             assignProps,
@@ -99,8 +89,7 @@ export default function (props: any) {
                 <AntdApp>
                     <ChildApp {...props}
                               setDarkMode={setDarkMode}
-                              pageTitle={pageTitle}
-                              siteTitle={siteTitle}
+                              pageTitle={layoutProps.metaTitle}
                               enableNewLayout={enableNewLayout}></ChildApp>
                 </AntdApp>
             </ProConfigProvider>

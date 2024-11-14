@@ -75,17 +75,6 @@ export default function (props: TableProps) {
         }
     }
 
-    const formRef = useRef<FormInstance>()
-    const actionRef = useRef<ActionType>()
-    const [editableKeys, setEditableKeys] = useState<React.Key[]>(() => [])
-    const [selectedRows, setSelectedRows] = useState<any[]>([])
-    const [editableValues, setEditableValues] = useState<Record<string, any>[]>([])
-    const [loading, setLoading] = useState(false)
-    const [pagination, setPagination] = useState<TablePaginationConfig>()
-    const [dataSource, setDataSource] = useState<any[]>([])
-    const [sticky, setSticky] = useState<TableProps['sticky']>(true)
-    const [extraRenderValues, setExtraRenderValues] = useState([])
-
     const columns = useMemo(() => {
         return cloneDeep(props.columns)?.map((c: ProColumnType & {
             key: string,
@@ -109,23 +98,6 @@ export default function (props: TableProps) {
         })
     }, [props.columns])
 
-    const modalContext = useContext(ModalContext)
-
-    useEffect(() => {
-        // @ts-ignore
-        setPagination(props.pagination as TablePaginationConfig || false)
-        setDataSource(postData(props.dataSource))
-        setExtraRenderValues(props.extraRenderValues)
-
-        setLoading(false)
-
-        if (!modalContext.inModal) {
-            setSticky({
-                offsetHeader: document.querySelector('.ant-layout-header')?.clientHeight || 56,
-            })
-        }
-
-    }, []);
 
     const postData = (data: any[]) => {
         if (!isArray(data)) {
@@ -157,6 +129,32 @@ export default function (props: TableProps) {
         })
     }
 
+
+    const formRef = useRef<FormInstance>()
+    const actionRef = useRef<ActionType>()
+    const [editableKeys, setEditableKeys] = useState<React.Key[]>(() => [])
+    const [selectedRows, setSelectedRows] = useState<any[]>([])
+    const [editableValues, setEditableValues] = useState<Record<string, any>[]>([])
+    const [loading, setLoading] = useState(false)
+    // @ts-ignore
+    const [pagination, setPagination] = useState<TablePaginationConfig>(props.pagination as TablePaginationConfig)
+    const [dataSource, setDataSource] = useState<any[]>(postData(props.dataSource))
+    const [sticky, setSticky] = useState<TableProps['sticky']>(true)
+    const [extraRenderValues, setExtraRenderValues] = useState(props.extraRenderValues)
+
+    const modalContext = useContext(ModalContext)
+
+    useEffect(() => {
+
+        setLoading(false)
+
+        if (!modalContext.inModal) {
+            setSticky({
+                offsetHeader: document.querySelector('.ant-layout-header')?.clientHeight || 56,
+            })
+        }
+
+    }, []);
 
     return <>
         <TableContext.Provider value={{

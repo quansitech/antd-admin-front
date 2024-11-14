@@ -37,7 +37,23 @@ export default function ({children, pageTitle, siteTitle, setDarkMode}: {
     }
 
     const [openKeys, setOpenKeys] = useState<string[]>([])
-    const [route, setRoute] = useState<Route>()
+    const route = useMemo(() => {
+        return {
+            key: '/',
+            routes: layoutProps.menuList?.map(menu => {
+                return {
+                    name: menu.name,
+                    key: menu.key,
+                    children: menu.children?.map(child => {
+                        return {
+                            name: child.name,
+                            key: child.key
+                        }
+                    })
+                }
+            })
+        }
+    }, [layoutProps.menuList])
 
     useEffect(() => {
         function findKeyPath(key: string, list: MenuDataItem[]): string[] {
@@ -83,24 +99,6 @@ export default function ({children, pageTitle, siteTitle, setDarkMode}: {
 
 
     useEffect(() => {
-
-        const r = {
-            key: '/',
-            routes: layoutProps.menuList?.map(menu => {
-                return {
-                    name: menu.name,
-                    key: menu.key,
-                    children: menu.children?.map(child => {
-                        return {
-                            name: child.name,
-                            key: child.key
-                        }
-                    })
-                }
-            })
-        }
-
-        setRoute(r)
 
         // 设置内容高度
         function onResize() {
@@ -158,7 +156,7 @@ export default function ({children, pageTitle, siteTitle, setDarkMode}: {
     }
 
     return <>
-        <ProLayout title={siteTitle}
+        <ProLayout title={layoutProps.title}
                    loading={layoutContext.props.loading}
                    layout="mix"
                    actionsRender={actionsRender}
@@ -166,7 +164,7 @@ export default function ({children, pageTitle, siteTitle, setDarkMode}: {
                    fixSiderbar={true}
                    logo={layoutContext.props.logo}
                    headerContentRender={headerContentRender}
-                   pageTitleRender={p => `${pageTitle} | ${siteTitle} 后台管理`}
+                   pageTitleRender={p => `${pageTitle} | ${layoutProps.title} 后台管理`}
                    footerRender={() => <>
                        <Space>
                            <a href="https://www.quansitech.com/" target={'_blank'}>全思科技</a>
