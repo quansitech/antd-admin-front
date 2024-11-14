@@ -1,5 +1,6 @@
 import {ColumnProps} from "./types";
 import {Cascader} from "antd";
+import type {DefaultOptionType} from "antd/es/cascader"
 import React, {useEffect, useState} from "react";
 import http from "../../lib/http";
 
@@ -69,7 +70,7 @@ export default function (props: ColumnProps) {
     }
 
     return <div className={props.className}>
-        <Cascader options={options}
+        <Cascader options={options as DefaultOptionType[]}
                   onChange={onChange}
                   placeholder={'请选择'}
                   value={values}

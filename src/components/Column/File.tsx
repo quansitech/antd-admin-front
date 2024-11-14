@@ -6,7 +6,6 @@ import {UploadListType} from "antd/es/upload/interface";
 import {DndContext, DragEndEvent, PointerSensor, useSensor} from '@dnd-kit/core';
 import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy,} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
-import {RcFile} from "antd/lib/upload";
 import {FormContext} from "../FormContext";
 import {TableContext} from "../TableContext";
 
@@ -19,7 +18,7 @@ interface DraggableUploadListItemProps {
 const DraggableUploadListItem = ({originNode, file}: DraggableUploadListItemProps) => {
     const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({
         id: file.uid,
-    });
+    } as any);
 
     const style: React.CSSProperties = {
         transform: CSS.Translate.toString(transform),
@@ -66,7 +65,7 @@ export default function (props: ColumnProps & {
 
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
-            file.preview = URL.createObjectURL(file.originFileObj as RcFile);
+            file.preview = URL.createObjectURL(file.originFileObj as File);
         }
 
         window.open(file.url || (file.preview as string))

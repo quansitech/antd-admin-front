@@ -3,7 +3,7 @@ import {ActionType} from "@ant-design/pro-components";
 import {TableProps} from "./Table";
 import {FormInstance} from "antd/lib/form";
 
-type TableContextValue = {
+export type TableContextValue = {
     getTableProps: () => TableProps,
     getEditedValues: () => Record<string, any>[],
     editableKeys: React.Key[],

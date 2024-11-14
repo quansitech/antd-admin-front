@@ -1,9 +1,9 @@
 import React, {useContext, useEffect, useMemo, useRef, useState} from "react";
-import {ActionType, FormInstance, ProColumnType, ProTable, ProTableProps} from "@ant-design/pro-components";
+import {ActionType, FormInstance, ProColumns, ProColumnType, ProTable, ProTableProps} from "@ant-design/pro-components";
 import type {SortOrder} from "antd/lib/table/interface";
 import {TablePaginationConfig} from "antd/es/table";
 import {cloneDeep, isArray, uniqueId} from "es-toolkit/compat"
-import {TableContext} from "./TableContext";
+import {TableContext, TableContextValue} from "./TableContext";
 import ToolbarActions from "./Table/ToolbarActions";
 import container from "../lib/container";
 import {TableActionProps} from "./Table/Action/types";
@@ -167,10 +167,10 @@ export default function (props: TableProps) {
             formRef: formRef.current,
             extraRenderValues: extraRenderValues,
             dataSource: dataSource,
-        }}>
+        } as TableContextValue}>
             <ProTable rowKey={props.rowKey}
                       tableClassName={'qs-antd-table'}
-                      columns={columns}
+                      columns={columns as ProColumns[]}
                       onDataSourceChange={setDataSource}
                       dataSource={dataSource}
                       pagination={pagination}

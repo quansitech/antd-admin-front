@@ -5,6 +5,7 @@ import {FileType, getBase64} from "../../lib/upload";
 import {ColumnProps} from "./types";
 import File from "./File";
 import ImgCrop from 'antd-img-crop';
+import type {ImagePreviewType} from "rc-image/es/Image"
 
 export default function (props: ColumnProps & {
     fieldProps?: {
@@ -68,7 +69,7 @@ export default function (props: ColumnProps & {
                     visible: previewOpen,
                     onVisibleChange: (visible) => setPreviewOpen(visible),
                     afterOpenChange: (visible) => !visible && setPreviewImage(''),
-                }}
+                } as ImagePreviewType}
                 src={previewImage}
             />
         )}
