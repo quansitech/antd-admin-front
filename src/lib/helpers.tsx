@@ -186,3 +186,15 @@ export function getProValueTypeMap() {
         return map
     }, {} as Record<string, any>)
 }
+
+export function handleCondition(condition: Condition, data: any) {
+    switch (condition.operator) {
+        case 'eq':
+        case '=':
+            return data[condition.field] == condition.value;
+        case 'neq':
+        case '!=':
+            return data[condition.field] != condition.value;
+    }
+    return false
+}

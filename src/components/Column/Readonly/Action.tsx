@@ -1,12 +1,10 @@
-import React, {Component, useEffect, useState} from "react";
+import React, {Component, useMemo} from "react";
 import {ReactComponentLike} from "prop-types";
 import container from "../../../lib/container";
 import {Badge, Flex} from "antd";
 import {ColumnReadonlyProps} from "./types";
-import {asyncFilter, handleRules} from "../../../lib/helpers";
-import {Rules} from "@rc-component/async-validator/lib/interface";
+import {handleCondition} from "../../../lib/helpers";
 import {upperFirst} from "es-toolkit";
-import {TableColumnActionProps} from "./Action/types";
 
 type ComponentType = {
     component: ReactComponentLike,
@@ -17,42 +15,41 @@ export default (props: ColumnReadonlyProps & {
     actions?: {
         type: string,
         title: string,
-        showRules?: Rules,
+        showCondition?: Condition,
         badge?: any,
     }[],
 }) => {
     const actions = props.fieldProps.actions
     const record = props.record
 
-    const [Components, setComponents] = useState<ComponentType[]>([]);
-
-    useEffect(() => {
-        if (actions) {
-            asyncFilter(actions, async (Component) => {
-                if (!Component.showRules) {
-                    return true
-                }
-                return await handleRules(Component.showRules, record)
-            }).then((Components: TableColumnActionProps[]) => setComponents(Components.map(a => {
-                let badge = a.badge
-                const matches = (badge + '').match(/^__(\w+)__$/)
-                if (matches) {
-                    badge = record[matches[1]]
-                }
-
-                const c = `Column.Readonly.Action.${upperFirst(a.type)}`
-                return {
-                    props: {
-                        ...a,
-                        record,
-                        badge,
-                    },
-                    component: container.get(c),
-                }
-            })))
+    const Components = useMemo(() => {
+        if (!actions?.length) {
+            return []
         }
-    }, []);
+        return actions.filter(Component => {
+            if (!Component.showCondition) {
+                return true
+            }
 
+            return handleCondition(Component.showCondition, record)
+        }).map(a => {
+            let badge = a.badge
+            const matches = (badge + '').match(/^__(\w+)__$/)
+            if (matches) {
+                badge = record[matches[1]]
+            }
+
+            const c = `Column.Readonly.Action.${upperFirst(a.type)}`
+            return {
+                props: {
+                    ...a,
+                    record,
+                    badge,
+                },
+                component: container.get(c),
+            }
+        })
+    }, [actions, record])
 
     return <>
         {

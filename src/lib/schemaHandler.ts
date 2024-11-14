@@ -1,6 +1,7 @@
 import {ProColumnType, ProSchema} from "@ant-design/pro-components";
 import {UploadFile} from "antd";
 import http from "./http";
+import {handleCondition} from "./helpers";
 
 type Handler = (schema: any) => ProSchema | ProColumnType
 
@@ -107,6 +108,18 @@ export const schemaHandler: Record<string, Handler> = {
     action: schema => {
         schema.fieldProps = {actions: schema.actions}
         return schema
+    },
+
+    dependency: schema => {
+        const {columns, valueType} = schema
+
+        return {
+            valueType,
+            name: [schema.showCondition.field],
+            columns(fields: Record<string, any>) {
+                return handleCondition(schema.showCondition, fields) ? columns : []
+            },
+        } as ProSchema
     },
 
     ueditor: schema => {
