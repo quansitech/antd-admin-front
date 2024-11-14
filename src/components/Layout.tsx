@@ -54,6 +54,8 @@ export default function (props: any) {
     }
 
     useEffect(() => {
+        console.log('props=>', pageProps)
+
         setLayoutProps({
             title: pageProps.layoutProps?.title || '',
             metaTitle: '',
