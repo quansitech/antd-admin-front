@@ -39,7 +39,7 @@ export default function (props: ColumnReadonlyProps & {
         }) as UploadFile[])
 
         setLoading(false)
-    }, []);
+    }, [props.record]);
 
 
     return <>

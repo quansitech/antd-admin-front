@@ -72,6 +72,19 @@ export default function (props: ColumnProps & {
     };
 
     useEffect(() => {
+        if (loading) {
+            return
+        }
+        const values = fileList.map(file => {
+            if (file.status === 'done') {
+                file.url = file.response.url || file.response.file_url
+            }
+            return file
+        })
+        props.fieldProps?.onChange(values)
+    }, [fileList]);
+
+    useEffect(() => {
         let extraRenderValue = [];
         if (formContext && formContext.extraRenderValues) {
             extraRenderValue = formContext.extraRenderValues[props.fieldProps.dataIndex as string] ?? []
@@ -79,6 +92,10 @@ export default function (props: ColumnProps & {
             const key = tableContext.getTableProps().rowKey
             const index = tableContext.dataSource.findIndex(item => item[key] === props.record[key])
             extraRenderValue = tableContext.extraRenderValues[index]?.[props.fieldProps.dataIndex as string] ?? []
+        }
+        if (!extraRenderValue.length) {
+            setLoading(false)
+            return
         }
         setFileList(extraRenderValue.map((item: any) => {
             return {
@@ -96,16 +113,6 @@ export default function (props: ColumnProps & {
 
         setLoading(false)
     }, []);
-
-    useEffect(() => {
-        const values = fileList.map(file => {
-            if (file.status === 'done') {
-                file.url = file.response.url || file.response.file_url
-            }
-            return file
-        })
-        props.fieldProps?.onChange(values)
-    }, [fileList]);
 
     const uploadButton = (
         <Tooltip
