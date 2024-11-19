@@ -130,22 +130,6 @@ container.register('Column.Readonly.Action.组件名', () => import('[组件路�
 
 ### 1.1.0
 
-#### 1.增加composer包注册组件机制
+* 增加composer包注册组件机制
 
-在包的composer.json中添加如下配置
 
-```json5
-{
-    // 省略其它配置
-    "extra": {
-        "qscmf": {
-            "antd-admin": {
-                "component": {
-                    "【container注册位置】": "【目标组件路径】",
-                    "Column.Extra": "resourses/js/Component/Extra.tsx"
-                }
-            }
-        }
-  }
-}
-```
