@@ -180,3 +180,15 @@ export function handleCondition(condition: Condition, data: any) {
     }
     return false
 }
+
+export function deepSet(obj: any, path: string, value: any) {
+    const paths = path.split('.');
+    paths.reduce((acc, key, index) => {
+        if (index === paths.length - 1) {
+            acc[key] = value;
+        } else {
+            acc[key] = acc[key] || {};
+        }
+        return acc[key];
+    }, obj);
+}

@@ -14,16 +14,30 @@ export default function (props: TableActionProps & {
 }) {
     const tableContext = useContext(TableContext)
 
+    const expandable = tableContext.getTableProps()?.expandable
+
+    function allChildren(data: any[], callback: (item: any) => void) {
+        data.map(item => {
+            callback(item)
+            if (item[expandable?.childrenColumnName || 'children']) {
+                allChildren(item.children, callback)
+            }
+        })
+    }
+
     const onStartClick = () => {
         const rowKey = tableContext.getTableProps().rowKey
-        tableContext.getTableProps().dataSource.map(item => {
+
+
+        allChildren(tableContext.getTableProps().dataSource, item => {
             tableContext.actionRef?.startEditable(item[rowKey], item)
         })
     }
 
     const onCancelClick = () => {
         const rowKey = tableContext.getTableProps().rowKey
-        tableContext.getTableProps().dataSource.map(item => {
+
+        allChildren(tableContext.getTableProps().dataSource, item => {
             tableContext.actionRef?.cancelEditable(item[rowKey])
         })
     }

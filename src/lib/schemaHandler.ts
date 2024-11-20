@@ -1,7 +1,7 @@
 import {ProColumnType, ProSchema} from "@ant-design/pro-components";
 import {UploadFile} from "antd";
 import http from "./http";
-import {handleCondition} from "./helpers";
+import {deepSet, handleCondition} from "./helpers";
 
 type Handler = (schema: any) => ProSchema | ProColumnType
 
@@ -39,6 +39,8 @@ export const commonHandler: Handler = schema => {
     if (schema.valueEnum) {
         schema.valueEnum = new Map(schema.valueEnum)
     }
+    // 有些表单项宽度并不能撑满，这里强制设置宽度
+    deepSet(schema, 'fieldProps.style.width', '100%')
     return schema
 }
 
