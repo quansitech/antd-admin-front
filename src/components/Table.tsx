@@ -11,6 +11,7 @@ import http from "../lib/http";
 import "./Table.scss"
 import {ModalContext} from "./ModalContext";
 import {commonHandler} from "../lib/schemaHandler";
+import {diffTree} from "../lib/helpers";
 
 export type TableProps = ProTableProps<any, any> & {
     columns: ProColumnType[],
@@ -231,11 +232,8 @@ export default function (props: TableProps) {
                           type: 'multiple',
                           editableKeys: editableKeys,
                           onChange: setEditableKeys,
-                          onValuesChange(record) {
-                              setEditableValues([
-                                  ...editableValues.filter(item => item[props.rowKey] !== record[props.rowKey]),
-                                  record
-                              ])
+                          onValuesChange(record, newDataSource) {
+                              setEditableValues(diffTree(dataSource, newDataSource, props.expandable?.childrenColumnName || 'children'))
                           }
                       }}
                       cardBordered

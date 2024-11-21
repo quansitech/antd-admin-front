@@ -7,6 +7,7 @@ import global from "./global";
 import {ModalContext} from "../components/ModalContext";
 import {ModalFuncProps} from "antd";
 import {uniq} from "lodash";
+import {isEqual} from "es-toolkit";
 
 export function replaceUrl(url: string, params: any) {
     return url.replace(/__([\w]+)__/g, (match, key) => {
@@ -191,4 +192,37 @@ export function deepSet(obj: any, path: string, value: any) {
         }
         return acc[key];
     }, obj);
+}
+
+export function filterObjectKeys(obj: Record<string, any>, keysToFilter: string[]) {
+    if (typeof obj !== 'object' || !obj) {
+        return obj;
+    }
+    return Object.keys(obj)
+        .filter(key => !keysToFilter.includes(key))
+        .reduce((newObj, key) => {
+            newObj[key] = obj[key];
+            return newObj;
+        }, {} as Record<string, any>);
+}
+
+export function diffTree(tree1: any[], tree2: any[], childKey: string) {
+    const res = []
+
+    for (const key in tree2) {
+        const item = tree2[key]
+        const found = tree1.find(i => {
+            const obj1 = filterObjectKeys(i, ['children'])
+            const obj2 = filterObjectKeys(item, ['children'])
+
+            return isEqual(obj1, obj2)
+        })
+        if (!found) {
+            res.push(filterObjectKeys(item, ['children']))
+        }
+        if (item[childKey]) {
+            res.push(...diffTree(tree1[key][childKey], item[childKey], childKey))
+        }
+    }
+    return res
 }
