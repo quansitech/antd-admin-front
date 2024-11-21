@@ -29,7 +29,7 @@ export default function (props: TableActionProps & {
         const rowKey = tableContext.getTableProps().rowKey
 
 
-        allChildren(tableContext.getTableProps().dataSource, item => {
+        allChildren(tableContext.dataSource, item => {
             tableContext.actionRef?.startEditable(item[rowKey], item)
         })
     }
@@ -37,7 +37,7 @@ export default function (props: TableActionProps & {
     const onCancelClick = () => {
         const rowKey = tableContext.getTableProps().rowKey
 
-        allChildren(tableContext.getTableProps().dataSource, item => {
+        allChildren(tableContext.dataSource, item => {
             tableContext.actionRef?.cancelEditable(item[rowKey])
         })
     }

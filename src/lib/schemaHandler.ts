@@ -127,7 +127,10 @@ export const schemaHandler: Record<string, Handler> = {
             valueType,
             name: [schema.showCondition.field],
             columns(fields: Record<string, any>) {
-                return handleCondition(schema.showCondition, fields) ? columns : []
+                if (schema.showCondition) {
+                    return handleCondition(schema.showCondition, fields) ? columns : []
+                }
+                return columns
             },
         } as ProSchema
     },
