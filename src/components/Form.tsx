@@ -71,6 +71,17 @@ export default function (props: FormSchema & {
                 return null
             }
 
+            // dependency依赖项需要特殊处理
+            if (c.valueType == 'dependency') {
+                c.columns = c.columns?.map(c => {
+                    commonHandler(c)
+                    if (container.schemaHandler[c.valueType as string]) {
+                        return container.schemaHandler[c.valueType as string](c)
+                    }
+                    return c
+                }) || []
+            }
+
             commonHandler(c)
             if (container.schemaHandler[c.valueType as string]) {
                 return container.schemaHandler[c.valueType as string](c)
