@@ -175,9 +175,9 @@ export function handleCondition(condition: Condition, data: any) {
         case '<=':
             return data[condition.field] <= condition.value;
         case 'in':
-            return data[condition.field] && condition.value.includes(data[condition.field]);
+            return condition.value?.includes(data[condition.field]);
         case 'not in':
-            return data[condition.field] && !condition.value.includes(data[condition.field]);
+            return !condition.value?.includes(data[condition.field]);
     }
     return false
 }

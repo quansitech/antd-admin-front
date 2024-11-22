@@ -24,7 +24,7 @@ ${extras.map(e => {
             cs.push(`container.register('${componentKey}', ()=>import('../../../vendor${path.join('/', e.path, e.component[componentKey])}'));`)
         }
         return cs.join('\n');
-    })}
+    }).join('\n')}
 `
 
     fs.writeFileSync(process.cwd() + '/resources/js/backend/extra.ts', extra_script);

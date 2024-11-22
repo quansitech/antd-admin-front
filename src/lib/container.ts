@@ -7,6 +7,7 @@ import tableAction from '../components/Table/Action';
 import formAction from '../components/Form/Action';
 import {lazy} from "react";
 import {lowerFirst} from "lodash";
+import {calc_file_hash} from "./upload";
 
 const components: Record<string, any> = {}
 
@@ -42,6 +43,17 @@ const container = {
     schemaHandler,
     routerNavigateTo,
 };
+
+if (typeof window !== 'undefined') {
+    ;((globalThis: any) => {
+        if (globalThis.$qsContainer) {
+            return;
+        }
+
+        globalThis.$qsContainer = container
+        globalThis.calc_file_hash = calc_file_hash
+    })(window);
+}
 
 async function autoRegister(prefix: string, components: Record<string, any>) {
     for (const [key, value] of Object.entries(components)) {
