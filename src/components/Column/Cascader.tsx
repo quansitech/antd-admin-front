@@ -70,7 +70,8 @@ export default function (props: ColumnProps) {
     }
 
     return <div className={props.className}>
-        <Cascader options={options as DefaultOptionType[]}
+        <Cascader {...props.fieldProps}
+                  options={options as DefaultOptionType[]}
                   onChange={onChange}
                   placeholder={'请选择'}
                   value={values}
