@@ -133,6 +133,17 @@ export default function (props: FormSchema & {
                                     loading={loading}
                                     formRef={formRef}
                                     initialValues={props.initialValues}
+                                    scrollToFirstError={{
+                                        behavior(actions) {
+                                            actions.forEach(({el, top, left}) => {
+                                                el.scrollTo({
+                                                    behavior: 'smooth',
+                                                    top: top - 120,
+                                                    left: left,
+                                                })
+                                            })
+                                        }
+                                    }}
                                     onFinish={onFinish}
                                     submitter={{
                                         render: () => [
