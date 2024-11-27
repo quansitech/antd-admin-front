@@ -62,11 +62,16 @@ export default function (props: any) {
             const layoutProps = e.detail.page.props.layoutProps as LayoutProps
 
             assignProps({
-                metaTitle: layoutProps?.metaTitle || ''
+                metaTitle: layoutProps?.metaTitle || '',
             })
             if (layoutProps?.title) {
                 assignProps({
                     title: layoutProps?.title
+                })
+            }
+            if (layoutProps?.menuActiveKey) {
+                assignProps({
+                    menuActiveKey: layoutProps?.menuActiveKey
                 })
             }
         }

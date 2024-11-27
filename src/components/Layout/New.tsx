@@ -71,6 +71,8 @@ export default function ({children, pageTitle, siteTitle, setDarkMode}: {
             return []
         }
 
+        console.log('layoutContext.props', layoutContext.props)
+
         if (!layoutContext.props.menuActiveKey) {
             return
         }
