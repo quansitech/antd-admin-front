@@ -38,7 +38,7 @@ export default function (props: FormActionType & {
                             modalContext.contexts?.tableContext?.getActionRef().reload()
                         })
                     }
-                    if (tableContext.getActionRef()) {
+                    if (tableContext.getActionRef) {
                         await tableContext.getActionRef().reload()
                     }
                 }
