@@ -53,12 +53,14 @@ export default function (props: TableActionProps & {
         }
 
         if (props.modal) {
+            setLoading(true)
             await modalShow({
                 ...props.modal,
                 contexts: {
                     tableContext,
                 },
             })
+            setLoading(false)
             return
         }
 

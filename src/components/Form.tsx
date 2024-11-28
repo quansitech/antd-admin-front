@@ -90,7 +90,7 @@ export default function (props: FormSchema & {
                     modalContext.contexts?.tableContext?.getActionRef().reload()
                 })
             }
-            if (tableContext.getActionRef()) {
+            if (tableContext.getActionRef) {
                 // @ts-ignore
                 await tableContext.getActionRef().reload()
             }
