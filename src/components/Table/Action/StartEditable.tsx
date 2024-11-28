@@ -28,9 +28,8 @@ export default function (props: TableActionProps & {
     const onStartClick = () => {
         const rowKey = tableContext.getTableProps().rowKey
 
-
         allChildren(tableContext.dataSource, item => {
-            tableContext.actionRef?.startEditable(item[rowKey], item)
+            tableContext.getActionRef()?.startEditable(item[rowKey], item)
         })
     }
 
@@ -38,7 +37,7 @@ export default function (props: TableActionProps & {
         const rowKey = tableContext.getTableProps().rowKey
 
         allChildren(tableContext.dataSource, item => {
-            tableContext.actionRef?.cancelEditable(item[rowKey])
+            tableContext.getActionRef()?.cancelEditable(item[rowKey])
         })
     }
 
@@ -68,7 +67,7 @@ export default function (props: TableActionProps & {
                 data: data,
             })
 
-            await tableContext.actionRef?.reload()
+            await tableContext.getActionRef()?.reload()
         } finally {
             setLoading(false)
         }

@@ -45,7 +45,7 @@ export default function (props: TableActionProps & {
                     headers: props.request.headers || {},
                     data: data,
                 })
-                await tableContext.actionRef?.reload()
+                await tableContext.getActionRef()?.reload()
             } finally {
                 setLoading(false)
             }

@@ -7,11 +7,11 @@ export type TableContextValue = {
     getTableProps: () => TableProps,
     getEditedValues: () => Record<string, any>[],
     editableKeys: React.Key[],
-    actionRef?: ActionType & {
+    getActionRef: () => ActionType & {
         startEditable: (key: React.Key, row?: any) => boolean,
         cancelEditable: (key: React.Key) => void,
     },
-    formRef?: FormInstance,
+    getFormRef: () => FormInstance,
     extraRenderValues?: Record<string, any>[],
     dataSource: any[],
 }

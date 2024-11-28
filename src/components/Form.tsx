@@ -87,12 +87,12 @@ export default function (props: FormSchema & {
         if (req?.afterAction?.includes('tableReload')) {
             if (modalContext.contexts) {
                 modalContext.setAfterClose(() => {
-                    modalContext.contexts?.tableContext?.actionRef.reload()
+                    modalContext.contexts?.tableContext?.getActionRef().reload()
                 })
             }
-            if (tableContext.actionRef) {
+            if (tableContext.getActionRef()) {
                 // @ts-ignore
-                await tableContext.actionRef.reload()
+                await tableContext.getActionRef().reload()
             }
         }
         if (req?.afterAction?.includes('closeModal') && modalContext.inModal) {
@@ -123,7 +123,7 @@ export default function (props: FormSchema & {
         <Row justify={'center'}>
             <Col sm={24} md={22} lg={20}>
                 <FormContext.Provider value={{
-                    formRef: formRef,
+                    getFormRef: () => formRef.current,
                     extraRenderValues: props.extraRenderValues,
                 }}>
                     <BetaSchemaForm columns={columns}

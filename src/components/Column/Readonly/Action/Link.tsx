@@ -33,7 +33,7 @@ export default function (props: Props) {
                     data: props.request.data ? replaceParams(props.request.data, props.record) : null,
                 })
 
-                await tableContext.actionRef?.reload()
+                await tableContext.getActionRef()?.reload()
             }
             if (props.modal) {
                 let url

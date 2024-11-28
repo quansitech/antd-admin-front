@@ -162,8 +162,8 @@ export default function (props: TableProps) {
             getTableProps: () => props,
             getEditedValues: () => editableValues,
             editableKeys: editableKeys,
-            actionRef: actionRef.current,
-            formRef: formRef.current,
+            getActionRef: () => actionRef.current,
+            getFormRef: () => formRef.current,
             extraRenderValues: extraRenderValues,
             dataSource: dataSource,
         } as TableContextValue}>

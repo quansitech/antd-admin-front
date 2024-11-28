@@ -35,11 +35,11 @@ export default function (props: FormActionType & {
                 if (req?.afterAction?.includes('tableReload')) {
                     if (modalContext.contexts) {
                         modalContext.setAfterClose(() => {
-                            modalContext.contexts?.tableContext?.actionRef.reload()
+                            modalContext.contexts?.tableContext?.getActionRef().reload()
                         })
                     }
-                    if (tableContext.actionRef) {
-                        await tableContext.actionRef.reload()
+                    if (tableContext.getActionRef()) {
+                        await tableContext.getActionRef().reload()
                     }
                 }
                 if (req?.afterAction?.includes('closeModal') && modalContext.inModal) {
@@ -48,7 +48,7 @@ export default function (props: FormActionType & {
             }
 
             if (props.submit) {
-                formContext.formRef?.current?.submit()
+                formContext.getFormRef()?.submit()
                 return
             }
             if (props.request) {
@@ -57,7 +57,7 @@ export default function (props: FormActionType & {
                     url: props.request.url,
                     headers: props.request.headers || {},
                     data: replaceParams(props.request.data || {}, {
-                        ...(await formContext.formRef?.current?.getFieldsValue()),
+                        ...(await formContext.getFormRef()?.getFieldsValue()),
                     })
                 })
 
@@ -69,18 +69,18 @@ export default function (props: FormActionType & {
                     ...props.modal,
                     content: {
                         ...props.modal.content,
-                        url: replaceUrl(props.modal.content.url as string, formContext.formRef?.current?.getFieldsValue())
+                        url: replaceUrl(props.modal.content.url as string, formContext.getFormRef()?.getFieldsValue())
                     }
                 })
                 return
             }
 
             if (props.link) {
-                routerNavigateTo(replaceUrl(props.link.url, await formContext.formRef?.current?.getFieldsValue()))
+                routerNavigateTo(replaceUrl(props.link.url, await formContext.getFormRef()?.getFieldsValue()))
                 return
             }
             if (props.reset) {
-                formContext.formRef?.current?.resetFields()
+                formContext.getFormRef()?.resetFields()
                 return
             }
             if (props.back) {
