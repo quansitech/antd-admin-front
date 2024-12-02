@@ -65,6 +65,12 @@ export default function (props: ColumnProps) {
             props.fieldProps?.onChange(props.dataIndex, undefined)
             return
         }
+
+        if (props.fieldProps.multiple) {
+            props.fieldProps?.onChange(values.map(v => v[v.length - 1]))
+            return
+        }
+
         const value = values[values.length - 1]
         props.fieldProps?.onChange(value)
     }
