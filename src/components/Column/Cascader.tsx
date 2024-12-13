@@ -8,9 +8,36 @@ export default function (props: ColumnProps) {
     const [options, setOptions] = useState<{ value: string, label: string }[]>();
     const [values, setValues] = useState<any>()
 
+    const findValue = (options: any[], value: any): any => {
+        for (let i = 0; i < options.length; i++) {
+            const option = options[i];
+            if (option.value === value) {
+                return [option.value]
+            } else if (option.children?.length) {
+                return [option.value, ...findValue(option.children, value)]
+            }
+        }
+        return []
+    }
+
     useEffect(() => {
-        const value = props.fieldProps.value
+        let value = props.fieldProps.value
         setOptions(props.fieldProps.options || [] as []);
+
+        if (value && props.fieldProps.options) {
+            if (props.fieldProps.multiple) {
+                const v = []
+                if (!Array.isArray(value)) {
+                    value = [value]
+                }
+                value.forEach(va => {
+                    v.push(findValue(props.fieldProps.options, va))
+                })
+                setValues(v)
+            } else {
+                setValues(findValue(props.fieldProps.options, value))
+            }
+        }
 
         // 远程获取数据
         if (props.fieldProps.loadDataUrl) {
@@ -24,16 +51,6 @@ export default function (props: ColumnProps) {
                 setOptions(res.data)
 
                 if (value) {
-                    const findValue = (options: any[], value: any): any => {
-                        for (let i = 0; i < options.length; i++) {
-                            const option = options[i];
-                            if (option.value === value) {
-                                return [option.value]
-                            } else if (option.children) {
-                                return [option.value, ...findValue(option.children, value)]
-                            }
-                        }
-                    }
 
                     setValues(findValue(res.data, value))
                 }
