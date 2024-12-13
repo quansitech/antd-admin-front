@@ -13,8 +13,12 @@ export default function (props: ColumnProps) {
             const option = options[i];
             if (option.value === value) {
                 return [option.value]
-            } else if (option.children?.length) {
-                return [option.value, ...findValue(option.children, value)]
+            }
+
+            if (option.children?.length) {
+                if (findValue(option.children, value).length) {
+                    return [option.value, ...findValue(option.children, value)]
+                }
             }
         }
         return []
