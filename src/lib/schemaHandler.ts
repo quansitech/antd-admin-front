@@ -144,6 +144,9 @@ export const schemaHandler: Record<string, Handler> = {
         }
         schema.formItemProps.rules.push({
             validator: async (rule, value) => {
+                if (!value) {
+                    return true
+                }
                 if (value.slice(0, 7) === '[抓取图片中]') {
                     throw new Error('请等待图片抓取完成')
                 }
