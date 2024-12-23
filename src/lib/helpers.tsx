@@ -72,9 +72,16 @@ export async function modalShow(options: ModalOptions) {
         }
         props = res.data
     }
+
     if (!props) {
         throw new Error('modal props is empty')
     }
+    if (props.type === 'table') {
+        if (typeof props.ajaxRequest === 'undefined') {
+            props.ajaxRequest = true
+        }
+    }
+
     const Component = container.get('Modal.' + upperFirst(props.type))
 
     let afterClose = () => {
@@ -225,4 +232,37 @@ export function diffTree(tree1: any[], tree2: any[], childKey: string) {
         }
     }
     return res
+}
+
+export function findValuePath(obj: any, target: any, path: string[] = []): string[] | null {
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            const currentPath = [...path, key];
+            if (obj[key] === target) {
+                return currentPath;
+            } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+                const result = findValuePath(obj[key], target, currentPath);
+                if (result) {
+                    return result;
+                }
+            }
+        }
+    }
+    return null;
+}
+
+export function getValueByPath(obj: any, path: string[]): any {
+    if (!Array.isArray(path) || path.length === 0) {
+        return undefined; // 如果路径无效，返回 undefined
+    }
+
+    let current = obj;
+    for (const key of path) {
+        if (current && typeof current === 'object' && key in current) {
+            current = current[key];
+        } else {
+            return undefined; // 如果路径中的某个键不存在，返回 undefined
+        }
+    }
+    return current;
 }

@@ -38,6 +38,14 @@ const uploadTransform = (value?: UploadFile[], _name?: string) => {
 
 export const commonHandler: Handler = schema => {
     if (schema.valueEnum) {
+        schema.valueEnum?.map((item: [any, any]) => {
+            let key = item[0]
+            if (typeof key === 'string' && /^\d+$/.test(key)) {
+                key = Number(key)
+            }
+
+            return [key, item[1]]
+        })
         schema.valueEnum = new Map(schema.valueEnum)
     }
     // 有些表单项宽度并不能撑满，这里强制设置宽度

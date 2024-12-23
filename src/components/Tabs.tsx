@@ -2,8 +2,10 @@ import {Tabs} from "antd";
 import React, {Suspense, useEffect, useMemo, useState} from "react";
 import type {Tab} from 'rc-tabs/lib/interface';
 import container from "../lib/container";
-import {routerNavigateTo} from "../lib/helpers";
+import {findValuePath, routerNavigateTo} from "../lib/helpers";
 import {upperFirst} from "es-toolkit";
+import {TabsContext} from './TabsContext'
+import {usePage} from "@inertiajs/react";
 
 type TabProps = {
     title: string,
@@ -21,6 +23,7 @@ export type TabsPageType = {
 
 export default function (props: TabsPageType) {
     const [activeKey, setActiveKey] = useState<string>();
+    const pageProps = usePage<TabsPageType>().props
 
     const items = useMemo(() => {
         return Object.keys(props.tabs).map(key => {
@@ -40,9 +43,14 @@ export default function (props: TabsPageType) {
                 key,
                 label: t.title,
                 children: <>
-                    <Suspense>
-                        <Component {...t.pane.props}></Component>
-                    </Suspense>
+                    <TabsContext.Provider value={{
+                        inTabs: true,
+                        propsPath: findValuePath(pageProps, t.pane.props),
+                    }}>
+                        <Suspense>
+                            <Component {...t.pane.props}></Component>
+                        </Suspense>
+                    </TabsContext.Provider>
                 </>
             }
         }) as Tab[]

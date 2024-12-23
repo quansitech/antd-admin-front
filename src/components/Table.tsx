@@ -11,7 +11,10 @@ import http from "../lib/http";
 import "./Table.scss"
 import {ModalContext} from "./ModalContext";
 import {commonHandler} from "../lib/schemaHandler";
-import {diffTree} from "../lib/helpers";
+import {diffTree, getValueByPath} from "../lib/helpers";
+import {router} from "@inertiajs/react";
+import qs from 'qs';
+import {TabsContext} from "./TabsContext";
 
 export type TableProps = ProTableProps<any, any> & {
     columns: ProColumnType[],
@@ -30,6 +33,8 @@ export type TableProps = ProTableProps<any, any> & {
 }
 
 export default function (props: TableProps) {
+
+    let {searchUrl} = props
 
     const request = async (params: Record<string, any> & {
         pageSize: number,
@@ -50,8 +55,37 @@ export default function (props: TableProps) {
         setEditableKeys([])
         setEditableValues([])
 
+        if (!modalContext.inModal) {
+            const only = ['dataSource', 'pagination']
+            if (tabsContext.inTabs) {
+                only.push('tabs')
+            }
+
+            router.get(searchUrl, data, {
+                preserveScroll: true,
+                preserveState: true,
+                only: only,
+                onSuccess(e) {
+                    let props = e.props as any | TableProps
+                    if (tabsContext.inTabs) {
+                        props = getValueByPath(props, tabsContext.propsPath)
+                    }
+
+                    console.log(props)
+
+                    setDataSource(postData(props.dataSource))
+                    setPagination(props.pagination)
+                },
+                onFinish: () => {
+                    setLoading(false)
+                }
+            })
+
+            return
+        }
+
         try {
-            const res = await http.get(props.searchUrl, {
+            const res = await http.get(searchUrl, {
                 params: data,
                 headers: {
                     'X-Table-Search': '1'
@@ -85,10 +119,6 @@ export default function (props: TableProps) {
             initialValue: any,
         }) => {
             c.key = c.dataIndex as string
-
-            if (props.defaultSearchValue?.[c.dataIndex as string] !== undefined) {
-                c.initialValue = props.defaultSearchValue[c.dataIndex as string]
-            }
 
             commonHandler(c)
             if (container.schemaHandler[c.valueType as string]) {
@@ -144,6 +174,7 @@ export default function (props: TableProps) {
     const [extraRenderValues, setExtraRenderValues] = useState(props.extraRenderValues)
 
     const modalContext = useContext(ModalContext)
+    const tabsContext = useContext(TabsContext)
 
     useEffect(() => {
 
@@ -154,6 +185,27 @@ export default function (props: TableProps) {
                 offsetHeader: document.querySelector('.ant-layout-header')?.clientHeight || 56,
             })
         }
+
+        // 搜索
+        if (!searchUrl) {
+            searchUrl = window.location.href
+        }
+
+        if (props.defaultSearchValue !== undefined) {
+            formRef.current.setFieldsValue(props.defaultSearchValue)
+        }
+
+        const query = qs.parse(window.location.search.replace(/^\?/, ''))
+        if (query && Object.keys(query).length) {
+            Object.keys(query).forEach(key => {
+                if (typeof query[key] === 'string') {
+                    /^\d+$/.test(query[key]) && (query[key] = parseInt(query[key]))
+                }
+            })
+
+            formRef.current.setFieldsValue(query)
+        }
+
 
     }, []);
 
