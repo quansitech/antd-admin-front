@@ -195,15 +195,17 @@ export default function (props: TableProps) {
             formRef.current.setFieldsValue(props.defaultSearchValue)
         }
 
-        const query = qs.parse(window.location.search.replace(/^\?/, ''))
-        if (query && Object.keys(query).length) {
-            Object.keys(query).forEach(key => {
-                if (typeof query[key] === 'string') {
-                    /^\d+$/.test(query[key]) && (query[key] = parseInt(query[key]))
-                }
-            })
+        if (!modalContext.inModal) {
+            const query = qs.parse(window.location.search.replace(/^\?/, ''))
+            if (query && Object.keys(query).length) {
+                Object.keys(query).forEach(key => {
+                    if (typeof query[key] === 'string') {
+                        /^\d+$/.test(query[key]) && (query[key] = parseInt(query[key]))
+                    }
+                })
 
-            formRef.current.setFieldsValue(query)
+                formRef.current.setFieldsValue(query)
+            }
         }
 
 
