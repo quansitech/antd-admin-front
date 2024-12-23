@@ -192,7 +192,7 @@ export default function (props: TableProps) {
         }
 
         if (props.defaultSearchValue !== undefined) {
-            formRef.current.setFieldsValue(props.defaultSearchValue)
+            formRef.current?.setFieldsValue(props.defaultSearchValue)
         }
 
         if (!modalContext.inModal) {
@@ -204,7 +204,7 @@ export default function (props: TableProps) {
                     }
                 })
 
-                formRef.current.setFieldsValue(query)
+                formRef.current?.setFieldsValue(query)
             }
         }
 
