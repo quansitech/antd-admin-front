@@ -56,7 +56,7 @@ export default function (props: TableProps) {
         setEditableValues([])
 
         if (!modalContext.inModal) {
-            const only = ['dataSource', 'pagination']
+            const only = ['dataSource', 'pagination', 'extraRenderValues']
             if (tabsContext.inTabs) {
                 only.push('tabs')
             }
@@ -70,8 +70,6 @@ export default function (props: TableProps) {
                     if (tabsContext.inTabs) {
                         props = getValueByPath(props, tabsContext.propsPath)
                     }
-
-                    console.log(props)
 
                     setDataSource(postData(props.dataSource))
                     setPagination(props.pagination)
