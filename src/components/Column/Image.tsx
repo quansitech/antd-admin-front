@@ -45,8 +45,9 @@ export default function (props: ColumnProps & {
             if (aspects.length === 2) {
                 aspect = parseInt(aspects[0]) / parseInt(aspects[1])
             }
+
             return <>
-                <ImgCrop rotationSlider aspect={aspect}>
+                <ImgCrop quality={props.fieldProps.crop?.quality || 0.8} rotationSlider aspect={aspect}>
                     {dom}
                 </ImgCrop>
             </>
