@@ -72,6 +72,7 @@ export default function (props: TableProps) {
                     }
 
                     setDataSource(postData(props.dataSource))
+                    setExtraRenderValues(props.extraRenderValues)
                     setPagination(props.pagination)
                 },
                 onFinish: () => {

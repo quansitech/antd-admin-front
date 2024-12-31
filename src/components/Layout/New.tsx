@@ -37,10 +37,25 @@ export default function ({children, pageTitle, siteTitle, setDarkMode}: {
     }
 
     const [openKeys, setOpenKeys] = useState<string[]>([])
-    const route = useMemo(() => {
-        return {
+    const [route, setRoute] = useState<any>({
+        key: '/',
+        routes: layoutContext.props.menuList?.map(menu => {
+            return {
+                name: menu.name,
+                key: menu.key,
+                children: menu.children?.map(child => {
+                    return {
+                        name: child.name,
+                        key: child.key
+                    }
+                })
+            }
+        })
+    })
+    useEffect(() => {
+        setRoute({
             key: '/',
-            routes: layoutProps.menuList?.map(menu => {
+            routes: layoutContext.props.menuList?.map(menu => {
                 return {
                     name: menu.name,
                     key: menu.key,
@@ -52,8 +67,8 @@ export default function ({children, pageTitle, siteTitle, setDarkMode}: {
                     })
                 }
             })
-        }
-    }, [layoutProps.menuList])
+        })
+    }, [layoutContext.props.menuList])
 
     useEffect(() => {
         function findKeyPath(key: string, list: MenuDataItem[]): string[] {

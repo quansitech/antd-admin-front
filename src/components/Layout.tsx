@@ -62,24 +62,47 @@ export default function (props: any) {
             const layoutProps = e.detail.page.props.layoutProps as LayoutProps
 
             assignProps({
+                ...layoutProps,
                 metaTitle: layoutProps?.metaTitle || '',
             })
-            if (layoutProps?.title) {
-                assignProps({
-                    title: layoutProps?.title
-                })
-            }
-            if (layoutProps?.menuActiveKey) {
-                assignProps({
-                    menuActiveKey: layoutProps?.menuActiveKey
-                })
-            }
         }
 
         document.addEventListener('inertia:navigate', listener)
 
         return () => {
             document.removeEventListener('inertia:navigate', listener)
+        }
+    }, []);
+
+    useEffect(() => {
+        const listener = (e: GlobalEvent<'invalid'>) => {
+            if (!e.detail.response.headers['content-type'].includes('json')) {
+                return
+            }
+            e.preventDefault()
+            const {data} = e.detail.response
+
+            const goto = () => {
+                if (!data.url) {
+                    return
+                }
+                window.location.href = data.url as string
+            }
+
+            if (data.info) {
+                global.notification.warning({message: data.info})
+                setTimeout(() => {
+                    goto()
+                })
+            } else {
+                goto()
+            }
+
+        }
+
+        document.addEventListener('inertia:invalid', listener)
+        return () => {
+            document.removeEventListener('inertia:invalid', listener)
         }
     }, []);
 
