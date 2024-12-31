@@ -80,6 +80,9 @@ export async function modalShow(options: ModalOptions) {
         if (typeof props.ajaxRequest === 'undefined') {
             props.ajaxRequest = true
         }
+        if (!props.searchUrl) {
+            props.searchUrl = options.content?.url || ''
+        }
     }
 
     const Component = container.get('Modal.' + upperFirst(props.type))
