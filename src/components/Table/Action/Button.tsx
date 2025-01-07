@@ -45,7 +45,11 @@ export default function (props: TableActionProps & {
                     headers: props.request.headers || {},
                     data: data,
                 })
+
                 await tableContext.getActionRef()?.reload()
+                if (props.relateSelection) {
+                    tableContext.getActionRef().clearSelected()
+                }
             } finally {
                 setLoading(false)
             }
