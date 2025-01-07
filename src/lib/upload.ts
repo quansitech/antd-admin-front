@@ -62,9 +62,10 @@ export async function customRequest(options: UploadRequestOption & {
             },
         })
 
-        if (res.data.info) {
-            message.error(res.data.info)
-            options.onError && options.onError(new Error(res.data.info), res.data)
+        const err = res.data.info || res.data.err_msg
+        if (err) {
+            message.error(err)
+            options.onError && options.onError(new Error(err), res.data)
             return
         }
 
