@@ -219,6 +219,7 @@ export default function (props: TableProps) {
             getFormRef: () => formRef.current,
             extraRenderValues: extraRenderValues,
             dataSource: dataSource,
+            getSelectedRows: () => selectedRows,
         } as TableContextValue}>
             <ProTable rowKey={props.rowKey}
                       tableClassName={'qs-antd-table'}
@@ -278,8 +279,7 @@ export default function (props: TableProps) {
                           filter: true,
                       }}
                       toolBarRender={(action) => [
-                          <ToolbarActions key={'actions'} actions={props.actions}
-                                          selectedRows={selectedRows}></ToolbarActions>
+                          <ToolbarActions key={'actions'} actions={props.actions}></ToolbarActions>
                       ]}
                       editable={{
                           type: 'multiple',

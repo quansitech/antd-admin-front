@@ -14,6 +14,7 @@ export type TableContextValue = {
     getFormRef: () => FormInstance,
     extraRenderValues?: Record<string, any>[],
     dataSource: any[],
+    getSelectedRows: () => any[],
 }
 
 export const TableContext = createContext({} as TableContextValue)

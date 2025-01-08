@@ -37,9 +37,9 @@ export default function ({
                     {
                         c.props.badge ?
                             <Badge count={c.props.badge} style={{zIndex: 100}}>
-                                <c.Component {...c.props} selectedRows={selectedRows}></c.Component>
+                                <c.Component {...c.props}></c.Component>
                             </Badge> :
-                            <c.Component {...c.props} selectedRows={selectedRows}></c.Component>
+                            <c.Component {...c.props}></c.Component>
                     }
                 </Suspense>
             ))}

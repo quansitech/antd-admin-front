@@ -4,6 +4,7 @@ import {TableContext} from "../../TableContext";
 import http from "../../../lib/http";
 import {modalShow, routerNavigateTo} from "../../../lib/helpers";
 import {TableActionProps} from "./types";
+import {cloneDeep} from "es-toolkit";
 
 export default function (props: TableActionProps & {
     props: Record<string, any>,
@@ -24,9 +25,11 @@ export default function (props: TableActionProps & {
 
         if (props.request) {
             setLoading(true)
-            const data = props.request.data || {}
+            const data = cloneDeep(props.request.data) || {}
             if (props.relateSelection) {
-                data.selection = props.selectedRows?.map(item => item[rowKey])
+                const selectedRows = tableContext.getSelectedRows()
+
+                data.selection = selectedRows?.map(item => item[rowKey])
                 for (const key in data) {
                     if (typeof data[key] !== 'string') {
                         continue
@@ -35,7 +38,7 @@ export default function (props: TableActionProps & {
                     if (!matches) {
                         continue
                     }
-                    data[key] = props.selectedRows?.map(item => item[matches[1]])
+                    data[key] = selectedRows?.map(item => item[matches[1]])
                 }
             }
             try {
