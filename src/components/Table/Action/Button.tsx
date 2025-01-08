@@ -81,9 +81,9 @@ export default function (props: TableActionProps & {
         if (!props.relateSelection) {
             return
         }
-        setDisabled(props.selectedRows?.length === 0)
+        setDisabled(tableContext.getSelectedRows()?.length === 0)
 
-    }, [props.selectedRows]);
+    }, [tableContext.getSelectedRows()]);
 
 
     const ButtonComponent = () => {
