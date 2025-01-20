@@ -9,6 +9,7 @@ import http from "../../lib/http";
 import {Route} from '@ant-design/pro-layout/lib/typing';
 import {MoonOutlined, SunOutlined} from "@ant-design/icons";
 import {usePage} from "@inertiajs/react";
+import './New.scss';
 
 export default function ({children, pageTitle, siteTitle, setDarkMode}: {
     children: React.ReactNode,

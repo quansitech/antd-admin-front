@@ -32,6 +32,11 @@ export function replaceParams(params: Record<string, any>, data: Record<string, 
 }
 
 export function routerNavigateTo(url: string, config?: VisitOptions) {
+    if (url.indexOf('javascript:') !== -1) {
+        window.location.href = url
+        return
+    }
+
     return router.visit(url, {
         ...config,
     })

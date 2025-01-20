@@ -36,7 +36,7 @@ export default function ({
                 <Suspense key={c.props.title}>
                     {
                         c.props.badge ?
-                            <Badge count={c.props.badge} style={{zIndex: 100}}>
+                            <Badge count={c.props.badge} style={{zIndex: 2}}>
                                 <c.Component {...c.props}></c.Component>
                             </Badge> :
                             <c.Component {...c.props}></c.Component>

@@ -1,6 +1,6 @@
 {
   "name": "@quansitech/antd-admin",
-  "version": "1.1.27",
+  "version": "1.1.28",
   "type": "module",
   "files": [
     "dist"
@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@ant-design/pro-components": "^2.7.15",
-    "@inertiajs/react": "^1.2.0",
+    "@inertiajs/react": "^1.2.0 || ^2.0.0",
     "antd": "^5.20.5",
     "antd-img-crop": "^4.23.0",
     "axios": "^1.7.7",

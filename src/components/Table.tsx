@@ -11,8 +11,7 @@ import http from "../lib/http";
 import "./Table.scss"
 import {ModalContext} from "./ModalContext";
 import {commonHandler} from "../lib/schemaHandler";
-import {diffTree, getValueByPath} from "../lib/helpers";
-import {router} from "@inertiajs/react";
+import {diffTree, getValueByPath, routerNavigateTo} from "../lib/helpers";
 import qs from 'qs';
 import {TabsContext} from "./TabsContext";
 
@@ -61,7 +60,9 @@ export default function (props: TableProps) {
                 only.push('tabs')
             }
 
-            router.get(searchUrl, data, {
+            routerNavigateTo(searchUrl, {
+                method: 'get',
+                data,
                 preserveScroll: true,
                 preserveState: true,
                 only: only,
