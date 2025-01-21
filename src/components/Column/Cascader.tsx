@@ -1,12 +1,17 @@
 import {ColumnProps} from "./types";
 import {Cascader} from "antd";
 import type {DefaultOptionType} from "antd/es/cascader"
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import http from "../../lib/http";
+import {FormContext} from "../FormContext";
+import {TableContext} from "../TableContext";
 
 export default function (props: ColumnProps) {
     const [options, setOptions] = useState<{ value: string, label: string }[]>();
     const [values, setValues] = useState<any>()
+
+    const formContext = useContext(FormContext)
+    const tableContext = useContext(TableContext)
 
     const findValue = (options: any[], value: any): any => {
         for (let i = 0; i < options.length; i++) {
@@ -43,6 +48,22 @@ export default function (props: ColumnProps) {
             }
         }
 
+        let extraData;
+        if (formContext.extraRenderValues) {
+            extraData = formContext.extraRenderValues[props.fieldProps.dataIndex]
+        }
+        if (tableContext.extraRenderValues) {
+            extraData = tableContext.extraRenderValues[props.index]?.[props.fieldProps.dataIndex]
+        }
+
+        if (extraData) {
+            setOptions(extraData.options)
+            if (value) {
+                setValues(findValue(extraData.options, value))
+            }
+            return
+        }
+
         // 远程获取数据
         if (props.fieldProps.loadDataUrl) {
             http({
@@ -55,7 +76,6 @@ export default function (props: ColumnProps) {
                 setOptions(res.data)
 
                 if (value) {
-
                     setValues(findValue(res.data, value))
                 }
 
