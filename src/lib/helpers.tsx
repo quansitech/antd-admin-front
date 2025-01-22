@@ -8,6 +8,7 @@ import {ModalContext} from "../components/ModalContext";
 import {ModalFuncProps} from "antd";
 import {uniq} from "lodash";
 import {isEqual} from "es-toolkit";
+import {Condition, ModalOptions} from "../types";
 
 export function replaceUrl(url: string, params: any) {
     return url.replace(/__([\w]+)__/g, (match, key) => {

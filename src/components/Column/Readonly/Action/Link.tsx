@@ -4,6 +4,7 @@ import {Button, Popconfirm, Spin} from "antd";
 import {TableContext} from "../../../TableContext";
 import http from "../../../../lib/http";
 import {TableColumnActionProps} from "./types";
+import {ModalOptions, RequestOptions} from "../../../../types";
 
 type Props = TableColumnActionProps & {
     href?: string,

@@ -1,3 +1,5 @@
+import {TableContextValue} from "./components/TableContext";
+
 type RequestOptions = {
     url: string,
     method: string,
@@ -14,7 +16,7 @@ type Condition = {
 }
 
 type ModalOptions = {
-    tableContext: TableContext,
+    tableContext: TableContextValue,
     contexts?: Record<string, any>
     title?: string,
     content: {

@@ -10,11 +10,16 @@ import {getProValueTypeMap} from "../lib/helpers";
 import type {LayoutProps} from "./LayoutContext";
 import {LayoutContext} from "./LayoutContext";
 
-function ChildApp(props: any) {
+function ChildApp(props: {
+    enableNewLayout: boolean,
+    pageTitle: string,
+    siteTitle: string,
+    setDarkMode: (boolean) => void,
+    children: React.ReactNode,
+}) {
     const {modal, notification, message} = App.useApp()
 
     useEffect(() => {
-
         global.modal = modal
         global.notification = notification
         global.message = message
@@ -22,13 +27,19 @@ function ChildApp(props: any) {
 
     return <>
         {props.enableNewLayout
-            ? <New {...props}></New>
-            : <Blank {...props}></Blank>
+            ? <New pageTitle={props.pageTitle}
+                   siteTitle={props.siteTitle}
+                   setDarkMode={props.setDarkMode}>{props.children}</New>
+            : <Blank pageTitle={props.pageTitle}>{props.children}</Blank>
         }
     </>
 }
 
-export default function (props: any) {
+type ExportLayoutProps = {
+    footer?: React.ReactNode
+}
+
+export default function (props: Record<string, any> & React.PropsWithChildren<ExportLayoutProps>) {
 
     const [darkMode, setDarkMode] = useState(false)
     const [enableNewLayout, setEnableNewLayout] = useState(false)
@@ -45,6 +56,8 @@ export default function (props: any) {
         menuList: pageProps.layoutProps?.menuList,
         logo: pageProps.layoutProps?.logo,
         userMenu: pageProps.layoutProps?.userMenu,
+        userName: pageProps.layoutProps?.userName,
+        footer: props.footer,
     })
 
     const assignProps = (newProps: LayoutProps) => {
@@ -115,10 +128,12 @@ export default function (props: any) {
         }}>
             <ProConfigProvider valueTypeMap={getProValueTypeMap()} dark={darkMode}>
                 <AntdApp>
-                    <ChildApp {...props}
-                              setDarkMode={setDarkMode}
+                    <ChildApp setDarkMode={setDarkMode}
+                              siteTitle={pageProps.layoutProps?.siteTitle}
                               pageTitle={layoutProps.metaTitle}
-                              enableNewLayout={enableNewLayout}></ChildApp>
+                              enableNewLayout={enableNewLayout}>
+                        {props.children}
+                    </ChildApp>
                 </AntdApp>
             </ProConfigProvider>
         </LayoutContext.Provider>

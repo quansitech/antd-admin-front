@@ -1,6 +1,6 @@
 import {MenuDataItem, PageContainer, ProLayout, ProProvider} from "@ant-design/pro-components";
 import {Button, Dropdown, Menu, MenuProps, Space} from "antd";
-import {LayoutContext} from "../LayoutContext";
+import {LayoutContext, LayoutProps} from "../LayoutContext";
 import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
 import {routerNavigateTo} from "../../lib/helpers";
 import {MenuInfo} from "rc-menu/lib/interface";
@@ -11,7 +11,7 @@ import {MoonOutlined, SunOutlined} from "@ant-design/icons";
 import {usePage} from "@inertiajs/react";
 import './New.scss';
 
-export default function ({children, pageTitle, siteTitle, setDarkMode}: {
+export default function ({children, pageTitle, setDarkMode}: {
     children: React.ReactNode,
     pageTitle: string,
     siteTitle: string,
@@ -20,7 +20,7 @@ export default function ({children, pageTitle, siteTitle, setDarkMode}: {
     const contentRef = useRef<HTMLDivElement>(null)
     const layoutContext = useContext(LayoutContext)
     const pageProps = usePage<any>().props
-    const layoutProps = useMemo(() => {
+    const layoutProps: LayoutProps = useMemo(() => {
         return {
             ...layoutContext.props
         }
@@ -182,13 +182,16 @@ export default function ({children, pageTitle, siteTitle, setDarkMode}: {
                    headerContentRender={headerContentRender}
                    pageTitleRender={p => `${pageTitle} | ${layoutProps.title} 后台管理`}
                    footerRender={() => <>
-                       <Space>
-                           <a href="https://www.quansitech.com/" target={'_blank'}>全思科技</a>
-                           <a href="https://github.com/quansitech/" target={'_blank'}>Github</a>
-                       </Space>
+                       {layoutProps.footer !== undefined
+                           ? <>{layoutProps.footer}</>
+                           : <Space>
+                               <a href="https://www.quansitech.com/" target={'_blank'}>全思科技</a>
+                               <a href="https://github.com/quansitech/" target={'_blank'}>Github</a>
+                           </Space>
+                       }
                    </>}
                    avatarProps={{
-                       title: 'admin',
+                       title: layoutProps.userName,
                        render(p, dom) {
                            return <>
                                <Dropdown menu={{

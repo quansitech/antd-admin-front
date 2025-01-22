@@ -5,6 +5,7 @@ import http from "../../../lib/http";
 import {modalShow, routerNavigateTo} from "../../../lib/helpers";
 import {TableActionProps} from "./types";
 import {cloneDeep} from "es-toolkit";
+import {ModalOptions, RequestOptions} from "../../../types";
 
 export default function (props: TableActionProps & {
     props: Record<string, any>,

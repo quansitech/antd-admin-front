@@ -6,6 +6,7 @@ import {FormContext} from "../../FormContext";
 import {modalShow, replaceParams, replaceUrl, routerNavigateTo} from "../../../lib/helpers";
 import {ModalContext} from "../../ModalContext";
 import {TableContext} from "../../TableContext";
+import {ModalOptions, RequestOptions} from "../../../types";
 
 export default function (props: FormActionType & {
     props: any,

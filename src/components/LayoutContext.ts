@@ -1,4 +1,4 @@
-import {createContext} from "react";
+import {createContext, ReactNode} from "react";
 import {MenuDataItem} from "@ant-design/pro-components";
 
 declare type LayoutContextValue = {
@@ -15,12 +15,14 @@ export declare type LayoutProps = {
     topMenu?: { name: string, key: string }[],
     menuList?: MenuDataItem[],
     logo?: string,
+    userName?: string,
     userMenu?: {
         title: string,
         url: string,
         type: string,
 
-    }[]
+    }[],
+    footer?: ReactNode,
 }
 
 export const LayoutContext = createContext<LayoutContextValue>({} as LayoutContextValue)

@@ -5,6 +5,7 @@ import {Badge, Flex} from "antd";
 import {ColumnReadonlyProps} from "./types";
 import {handleCondition} from "../../../lib/helpers";
 import {upperFirst} from "es-toolkit";
+import {Condition} from "../../../types";
 
 type ComponentType = {
     component: ReactComponentLike,

@@ -10,6 +10,31 @@ npm install @quansitech/antd-admin
 
 ## 使用参考
 
+### Layout组件Props
+
+| 属性     | 说明   | 类型        | 默认值           |
+|--------|------|-----------|---------------|
+| footer | 底部内容 | ReactNode | 全思科技 - Github |
+
+可在项目目录 `/resources/js/backend/app.tsx` 中修改，如：
+
+```tsx
+createInertiaApp({
+    resolve: async name => {
+        const pages = import.meta.glob('./Pages/**/*.tsx')
+        const page: any = await pages[`./Pages/${name}.tsx`]()
+        page.default.layout = page.default.layout || ((page: ReactNode) => <Layout
+
+                footer={<>这是底部内容</>} // 底部内容
+
+                children={page}/>
+        )
+        return page
+    },
+    //...
+})
+```
+
 ### valueType列表
 
 参考 [ant-design-pro#valueType](https://procomponents.ant.design/components/schema#valuetype-%E5%88%97%E8%A1%A8)
