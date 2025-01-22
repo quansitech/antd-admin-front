@@ -1,7 +1,7 @@
 import {MenuDataItem, PageContainer, ProLayout, ProProvider} from "@ant-design/pro-components";
 import {Button, Dropdown, Menu, MenuProps, Space} from "antd";
 import {LayoutContext, LayoutProps} from "../LayoutContext";
-import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
+import React, {useContext, useEffect, useMemo, useRef, useState} from "react";
 import {routerNavigateTo} from "../../lib/helpers";
 import {MenuInfo} from "rc-menu/lib/interface";
 import http from "../../lib/http";
@@ -94,26 +94,6 @@ export default function ({children, pageTitle, setDarkMode}: {
 
     }, [layoutContext.props.menuActiveKey]);
 
-    useCallback(() => {
-        if (pageProps.layoutProps?.menuActiveKey) {
-            assignProps({
-                menuActiveKey: pageProps.layoutProps.menuActiveKey
-            })
-        }
-
-        const title = layoutContext.props.title || layoutProps.title
-        if (pageProps.layoutProps?.metaTitle) {
-            assignProps({
-                metaTitle: pageProps.layoutProps.metaTitle + ' | ' + title
-            })
-        } else {
-            assignProps({
-                metaTitle: title
-            })
-        }
-    }, [pageProps.layoutProps]);
-
-
     useEffect(() => {
 
         // 设置内容高度
@@ -161,7 +141,7 @@ export default function ({children, pageTitle, setDarkMode}: {
 
     const actionsRender = () => {
         return <>
-            {layoutProps.headerActions}
+            {layoutContext.props.headerActions}
             <Space>
                 <Button type={'text'} onClick={() => {
                     setDarkMode(!proContext.dark)
@@ -183,8 +163,8 @@ export default function ({children, pageTitle, setDarkMode}: {
                    headerContentRender={headerContentRender}
                    pageTitleRender={p => `${pageTitle} | ${layoutProps.title} 后台管理`}
                    footerRender={() => <>
-                       {layoutProps.footer !== undefined
-                           ? <>{layoutProps.footer}</>
+                       {layoutContext.props.footer !== undefined
+                           ? <>{layoutContext.props.footer}</>
                            : <Space>
                                <a href="https://www.quansitech.com/" target={'_blank'}>全思科技</a>
                                <a href="https://github.com/quansitech/" target={'_blank'}>Github</a>

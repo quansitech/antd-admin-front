@@ -12,10 +12,10 @@ npm install @quansitech/antd-admin
 
 ### Layout组件Props
 
-| 属性            | 说明   | 类型        | 默认值           |
-|---------------|------|-----------|---------------|
-| headerActions | 顶部操作 | ReactNode | -             |
-| footer        | 底部内容 | ReactNode | 全思科技 - Github |
+| 属性            | 替换组件          | 说明   | 类型        | 默认值           |
+|---------------|---------------|------|-----------|---------------|
+| headerActions | HeaderActions | 顶部操作 | ReactNode | -             |
+| footer        | Footer        | 底部内容 | ReactNode | 全思科技 - Github |
 
 可在项目目录 `/resources/js/backend/app.tsx` 中修改，如：
 
@@ -35,6 +35,23 @@ createInertiaApp({
     },
     //...
 })
+```
+
+对于单独页面修改Layout组件属性，可在页面中调用对应的 Replacement 组件，如：
+
+```tsx
+import HeaderActions from "@quansitech/antd-admin/dist/components/Layout/Replacement/HeaderActions";
+
+export default function () {
+
+    return <>
+        <HeaderActions>
+            修改的内容
+        </HeaderActions>
+        页面内容
+    </>
+}
+
 ```
 
 ### valueType列表
