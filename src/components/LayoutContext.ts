@@ -23,6 +23,7 @@ export declare type LayoutProps = {
 
     }[],
     footer?: ReactNode,
+    headerActions?: ReactNode,
 }
 
 export const LayoutContext = createContext<LayoutContextValue>({} as LayoutContextValue)

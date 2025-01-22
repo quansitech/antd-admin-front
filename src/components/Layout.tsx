@@ -58,6 +58,7 @@ export default function (props: Record<string, any> & React.PropsWithChildren<Ex
         userMenu: pageProps.layoutProps?.userMenu,
         userName: pageProps.layoutProps?.userName,
         footer: props.footer,
+        headerActions: props.headerActions,
     })
 
     const assignProps = (newProps: LayoutProps) => {

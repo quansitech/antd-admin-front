@@ -161,6 +161,7 @@ export default function ({children, pageTitle, setDarkMode}: {
 
     const actionsRender = () => {
         return <>
+            {layoutProps.headerActions}
             <Space>
                 <Button type={'text'} onClick={() => {
                     setDarkMode(!proContext.dark)

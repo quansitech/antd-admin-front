@@ -12,9 +12,10 @@ npm install @quansitech/antd-admin
 
 ### Layout组件Props
 
-| 属性     | 说明   | 类型        | 默认值           |
-|--------|------|-----------|---------------|
-| footer | 底部内容 | ReactNode | 全思科技 - Github |
+| 属性            | 说明   | 类型        | 默认值           |
+|---------------|------|-----------|---------------|
+| headerActions | 顶部操作 | ReactNode | -             |
+| footer        | 底部内容 | ReactNode | 全思科技 - Github |
 
 可在项目目录 `/resources/js/backend/app.tsx` 中修改，如：
 
@@ -25,6 +26,7 @@ createInertiaApp({
         const page: any = await pages[`./Pages/${name}.tsx`]()
         page.default.layout = page.default.layout || ((page: ReactNode) => <Layout
 
+                headerActions={<HeaderActions/>} //顶部操作
                 footer={<>这是底部内容</>} // 底部内容
 
                 children={page}/>
