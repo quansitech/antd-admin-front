@@ -234,14 +234,15 @@ export default function (props: TableProps) {
                       sticky={sticky}
                       form={{
                           initialValues: props.defaultSearchValue,
-                          onValuesChange(changedValues, allValues) {
-                              let submit = !!columns.filter((c: ProColumnType & {
+                          onValuesChange(changedValues: Record<string, any>, allValues) {
+                              let submit = columns.filter((c: {
+                                  dataIndex: string,
                                   searchOnChange: boolean
                               }) => {
                                   if (!c.searchOnChange) {
                                       return false
                                   }
-                                  return lastQuery[c.dataIndex] !== changedValues[c.dataIndex]
+                                  return lastQuery[c.dataIndex] !== allValues[c.dataIndex]
                               }).length
 
                               if (!submit) {
