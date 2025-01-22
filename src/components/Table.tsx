@@ -41,14 +41,12 @@ export default function (props: TableProps) {
     }, sort: Record<string, SortOrder>, filter: Record<string, (string | number)[] | null>) => {
         setLoading(true)
         const data: Record<string, any> = {
-            ...params,
             ...filter,
+            ...formRef.current?.getFieldsValue(),
             sort,
         }
         if (props.pagination) {
-            data[props.pagination.paramName || 'page'] = data.current
-            delete data.current
-            delete data.pageSize
+            data[props.pagination.paramName || 'page'] = params.current
         }
 
         setEditableKeys([])
@@ -72,6 +70,7 @@ export default function (props: TableProps) {
                         props = getValueByPath(props, tabsContext.propsPath)
                     }
 
+                    setLastQuery(data)
                     setDataSource(postData(props.dataSource))
                     setExtraRenderValues(props.extraRenderValues)
                     setPagination(props.pagination)
@@ -101,6 +100,7 @@ export default function (props: TableProps) {
             if (res.data.extraRenderValues) {
                 setExtraRenderValues(res.data.extraRenderValues)
             }
+            setLastQuery(data)
             return {
                 data: res.data.dataSource || [],
                 success: true,
@@ -163,6 +163,7 @@ export default function (props: TableProps) {
 
     const formRef = useRef<FormInstance>()
     const actionRef = useRef<ActionType>()
+    const [lastQuery, setLastQuery] = useState<Record<string, any>>({})
     const [editableKeys, setEditableKeys] = useState<React.Key[]>(() => [])
     const [selectedRows, setSelectedRows] = useState<any[]>([])
     const [editableValues, setEditableValues] = useState<Record<string, any>[]>([])
@@ -191,9 +192,8 @@ export default function (props: TableProps) {
             searchUrl = window.location.href
         }
 
-        if (props.defaultSearchValue !== undefined) {
-            formRef.current?.setFieldsValue(props.defaultSearchValue)
-        }
+
+        setLastQuery(props.defaultSearchValue)
 
         if (!modalContext.inModal) {
             const query = qs.parse(window.location.search.replace(/^\?/, ''))
@@ -233,19 +233,22 @@ export default function (props: TableProps) {
                       postData={postData}
                       sticky={sticky}
                       form={{
-                          onValuesChange(changedValues) {
-                              const key = Object.keys(changedValues)[0]
-                              const c = columns.find(c => c.dataIndex === key) as ProColumnType & {
+                          initialValues: props.defaultSearchValue,
+                          onValuesChange(changedValues, allValues) {
+                              let submit = !!columns.filter((c: ProColumnType & {
                                   searchOnChange: boolean
-                              }
-                              if (!c) {
+                              }) => {
+                                  if (!c.searchOnChange) {
+                                      return false
+                                  }
+                                  return lastQuery[c.dataIndex] !== changedValues[c.dataIndex]
+                              }).length
+
+                              if (!submit) {
                                   return
                               }
                               // 是否立即搜索
-                              if (c.searchOnChange) {
-                                  // @ts-ignore
-                                  formRef.current?.submit()
-                              }
+                              formRef.current?.submit()
                           }
                       }}
                       rowSelection={props.rowSelection && {
