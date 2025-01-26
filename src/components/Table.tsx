@@ -39,14 +39,15 @@ export default function (props: TableProps) {
         pageSize: number,
         current: number
     }, sort: Record<string, SortOrder>, filter: Record<string, (string | number)[] | null>) => {
-        setLoading(true)
         const data: Record<string, any> = {
+            ...params,
             ...filter,
-            ...formRef.current?.getFieldsValue(),
             sort,
         }
         if (props.pagination) {
             data[props.pagination.paramName || 'page'] = params.current
+            delete data.current
+            delete data.pageSize
         }
 
         setEditableKeys([])
@@ -190,6 +191,11 @@ export default function (props: TableProps) {
         // 搜索
         if (!searchUrl) {
             searchUrl = window.location.href
+            searchUrl = searchUrl.replace(/page=\d+&?/, '')
+            columns.filter(c => c.search !== false).map(c => {
+                searchUrl = searchUrl.replace(new RegExp(`${c.dataIndex}=[^&]*&?`), '')
+            })
+            console.log('searchUrl', searchUrl)
         }
 
 
