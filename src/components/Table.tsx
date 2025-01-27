@@ -33,8 +33,7 @@ export type TableProps = ProTableProps<any, any> & {
 
 export default function (props: TableProps) {
 
-    let {searchUrl} = props
-
+    const [searchUrl, setSearchUrl] = useState(props.searchUrl)
     const request = async (params: Record<string, any> & {
         pageSize: number,
         current: number
@@ -190,12 +189,12 @@ export default function (props: TableProps) {
 
         // 搜索
         if (!searchUrl) {
-            searchUrl = window.location.href
-            searchUrl = searchUrl.replace(/page=\d+&?/, '')
+            let s = window.location.href
+            s = s.replace(/page=\d+&?/, '')
             columns.filter(c => c.search !== false).map(c => {
-                searchUrl = searchUrl.replace(new RegExp(`${c.dataIndex}=[^&]*&?`), '')
+                s = s.replace(new RegExp(`${c.dataIndex}=[^&]*&?`), '')
             })
-            console.log('searchUrl', searchUrl)
+            setSearchUrl(s)
         }
 
 
