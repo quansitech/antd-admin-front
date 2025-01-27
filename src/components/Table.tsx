@@ -33,7 +33,6 @@ export type TableProps = ProTableProps<any, any> & {
 
 export default function (props: TableProps) {
 
-    const [searchUrl, setSearchUrl] = useState(props.searchUrl)
     const request = async (params: Record<string, any> & {
         pageSize: number,
         current: number
@@ -53,6 +52,7 @@ export default function (props: TableProps) {
         setEditableValues([])
 
         if (!modalContext.inModal) {
+            // 如果不在 modal 中，则使用 routerNavigateTo
             const only = ['dataSource', 'pagination', 'extraRenderValues']
             if (tabsContext.inTabs) {
                 only.push('tabs')
@@ -160,7 +160,7 @@ export default function (props: TableProps) {
         })
     }
 
-
+    const [searchUrl, setSearchUrl] = useState(props.searchUrl)
     const formRef = useRef<FormInstance>()
     const actionRef = useRef<ActionType>()
     const [lastQuery, setLastQuery] = useState<Record<string, any>>({})
