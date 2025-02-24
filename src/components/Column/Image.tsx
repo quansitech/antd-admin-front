@@ -47,7 +47,7 @@ export default function (props: ColumnProps & {
             }
 
             return <>
-                <ImgCrop quality={props.fieldProps.crop?.quality || 0.8} rotationSlider aspect={aspect}>
+                <ImgCrop quality={props.fieldProps.crop?.quality || 0.92} rotationSlider aspect={aspect}>
                     {dom}
                 </ImgCrop>
             </>
