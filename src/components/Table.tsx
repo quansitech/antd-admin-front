@@ -198,7 +198,7 @@ export default function (props: TableProps) {
         }
 
 
-        setLastQuery(props.defaultSearchValue)
+        setLastQuery(props.defaultSearchValue || {})
 
         if (!modalContext.inModal) {
             const query = qs.parse(window.location.search.replace(/^\?/, ''))
