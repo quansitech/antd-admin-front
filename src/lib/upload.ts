@@ -11,6 +11,12 @@ type QsUploadFile = UploadFile & {
 export async function customRequest(options: UploadRequestOption & {
     file: QsUploadFile
 }) {
+    let filename = options.file.name
+    let ext = filename.match(/(\.[^.]+)$/)
+    if (ext) {
+        filename = filename.replace(ext[1], ext[1].toLowerCase())
+    }
+
     const policyRes = await http({
         url: options.action,
         method: 'get',
@@ -19,7 +25,7 @@ export async function customRequest(options: UploadRequestOption & {
             noHandle: true
         },
         params: {
-            title: options.file.name,
+            title: filename,
             hash_id: options.file.hash_id,
             file_type: options.file?.type || '' as string
         }

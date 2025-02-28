@@ -38,38 +38,42 @@ export default function ({children, pageTitle, setDarkMode}: {
     }
 
     const [openKeys, setOpenKeys] = useState<string[]>([])
+    const mapMenuListToRoutes = (menuList: MenuDataItem[]) => {
+        return menuList?.map(menu => ({
+            name: menu.name,
+            key: menu.key,
+            children: menu.children?.map(child => ({
+                name: child.name,
+                key: child.key
+            }))
+        }))
+    }
+
     const [route, setRoute] = useState<any>({
         key: '/',
-        routes: layoutContext.props.menuList?.map(menu => {
-            return {
-                name: menu.name,
-                key: menu.key,
-                children: menu.children?.map(child => {
-                    return {
-                        name: child.name,
-                        key: child.key
-                    }
-                })
-            }
-        })
+        routes: mapMenuListToRoutes(layoutContext.props.menuList)
     })
+
     useEffect(() => {
         setRoute({
             key: '/',
-            routes: layoutContext.props.menuList?.map(menu => {
-                return {
-                    name: menu.name,
-                    key: menu.key,
-                    children: menu.children?.map(child => {
-                        return {
-                            name: child.name,
-                            key: child.key
-                        }
-                    })
-                }
-            })
+            routes: mapMenuListToRoutes(layoutContext.props.menuList)
         })
     }, [layoutContext.props.menuList])
+
+    const useWindowResize = (callback: () => void) => {
+        useEffect(() => {
+            callback()
+            window.addEventListener('resize', callback)
+            return () => window.removeEventListener('resize', callback)
+        }, [callback])
+    }
+
+    useWindowResize(() => {
+        if (contentRef.current) {
+            contentRef.current.style.minHeight = Math.max(window.innerHeight - 200, 200) + 'px'
+        }
+    })
 
     useEffect(() => {
         function findKeyPath(key: string, list: MenuDataItem[]): string[] {
@@ -87,30 +91,23 @@ export default function ({children, pageTitle, setDarkMode}: {
             return []
         }
 
-        if (!layoutContext.props.menuActiveKey) {
-            return
+        if (layoutContext.props.menuActiveKey) {
+            setOpenKeys(findKeyPath(layoutContext.props.menuActiveKey, layoutContext.props.menuList || []))
         }
-        setOpenKeys(findKeyPath(layoutContext.props.menuActiveKey, layoutContext.props.menuList || []))
+    }, [layoutContext.props.menuActiveKey, layoutContext.props.menuList])
 
-    }, [layoutContext.props.menuActiveKey]);
 
-    useEffect(() => {
-
-        // 设置内容高度
-        function onResize() {
-            if (contentRef.current) {
-                contentRef.current.style.minHeight = Math.max(window.innerHeight - 200, 200) + 'px'
+    const handleMenuNavigation = (path: string, menuKey: string) => {
+        assignProps({loading: true})
+        routerNavigateTo(path, {
+            onSuccess() {
+                assignProps({menuActiveKey: menuKey})
+            },
+            onFinish() {
+                assignProps({loading: false})
             }
-        }
-
-        onResize()
-        window.addEventListener('resize', onResize)
-        return () => {
-            window.removeEventListener('resize', onResize)
-        }
-
-    }, [])
-
+        })
+    }
 
     const onMenuClick = (info: MenuInfo) => {
         const keyPath = info.keyPath.reverse()
@@ -119,33 +116,27 @@ export default function ({children, pageTitle, setDarkMode}: {
             menu = menu?.children?.find(m => m.key === keyPath[i])
         }
         if (menu?.path) {
-            assignProps({
-                loading: true
-            })
-            routerNavigateTo(menu.path, {
-                onSuccess() {
-                    assignProps({
-                        menuActiveKey: info.key
-                    })
-                },
-                onFinish() {
-                    assignProps({
-                        loading: false
-                    })
-                }
-            })
+            handleMenuNavigation(menu.path, info.key)
         }
     }
 
     const proContext = useContext(ProProvider)
 
+    const toggleDarkMode = () => {
+        const newDarkMode = !proContext.dark
+        setDarkMode(newDarkMode)
+        return newDarkMode
+    }
+
     const actionsRender = () => {
         return <>
             {layoutContext.props.headerActions}
             <Space>
-                <Button type={'text'} onClick={() => {
-                    setDarkMode(!proContext.dark)
-                }}>
+                <Button
+                    type="text"
+                    onClick={toggleDarkMode}
+                    aria-label={proContext.dark ? "Switch to light mode" : "Switch to dark mode"}
+                >
                     {proContext.dark ? <MoonOutlined/> : <SunOutlined/>}
                 </Button>
             </Space>
