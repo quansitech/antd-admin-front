@@ -46,7 +46,6 @@ export async function customRequest(options: UploadRequestOption & {
         }
     }
 
-    formData.append('Content-Type', options.file.type)
     formData.append('file', options.file)
     try {
         const res = await http({
