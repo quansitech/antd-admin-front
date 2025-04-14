@@ -22,7 +22,8 @@ export async function customRequest(options: UploadRequestOption & {
         params: {
             title: options.file.name,
             hash_id: options.file.hash_id,
-            file_type: options.file?.type || '' as string
+            file_type: options.file?.type || '' as string,
+            file_size: options.file.size || 0,
         }
     })
     if (policyRes.data.status) {
@@ -30,6 +31,11 @@ export async function customRequest(options: UploadRequestOption & {
             ...policyRes.data,
             url: policyRes.data.url || policyRes.data.file_url
         })
+        return
+    }
+    if (policyRes.data.err_msg) {
+        message.error(policyRes.data.err_msg)
+        options.onError && options.onError(new Error(policyRes.data.err_msg), policyRes.data)
         return
     }
 
