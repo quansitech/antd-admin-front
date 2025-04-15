@@ -87,11 +87,11 @@ export default function (props: ColumnProps & {
     useEffect(() => {
         let extraRenderValue = [];
         if (formContext && formContext.extraRenderValues) {
-            extraRenderValue = formContext.extraRenderValues[props.fieldProps.dataIndex as string] ?? []
+            extraRenderValue = formContext.extraRenderValues[props.fieldProps['data-field'] as string] ?? []
         } else if (tableContext && tableContext.extraRenderValues) {
             const key = tableContext.getTableProps().rowKey
             const index = tableContext.dataSource.findIndex(item => item[key] === props.record[key])
-            extraRenderValue = tableContext.extraRenderValues[index]?.[props.fieldProps.dataIndex as string] ?? []
+            extraRenderValue = tableContext.extraRenderValues[index]?.[props.fieldProps['data-field'] as string] ?? []
         }
         if (!extraRenderValue.length) {
             setLoading(false)
@@ -135,8 +135,11 @@ export default function (props: ColumnProps & {
         }
     };
 
+    const fieldProps = {...props.fieldProps}
+    delete fieldProps.uploadRequest
+
     const uploader = (
-        <Upload {...props.fieldProps}
+        <Upload {...fieldProps}
                 action={props.fieldProps.uploadRequest.policyGetUrl}
                 listType={props.listType || 'text'}
                 fileList={fileList}

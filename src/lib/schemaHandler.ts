@@ -50,7 +50,8 @@ export const commonHandler: Handler = schema => {
     }
     // 有些表单项宽度并不能撑满，这里强制设置宽度
     deepSet(schema, 'fieldProps.style.width', '100%')
-    deepSet(schema, 'fieldProps.dataIndex', schema.dataIndex)
+    // 这里是为了兼容之前的写法
+    deepSet(schema, 'fieldProps.data-field', schema.dataIndex)
     return schema
 }
 
@@ -99,7 +100,6 @@ export const schemaHandler: Record<string, Handler> = {
         schema.formItemProps.rules.push({
             validator: uploadValidator,
         })
-        schema.fieldProps.dataIndex = schema.dataIndex
         return {
             ...schema,
             transform: uploadTransform,

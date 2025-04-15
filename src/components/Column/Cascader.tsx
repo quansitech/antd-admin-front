@@ -50,10 +50,10 @@ export default function (props: ColumnProps) {
 
         let extraData;
         if (formContext.extraRenderValues) {
-            extraData = formContext.extraRenderValues[props.fieldProps.dataIndex]
+            extraData = formContext.extraRenderValues[props.fieldProps['data-field']]
         }
         if (tableContext.extraRenderValues) {
-            extraData = tableContext.extraRenderValues[props.index]?.[props.fieldProps.dataIndex]
+            extraData = tableContext.extraRenderValues[props.index]?.[props.fieldProps['data-field']]
         }
 
         if (extraData) {
@@ -103,7 +103,7 @@ export default function (props: ColumnProps) {
     const onChange = (values: any[]) => {
         setValues(values)
         if (!values?.length) {
-            props.fieldProps?.onChange(props.dataIndex, undefined)
+            props.fieldProps?.onChange(props.fieldProps['data-field'], undefined)
             return
         }
 
@@ -116,8 +116,11 @@ export default function (props: ColumnProps) {
         props.fieldProps?.onChange(value)
     }
 
+    const fieldProps = {...props.fieldProps}
+    delete fieldProps.loadDataUrl
+
     return <div className={props.className}>
-        <Cascader {...props.fieldProps}
+        <Cascader {...fieldProps}
                   options={options as DefaultOptionType[]}
                   onChange={onChange}
                   placeholder={'请选择'}
