@@ -34,12 +34,12 @@ export default function (props: ColumnReadonlyProps & {
 
         let extraData;
         if (formContext.extraRenderValues) {
-            extraData = formContext.extraRenderValues[props.fieldProps.dataIndex]
+            extraData = formContext.extraRenderValues[props.fieldProps['data-field']]
         }
         if (tableContext.extraRenderValues) {
             const key = tableContext.getTableProps().rowKey
             const index = tableContext.dataSource.findIndex(item => item[key] === props.record[key])
-            extraData = tableContext.extraRenderValues[index]?.[props.fieldProps.dataIndex]
+            extraData = tableContext.extraRenderValues[index]?.[props.fieldProps['data-field']]
         }
 
         if (extraData) {

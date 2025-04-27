@@ -18,11 +18,11 @@ export default function (props: ColumnReadonlyProps & {
     useEffect(() => {
         let extraRenderValue = [];
         if (formContext && formContext.extraRenderValues) {
-            extraRenderValue = formContext.extraRenderValues[props.fieldProps.dataIndex as string] ?? []
+            extraRenderValue = formContext.extraRenderValues[props.fieldProps['data-field'] as string] ?? []
         } else if (tableContext && tableContext.extraRenderValues) {
             const key = tableContext.getTableProps().rowKey
             const index = tableContext.dataSource.findIndex(item => item[key] === props.record[key])
-            extraRenderValue = tableContext.extraRenderValues[index]?.[props.fieldProps.dataIndex as string] ?? []
+            extraRenderValue = tableContext.extraRenderValues[index]?.[props.fieldProps['data-field'] as string] ?? []
         }
         setFileList(extraRenderValue.map((item: any) => {
             return {
