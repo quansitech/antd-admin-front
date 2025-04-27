@@ -237,6 +237,11 @@ export default function (props: TableProps) {
                       scroll={{x: true}}
                       postData={postData}
                       sticky={sticky}
+                      options={{
+                        setting: false,
+                        density: false,
+                        reload: true,
+                      }}
                       form={{
                           initialValues: props.defaultSearchValue,
                           onValuesChange(changedValues: Record<string, any>, allValues) {
