@@ -50,26 +50,24 @@ export default function (props: TableProps) {
 
         setEditableKeys([])
         setEditableValues([])
+        setSelectedRows([])
 
         if (!modalContext.inModal) {
             // 如果不在 modal 中，则使用 routerNavigateTo
-            const only = ['dataSource', 'pagination', 'extraRenderValues']
-            if (tabsContext.inTabs) {
-                only.push('tabs')
-            }
 
             routerNavigateTo(searchUrl, {
                 method: 'get',
                 data,
                 preserveScroll: true,
                 preserveState: true,
-                only: only,
                 onSuccess(e) {
                     let props = e.props as any | TableProps
                     if (tabsContext.inTabs) {
                         props = getValueByPath(props, tabsContext.propsPath)
                     }
 
+                    setToolActions(props.actions)
+                    setColumns(props.columns)
                     setLastQuery(data)
                     setDataSource(postData(props.dataSource))
                     setExtraRenderValues(props.extraRenderValues)
@@ -110,32 +108,12 @@ export default function (props: TableProps) {
         }
     }
 
-    const columns = useMemo(() => {
-        return cloneDeep(props.columns)?.map((c: ProColumnType & {
-            key: string,
-            dataIndex: string,
-            valueType?: string,
-            formItemProps?: {},
-            initialValue: any,
-        }) => {
-            c.key = c.dataIndex as string
-
-            commonHandler(c)
-            if (container.schemaHandler[c.valueType as string]) {
-                return container.schemaHandler[c.valueType as string](c) as ProColumnType
-            }
-
-            return c
-        })
-    }, [props.columns])
-
-
     const postData = (data: any[]) => {
         if (!isArray(data)) {
             return data
         }
 
-        columns.map((column: ProColumnType & {
+        realColumns?.map((column: ProColumnType & {
             valueType?: string,
             dataIndex: string,
         }) => {
@@ -173,6 +151,27 @@ export default function (props: TableProps) {
     const [dataSource, setDataSource] = useState<any[]>(postData(props.dataSource))
     const [sticky, setSticky] = useState<TableProps['sticky']>(true)
     const [extraRenderValues, setExtraRenderValues] = useState(props.extraRenderValues)
+    const [toolActions, setToolActions] = useState<TableActionProps[]>(props.actions)
+    const [columns, setColumns] = useState(props.columns)
+
+    const realColumns = useMemo(() => {
+        return cloneDeep(columns)?.map((c: ProColumnType & {
+            key: string,
+            dataIndex: string,
+            valueType?: string,
+            formItemProps?: {},
+            initialValue: any,
+        }) => {
+            c.key = c.dataIndex as string
+
+            commonHandler(c)
+            if (container.schemaHandler[c.valueType as string]) {
+                return container.schemaHandler[c.valueType as string](c) as ProColumnType
+            }
+
+            return c
+        })
+    }, [columns])
 
     const modalContext = useContext(ModalContext)
     const tabsContext = useContext(TabsContext)
@@ -191,7 +190,7 @@ export default function (props: TableProps) {
         if (!searchUrl) {
             let s = window.location.href
             s = s.replace(/page=\d+&?/, '')
-            columns.filter(c => c.search !== false).map(c => {
+            realColumns.filter(c => c.search !== false).map(c => {
                 s = s.replace(new RegExp(`${c.dataIndex}=[^&]*&?`), '')
             })
             setSearchUrl(s)
@@ -210,6 +209,7 @@ export default function (props: TableProps) {
                 })
 
                 formRef.current?.setFieldsValue(query)
+                setLastQuery(query)
             }
         }
 
@@ -229,7 +229,7 @@ export default function (props: TableProps) {
         } as TableContextValue}>
             <ProTable rowKey={props.rowKey}
                       tableClassName={'qs-antd-table'}
-                      columns={columns as ProColumns[]}
+                      columns={realColumns as ProColumns[]}
                       onDataSourceChange={setDataSource}
                       dataSource={dataSource}
                       pagination={pagination}
@@ -245,7 +245,7 @@ export default function (props: TableProps) {
                       form={{
                           initialValues: props.defaultSearchValue,
                           onValuesChange(changedValues: Record<string, any>, allValues) {
-                              let submit = columns.filter((c: {
+                              let submit = realColumns.filter((c: {
                                   dataIndex: string,
                                   searchOnChange: boolean
                               }) => {
@@ -294,7 +294,7 @@ export default function (props: TableProps) {
                           filter: true,
                       }}
                       toolBarRender={(action) => [
-                          <ToolbarActions key={'actions'} actions={props.actions}></ToolbarActions>
+                          <ToolbarActions key={'actions'} actions={toolActions}></ToolbarActions>
                       ]}
                       editable={{
                           type: 'multiple',
