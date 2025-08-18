@@ -29,6 +29,7 @@ export default function ({children, pageTitle, setDarkMode}: {
     const assignProps = layoutContext.assignProps
 
     const headerContentRender = () => {
+        // @ts-ignore
         return <>
             <Menu items={layoutContext.props.topMenu}
                   mode={'horizontal'}

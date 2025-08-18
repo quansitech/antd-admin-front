@@ -35,7 +35,7 @@ http.interceptors.response.use(response => {
         }
         return true
     }
-
+    // @ts-ignore
     if (response.config.fetchOptions?.noHandle) {
         return response
     }
