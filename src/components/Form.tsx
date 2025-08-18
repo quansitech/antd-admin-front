@@ -13,6 +13,7 @@ import {ModalContext} from "./ModalContext";
 import {TableContext} from "./TableContext";
 import {commonHandler} from "../lib/schemaHandler";
 import {Rule} from "antd/es/form";
+import "./Form.scss";
 
 type SubmitRequestType = {
     url: string,
@@ -127,6 +128,7 @@ export default function (props: FormSchema & {
                     extraRenderValues: props.extraRenderValues,
                 }}>
                     <BetaSchemaForm columns={columns}
+                                    className={'qs-form-container'}
                                     colProps={props.colProps}
                                     readonly={props.readonly}
                                     grid={true}

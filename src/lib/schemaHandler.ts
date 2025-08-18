@@ -183,4 +183,22 @@ export const schemaHandler: Record<string, Handler> = {
         }
         return schema
     },
+
+    formList(schema) {
+        schema.columns = schema.columns.map(c => {
+            commonHandler(c)
+            if (container.schemaHandler[c.valueType as string]) {
+                return container.schemaHandler[c.valueType as string](c)
+            }
+            return c
+        })
+        deepSet(schema, 'fieldProps.className', `qs-form-list-${schema.mode}`)
+        switch (schema.mode) {
+            case 'form_list':
+                deepSet(schema, 'fieldProps.alwaysShowItemLabel', true)
+                break;
+        }
+        console.log(schema)
+        return schema
+    },
 }
