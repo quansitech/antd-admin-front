@@ -237,6 +237,7 @@ export default function (props: TableProps) {
                       scroll={{x: true}}
                       postData={postData}
                       sticky={sticky}
+                      expandable={props.expandable}
                       options={{
                         setting: false,
                         density: false,
