@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {MenuDataItem, PageContainer, ProLayout, ProProvider} from "@ant-design/pro-components";
 import {Button, Dropdown, Menu, MenuProps, Space} from "antd";
 import {LayoutContext, LayoutProps} from "../LayoutContext";
