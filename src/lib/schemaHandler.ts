@@ -3,6 +3,7 @@ import {UploadFile} from "antd";
 import http from "./http";
 import {deepSet, handleCondition} from "./helpers";
 import container from "./container";
+import { itemRender } from "./FormList";
 
 type Handler = (schema: any) => ProSchema | ProColumnType
 
@@ -24,16 +25,6 @@ const uploadValidator = (_: unknown, value: UploadFile[]) => {
         }
         resolve(true)
     })
-}
-
-const uploadTransform = (value?: UploadFile[], _name?: string) => {
-    if (value instanceof Array) {
-        return value.filter(file => file.status === 'done')
-            .map((file: UploadFile) => {
-                return file.response?.file_id
-            }).join(',')
-    }
-    return value
 }
 
 export const commonHandler: Handler = schema => {
@@ -102,7 +93,6 @@ export const schemaHandler: Record<string, Handler> = {
         })
         return {
             ...schema,
-            transform: uploadTransform,
         }
     },
     file: schema => {
@@ -112,7 +102,6 @@ export const schemaHandler: Record<string, Handler> = {
 
         return {
             ...schema,
-            transform: uploadTransform,
         }
     },
 
@@ -193,12 +182,12 @@ export const schemaHandler: Record<string, Handler> = {
             return c
         })
         deepSet(schema, 'fieldProps.className', `qs-form-list-${schema.mode}`)
+        deepSet(schema, 'fieldProps.itemRender', itemRender)
         switch (schema.mode) {
             case 'form_list':
                 deepSet(schema, 'fieldProps.alwaysShowItemLabel', true)
                 break;
         }
-        console.log(schema)
         return schema
     },
 }

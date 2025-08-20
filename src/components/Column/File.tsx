@@ -8,6 +8,7 @@ import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy,} f
 import {CSS} from '@dnd-kit/utilities';
 import {FormContext} from "../FormContext";
 import {TableContext} from "../TableContext";
+import { ItemContext } from "../../lib/FormList";
 
 
 interface DraggableUploadListItemProps {
@@ -62,6 +63,7 @@ export default function (props: ColumnProps & {
     const [fileList, setFileList] = useState<UploadFile[]>([]);
     const formContext = useContext(FormContext);
     const tableContext = useContext(TableContext);
+    const itemContext = useContext(ItemContext);
 
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
@@ -81,17 +83,28 @@ export default function (props: ColumnProps & {
             }
             return file
         })
-        props.fieldProps?.onChange(values)
+        
+        props.fieldProps?.onChange(values.filter(file => file.status === 'done')
+            .map((file: UploadFile) => {
+                return file.response?.file_id
+            }).join(','))
     }, [fileList]);
 
     useEffect(() => {
         let extraRenderValue = [];
-        if (formContext && formContext.extraRenderValues) {
-            extraRenderValue = formContext.extraRenderValues[props.fieldProps['data-field'] as string] ?? []
-        } else if (tableContext && tableContext.extraRenderValues) {
-            const key = tableContext.getTableProps().rowKey
-            const index = tableContext.dataSource.findIndex(item => item[key] === props.record[key])
-            extraRenderValue = tableContext.extraRenderValues[index]?.[props.fieldProps['data-field'] as string] ?? []
+        if (props.fieldProps?.extraRenderValue){
+            extraRenderValue = props.fieldProps.extraRenderValue
+        }
+        if (props.fieldProps?.extraRenderValues){
+            let index = -1;
+            if (tableContext && tableContext?.dataSource){
+                const key = tableContext.getTableProps().rowKey
+                index = tableContext.dataSource.findIndex(item => item[key] === props.record[key])
+            }
+            if (itemContext && itemContext?.index !== undefined){
+                index = itemContext.index
+            }
+            extraRenderValue = props.fieldProps.extraRenderValues[index] ?? []
         }
         if (!extraRenderValue.length) {
             setLoading(false)

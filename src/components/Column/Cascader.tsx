@@ -5,6 +5,7 @@ import React, {useContext, useEffect, useState} from "react";
 import http from "../../lib/http";
 import {FormContext} from "../FormContext";
 import {TableContext} from "../TableContext";
+import {ItemContext} from "../../lib/FormList";
 
 export default function (props: ColumnProps) {
     const [options, setOptions] = useState<{ value: string, label: string }[]>();
@@ -12,6 +13,7 @@ export default function (props: ColumnProps) {
 
     const formContext = useContext(FormContext)
     const tableContext = useContext(TableContext)
+    const itemContext = useContext(ItemContext)
 
     const findValue = (options: any[], value: any): any => {
         for (let i = 0; i < options.length; i++) {
@@ -49,11 +51,19 @@ export default function (props: ColumnProps) {
         }
 
         let extraData;
-        if (formContext.extraRenderValues) {
-            extraData = formContext.extraRenderValues[props.fieldProps['data-field']]
+        if (props.fieldProps?.extraRenderValue){
+            extraData = props.fieldProps.extraRenderValue
         }
-        if (tableContext.extraRenderValues) {
-            extraData = tableContext.extraRenderValues[props.index]?.[props.fieldProps['data-field']]
+        if (props.fieldProps?.extraRenderValues){
+            let index = -1;
+            if (tableContext && tableContext?.dataSource){
+                const key = tableContext.getTableProps().rowKey
+                index = tableContext.dataSource.findIndex(item => item[key] === props.record[key])
+            }
+             if (itemContext && itemContext?.index !== undefined){
+                index = itemContext.index
+            }
+            extraData = props.fieldProps.extraRenderValues[index] ?? []
         }
 
         if (extraData) {

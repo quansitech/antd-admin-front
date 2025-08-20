@@ -3,6 +3,7 @@ import React, {ReactNode, useContext, useEffect, useState} from "react";
 import http from "../../../lib/http";
 import {FormContext} from "../../FormContext";
 import {TableContext} from "../../TableContext";
+import {ItemContext} from "../../../lib/FormList";
 
 export default function (props: ColumnReadonlyProps & {
     schema: {
@@ -15,6 +16,7 @@ export default function (props: ColumnReadonlyProps & {
 
     const formContext = useContext(FormContext)
     const tableContext = useContext(TableContext)
+    const itemContext = useContext(ItemContext || null)
 
     const findValue = (options: any[], value: any): any => {
         for (let i = 0; i < options.length; i++) {
@@ -33,13 +35,19 @@ export default function (props: ColumnReadonlyProps & {
         const value = props.fieldProps.value
 
         let extraData;
-        if (formContext.extraRenderValues) {
-            extraData = formContext.extraRenderValues[props.fieldProps['data-field']]
+        if (props.fieldProps?.extraRenderValue){
+            extraData = props.fieldProps.extraRenderValue
         }
-        if (tableContext.extraRenderValues) {
-            const key = tableContext.getTableProps().rowKey
-            const index = tableContext.dataSource.findIndex(item => item[key] === props.record[key])
-            extraData = tableContext.extraRenderValues[index]?.[props.fieldProps['data-field']]
+        if (props.fieldProps?.extraRenderValues){
+            let index = -1;
+            if (tableContext && tableContext?.dataSource){
+                const key = tableContext.getTableProps().rowKey
+                index = tableContext.dataSource.findIndex(item => item[key] === props.record[key])
+            }
+            if (itemContext && itemContext?.index !== undefined){
+                index = itemContext.index
+            }
+            extraData = props.fieldProps.extraRenderValues[index] ?? []
         }
 
         if (extraData) {

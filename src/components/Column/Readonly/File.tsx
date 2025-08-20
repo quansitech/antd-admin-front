@@ -4,6 +4,7 @@ import React, {useContext, useEffect, useState} from "react";
 import {FormContext} from "../../FormContext";
 import {UploadListType} from "antd/es/upload/interface";
 import {TableContext} from "../../TableContext";
+import {ItemContext} from "../../../lib/FormList";
 
 export default function (props: ColumnReadonlyProps & {
     listType?: UploadListType,
@@ -14,15 +15,23 @@ export default function (props: ColumnReadonlyProps & {
     const [fileList, setFileList] = useState<UploadFile[]>([]);
     const formContext = useContext(FormContext);
     const tableContext = useContext(TableContext);
+    const itemContext = useContext(ItemContext);
 
     useEffect(() => {
         let extraRenderValue = [];
-        if (formContext && formContext.extraRenderValues) {
-            extraRenderValue = formContext.extraRenderValues[props.fieldProps['data-field'] as string] ?? []
-        } else if (tableContext && tableContext.extraRenderValues) {
-            const key = tableContext.getTableProps().rowKey
-            const index = tableContext.dataSource.findIndex(item => item[key] === props.record[key])
-            extraRenderValue = tableContext.extraRenderValues[index]?.[props.fieldProps['data-field'] as string] ?? []
+        if (props.fieldProps?.extraRenderValue){
+            extraRenderValue = props.fieldProps.extraRenderValue
+        }
+        if (props.fieldProps?.extraRenderValues){
+            let index = -1;
+            if (tableContext && tableContext?.dataSource){
+                const key = tableContext.getTableProps().rowKey
+                index = tableContext.dataSource.findIndex(item => item[key] === props.record[key])
+            }
+            if (itemContext && itemContext?.index !== undefined){
+                index = itemContext.index
+            }
+            extraRenderValue = props.fieldProps.extraRenderValues[index] ?? []
         }
         setFileList(extraRenderValue.map((item: any) => {
             return {

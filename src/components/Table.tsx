@@ -89,16 +89,13 @@ export default function (props: TableProps) {
                 }
             } as any)
 
-            if (res.data.pagination) {
-                setPagination({
-                    ...res.data.pagination,
-                    current: params.current,
-                })
-            }
-            if (res.data.extraRenderValues) {
-                setExtraRenderValues(res.data.extraRenderValues)
-            }
+            const props = res.data as TableProps
+            setToolActions(props.actions)
+            setColumns(props.columns)
             setLastQuery(data)
+            setDataSource(postData(props.dataSource))
+            setExtraRenderValues(props.extraRenderValues)
+            setPagination(props.pagination)
             return {
                 data: res.data.dataSource || [],
                 success: true,

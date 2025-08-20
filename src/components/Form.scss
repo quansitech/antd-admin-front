@@ -1,15 +1,19 @@
 .qs-form-container {
-  .qs-form-list-form_list {
-    .ant-pro-form-list-item {
-      border: 1px dashed #cccccc;
-      margin-top: 10px;
-      border-radius: 5px;
-      padding: 10px;
-
+  .qs-form-list-item{
+    display: flex;
+    border: 1px dashed #cccccc;
+    margin-top: 10px;
+    border-radius: 5px;
+    padding: 10px;
+    align-items: flex-end;
+    .dom{
+      flex: 1;
       .ant-pro-form-list-container {
         display: flex;
         flex-wrap: wrap;
       }
+    }
+    .action{
     }
   }
 }
