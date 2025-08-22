@@ -21,7 +21,9 @@ export type ColumnProps = {
         options?: any[];
     }
     form: FormInstance,
-    fieldProps: any,
+    fieldProps: any & {
+        withValidator: (validator: PromiseLike)=>any
+    },
     rules?: Rule[],
     dataIndex?: Key,
     value?: any,

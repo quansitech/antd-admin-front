@@ -4,6 +4,7 @@ import http from "./http";
 import {deepSet, handleCondition} from "./helpers";
 import container from "./container";
 import { itemRender } from "./FormList";
+import { lowerFirst } from "es-toolkit";
 
 type Handler = (schema: any) => ProSchema | ProColumnType
 
@@ -28,6 +29,7 @@ const uploadValidator = (_: unknown, value: UploadFile[]) => {
 }
 
 export const commonHandler: Handler = schema => {
+    schema.valueType = lowerFirst(schema.valueType)
     if (schema.valueEnum) {
         schema.valueEnum?.map((item: [any, any]) => {
             let key = item[0]
@@ -43,6 +45,20 @@ export const commonHandler: Handler = schema => {
     deepSet(schema, 'fieldProps.style.width', '100%')
     // 这里是为了兼容之前的写法
     deepSet(schema, 'fieldProps.data-field', schema.dataIndex)
+
+    if (!schema.formItemProps?.rules){
+        deepSet(schema, 'formItemProps.rules', [])
+    }
+    schema.fieldProps.withValidator =  (validator: any)=>{
+        schema.formItemProps.rules.push({
+            async validator(rules: any[], value: any){
+                await validator(value)
+
+                return true
+            }
+        })
+    }
+    
     return schema
 }
 
@@ -115,7 +131,7 @@ export const schemaHandler: Record<string, Handler> = {
         columns = columns?.map(c => {
             commonHandler(c)
             if (container.schemaHandler[c.valueType as string]) {
-                return container.schemaHandler[c.valueType as string](c)
+                c = container.schemaHandler[c.valueType as string](c)
             }
             return c
         }) || []
@@ -177,7 +193,7 @@ export const schemaHandler: Record<string, Handler> = {
         schema.columns = schema.columns.map(c => {
             commonHandler(c)
             if (container.schemaHandler[c.valueType as string]) {
-                return container.schemaHandler[c.valueType as string](c)
+                c = container.schemaHandler[c.valueType as string](c)
             }
             return c
         })

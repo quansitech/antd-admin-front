@@ -1,4 +1,4 @@
-import {BetaSchemaForm, ProFormColumnsType, ProFormInstance} from "@ant-design/pro-components";
+import {BetaSchemaForm, ProCard, ProFormColumnsType, ProFormInstance} from "@ant-design/pro-components";
 import type {FormSchema} from "@ant-design/pro-form/es/components/SchemaForm/typing";
 import React, {useContext, useMemo, useRef, useState} from "react";
 import {cloneDeep} from "es-toolkit";
@@ -74,7 +74,7 @@ export default function (props: FormSchema & {
 
             commonHandler(c)
             if (container.schemaHandler[c.valueType as string]) {
-                return container.schemaHandler[c.valueType as string](c)
+                c = container.schemaHandler[c.valueType as string](c) as any
             }
 
             return c
@@ -121,34 +121,36 @@ export default function (props: FormSchema & {
 
 
     return <>
-        <Row justify={'center'}>
-            <Col sm={24} md={22} lg={20}>
-                <FormContext.Provider value={{
-                    getFormRef: () => formRef.current,
-                    extraRenderValues: props.extraRenderValues,
-                }}>
-                    <BetaSchemaForm columns={columns}
-                                    className={'qs-form-container'}
-                                    colProps={props.colProps}
-                                    readonly={props.readonly}
-                                    grid={true}
-                                    loading={loading}
-                                    formRef={formRef}
-                                    initialValues={props.initialValues}
-                                    scrollToFirstError={{
-                                        block: 'center',
-                                        behavior: 'smooth'
-                                    }}
-                                    onFinish={onFinish}
-                                    submitter={{
-                                        render: () => [
-                                            <Actions key={'actions'} loading={loading}
-                                                     actions={props.actions}></Actions>
-                                        ]
-                                    }}
-                    ></BetaSchemaForm>
-                </FormContext.Provider>
-            </Col>
-        </Row>
+        <ProCard bodyStyle={{marginTop: '20px'}}>
+            <Row justify={'center'}>
+                <Col sm={24} md={22} lg={20}>
+                    <FormContext.Provider value={{
+                        getFormRef: () => formRef.current,
+                        extraRenderValues: props.extraRenderValues,
+                    }}>
+                        <BetaSchemaForm columns={columns}
+                                        className={'qs-form-container'}
+                                        colProps={props.colProps}
+                                        readonly={props.readonly}
+                                        grid={true}
+                                        loading={loading}
+                                        formRef={formRef}
+                                        initialValues={props.initialValues}
+                                        scrollToFirstError={{
+                                            block: 'center',
+                                            behavior: 'smooth'
+                                        }}
+                                        onFinish={onFinish}
+                                        submitter={{
+                                            render: () => [
+                                                <Actions key={'actions'} loading={loading}
+                                                            actions={props.actions}></Actions>
+                                            ]
+                                        }}
+                        ></BetaSchemaForm>
+                    </FormContext.Provider>
+                </Col>
+            </Row>
+        </ProCard>
     </>
 }

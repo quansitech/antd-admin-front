@@ -163,7 +163,7 @@ export default function (props: TableProps) {
 
             commonHandler(c)
             if (container.schemaHandler[c.valueType as string]) {
-                return container.schemaHandler[c.valueType as string](c) as ProColumnType
+                c = container.schemaHandler[c.valueType as string](c) as any
             }
 
             return c
@@ -243,10 +243,7 @@ export default function (props: TableProps) {
                       form={{
                           initialValues: props.defaultSearchValue,
                           onValuesChange(changedValues: Record<string, any>, allValues) {
-                              let submit = realColumns.filter((c: {
-                                  dataIndex: string,
-                                  searchOnChange: boolean
-                              }) => {
+                              let submit = realColumns.filter((c: any) => {
                                   if (!c.searchOnChange) {
                                       return false
                                   }
