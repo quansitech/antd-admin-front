@@ -5,6 +5,7 @@ import {deepSet, handleCondition} from "./helpers";
 import container from "./container";
 import { itemRender } from "./FormList";
 import { lowerFirst } from "es-toolkit";
+import { Rule, RuleObject } from "antd/es/form";
 
 type Handler = (schema: any) => ProSchema | ProColumnType
 
@@ -26,6 +27,26 @@ const uploadValidator = (_: unknown, value: UploadFile[]) => {
         }
         resolve(true)
     })
+}
+
+const handleUploadRules = (rules: RuleObject[])=>{
+    const rRule = rules.find(rule=>rule.required)
+    if (rRule){
+        rules.push({
+            validator: async (_: unknown, value: any) => {
+                if (value === '0' || value === 0){
+                    throw new Error(rRule.message as string)
+                }
+                return true
+            }
+        })
+    }
+    rules.push({
+        validator: uploadValidator,
+    })
+    console.log(rules);
+    
+    return rules
 }
 
 export const commonHandler: Handler = schema => {
@@ -104,17 +125,13 @@ export const schemaHandler: Record<string, Handler> = {
 
     // 上传
     image: schema => {
-        schema.formItemProps.rules.push({
-            validator: uploadValidator,
-        })
+        schema.formItemProps.rules = handleUploadRules(schema.formItemProps?.rules);
         return {
             ...schema,
         }
     },
     file: schema => {
-        schema.formItemProps.rules.push({
-            validator: uploadValidator,
-        })
+        schema.formItemProps.rules = handleUploadRules(schema.formItemProps?.rules);
 
         return {
             ...schema,
