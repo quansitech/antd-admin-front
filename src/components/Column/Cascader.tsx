@@ -56,7 +56,7 @@ export default function (props: ColumnProps) {
         }
         if (props.fieldProps?.extraRenderValues){
             let index = -1;
-            if (tableContext && tableContext?.dataSource){
+            if (tableContext && tableContext?.dataSource && props.record){
                 const key = tableContext.getTableProps().rowKey
                 index = tableContext.dataSource.findIndex(item => item[key] === props.record[key])
             }

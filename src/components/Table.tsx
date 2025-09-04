@@ -173,6 +173,7 @@ export default function (props: TableProps) {
     const modalContext = useContext(ModalContext)
     const tabsContext = useContext(TabsContext)
 
+
     useEffect(() => {
 
         setLoading(false)
@@ -195,6 +196,7 @@ export default function (props: TableProps) {
 
 
         setLastQuery(props.defaultSearchValue || {})
+        setDataSource(postData(props.dataSource || []))
 
         if (!modalContext.inModal) {
             const query = qs.parse(window.location.search.replace(/^\?/, ''))
