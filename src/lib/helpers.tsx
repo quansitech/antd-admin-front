@@ -275,3 +275,9 @@ export function getValueByPath(obj: any, path: string[]): any {
     }
     return current;
 }
+
+export function renderTextarea(text: string) {
+    return <>
+        <div style={{whiteSpace: 'pre-wrap'}}>{text}</div>
+    </>
+}

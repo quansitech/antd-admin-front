@@ -1,7 +1,7 @@
 import {ProColumnType, ProSchema} from "@ant-design/pro-components";
 import {UploadFile} from "antd";
 import http from "./http";
-import {deepSet, handleCondition} from "./helpers";
+import {deepSet, handleCondition, renderTextarea} from "./helpers";
 import container from "./container";
 import { itemRender } from "./FormList";
 import { lowerFirst } from "es-toolkit";
@@ -116,6 +116,16 @@ export const schemaHandler: Record<string, Handler> = {
                     }
                 }
             }
+        }
+
+        return {
+            ...schema,
+        }
+    },
+
+    textarea: schema => {
+        schema.renderText = (text: string) => {
+            return renderTextarea(text as string)
         }
 
         return {
