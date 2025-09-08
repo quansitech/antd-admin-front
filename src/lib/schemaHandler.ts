@@ -44,7 +44,6 @@ const handleUploadRules = (rules: RuleObject[])=>{
     rules.push({
         validator: uploadValidator,
     })
-    console.log(rules);
     
     return rules
 }
@@ -124,8 +123,8 @@ export const schemaHandler: Record<string, Handler> = {
     },
 
     textarea: schema => {
-        schema.renderText = (text: string) => {
-            return renderTextarea(text as string)
+        schema.render = (dom,entity,index, action, schema) => {
+            return renderTextarea(entity?.[schema.dataIndex as string] || entity.value)
         }
 
         return {

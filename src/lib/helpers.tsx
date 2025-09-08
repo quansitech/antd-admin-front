@@ -277,6 +277,10 @@ export function getValueByPath(obj: any, path: string[]): any {
 }
 
 export function renderTextarea(text: string) {
+    if (typeof text !== 'string') {
+        text = '-'
+    }
+
     return <>
         <div style={{whiteSpace: 'pre-wrap'}}>{text}</div>
     </>
