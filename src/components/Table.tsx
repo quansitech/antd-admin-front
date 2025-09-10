@@ -246,22 +246,8 @@ export default function (props: TableProps) {
         });
     }
 
-    // 处理搜索表单的初始值转换（将字符串格式的日期范围转换为数组）
-    const processedDefaultSearchValue = useMemo(() => {
-        if (!props.defaultSearchValue) return props.defaultSearchValue;
-        
-        const processedValue = {...props.defaultSearchValue};
-        
-        handleSearchRangeValue(processedValue);
-        
-        return processedValue;
-    }, [props.defaultSearchValue]);
-
     const modalContext = useContext(ModalContext)
     const tabsContext = useContext(TabsContext)
-
-    
-
 
     useEffect(() => {
 
@@ -335,7 +321,7 @@ export default function (props: TableProps) {
                         reload: true,
                       }}
                       form={{
-                          initialValues: processedDefaultSearchValue,
+                          initialValues: props.defaultSearchValue,
                           onValuesChange(changedValues: Record<string, any>, allValues) {
                               let submit = realColumns.filter((c: any) => {
                                   if (!c.searchOnChange) {
