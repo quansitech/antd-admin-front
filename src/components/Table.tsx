@@ -115,6 +115,7 @@ export default function (props: TableProps) {
             dataIndex: string,
         }) => {
             switch (column.valueType) {
+                case 'date':
                 case 'dateTime':
                     data = data.map(row => {
                         const v = row[column.dataIndex]
@@ -152,26 +153,114 @@ export default function (props: TableProps) {
     const [columns, setColumns] = useState(props.columns)
 
     const realColumns = useMemo(() => {
-        return cloneDeep(columns)?.map((c: ProColumnType & {
+        const processedColumns: ProColumnType[] = [];
+        
+        /**
+         * 创建搜索用的range column
+         */
+        const createSearchRangeColumn = (
+            column: ProColumnType & { dataIndex: string, title?: any },
+            rangeType: string
+        ): ProColumnType => {
+            return {
+                ...column,
+                dataIndex: column.dataIndex + '_range',
+                valueType: rangeType as any,
+                title: typeof column.title === 'string' ? `${column.title}范围` : column.title,
+                hideInTable: true,
+                search: {
+                    transform(value: any) {
+                        return value ? value.join(' - ') : value;
+                    }
+                }
+            } as ProColumnType;
+        };
+
+        /**
+         * 创建表格显示用的column（禁用搜索）
+         */
+        const createTableColumn = (column: ProColumnType): ProColumnType => {
+            return {
+                ...column,
+                search: false
+            } as ProColumnType;
+        };
+
+        /**
+         * 处理普通column
+         */
+        const processNormalColumn = (
+            column: ProColumnType & { valueType?: string },
+            processedColumns: ProColumnType[]
+        ) => {
+            if (container.schemaHandler[column.valueType as string]) {
+                const processedColumn = container.schemaHandler[column.valueType as string](column) as ProColumnType;
+                processedColumns.push(processedColumn);
+            } else {
+                processedColumns.push(column);
+            }
+        };
+        
+        cloneDeep(columns)?.forEach((column: ProColumnType & {
             key: string,
             dataIndex: string,
             valueType?: string,
             formItemProps?: {},
             initialValue: any,
         }) => {
-            c.key = c.dataIndex as string
-
-            commonHandler(c)
-            if (container.schemaHandler[c.valueType as string]) {
-                c = container.schemaHandler[c.valueType as string](c) as any
+            // 设置column的key
+            column.key = column.dataIndex as string;
+            commonHandler(column);
+            
+            // 处理date和datetime类型的搜索栏range转换
+            if (column.search !== false && (column.valueType === 'date' || column.valueType === 'dateTime')) {
+                const rangeType = column.valueType === 'date' ? 'dateRange' : 'dateTimeRange';
+                
+                // 创建搜索专用的range column
+                const searchColumn = createSearchRangeColumn(column, rangeType);
+                
+                // 创建表格显示用的原column（禁用搜索）
+                const tableColumn = createTableColumn(column);
+                
+                processedColumns.push(searchColumn, tableColumn);
+            } else {
+                // 处理普通column
+                processNormalColumn(column, processedColumns);
             }
+        });
+        
+        return processedColumns;
+    }, [columns]);
 
-            return c
-        })
-    }, [columns])
+    const handleSearchRangeValue = (processedValue)=>{
+        Object.keys(processedValue).forEach(key => {
+            const c = props.columns.find(c => c.dataIndex === key);
+            
+            if (c?.valueType === 'date' || c?.valueType === 'dateTime') {
+                const value = processedValue[key];
+                
+                if (typeof value === 'string' && value.includes(' - ')) {
+                    processedValue[key] = value.split(' - ');
+                }
+            }
+        });
+    }
+
+    // 处理搜索表单的初始值转换（将字符串格式的日期范围转换为数组）
+    const processedDefaultSearchValue = useMemo(() => {
+        if (!props.defaultSearchValue) return props.defaultSearchValue;
+        
+        const processedValue = {...props.defaultSearchValue};
+        
+        handleSearchRangeValue(processedValue);
+        
+        return processedValue;
+    }, [props.defaultSearchValue]);
 
     const modalContext = useContext(ModalContext)
     const tabsContext = useContext(TabsContext)
+
+    
 
 
     useEffect(() => {
@@ -206,6 +295,9 @@ export default function (props: TableProps) {
                         /^\d+$/.test(query[key]) && (query[key] = parseInt(query[key]))
                     }
                 })
+
+                handleSearchRangeValue(query);
+                
 
                 formRef.current?.setFieldsValue(query)
                 setLastQuery(query)
@@ -243,7 +335,7 @@ export default function (props: TableProps) {
                         reload: true,
                       }}
                       form={{
-                          initialValues: props.defaultSearchValue,
+                          initialValues: processedDefaultSearchValue,
                           onValuesChange(changedValues: Record<string, any>, allValues) {
                               let submit = realColumns.filter((c: any) => {
                                   if (!c.searchOnChange) {
