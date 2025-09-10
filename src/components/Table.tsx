@@ -164,7 +164,7 @@ export default function (props: TableProps) {
         ): ProColumnType => {
             return {
                 ...column,
-                dataIndex: column.dataIndex + '_range',
+                dataIndex: column.dataIndex,
                 valueType: rangeType as any,
                 title: typeof column.title === 'string' ? `${column.title}范围` : column.title,
                 hideInTable: true,
