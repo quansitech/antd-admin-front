@@ -185,21 +185,6 @@ export default function (props: TableProps) {
                 search: false
             } as ProColumnType;
         };
-
-        /**
-         * 处理普通column
-         */
-        const processNormalColumn = (
-            column: ProColumnType & { valueType?: string },
-            processedColumns: ProColumnType[]
-        ) => {
-            if (container.schemaHandler[column.valueType as string]) {
-                const processedColumn = container.schemaHandler[column.valueType as string](column) as ProColumnType;
-                processedColumns.push(processedColumn);
-            } else {
-                processedColumns.push(column);
-            }
-        };
         
         cloneDeep(columns)?.forEach((column: ProColumnType & {
             key: string,
@@ -225,11 +210,17 @@ export default function (props: TableProps) {
                 processedColumns.push(searchColumn, tableColumn);
             } else {
                 // 处理普通column
-                processNormalColumn(column, processedColumns);
+                processedColumns.push(column);
             }
         });
         
-        return processedColumns;
+        return processedColumns.map(column => {
+            if (container.schemaHandler[column.valueType as string]) {
+                column = container.schemaHandler[column.valueType as string](column);
+            }
+            return column;
+        });
+
     }, [columns]);
 
     const handleSearchRangeValue = (processedValue)=>{
