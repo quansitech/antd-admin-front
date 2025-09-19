@@ -29,6 +29,7 @@ export type TableProps = ProTableProps<any, any> & {
     extraRenderValues?: Record<string, any>[],
     rowSelection: boolean,
     dateFormatter: string,
+    description?: string,
 }
 
 export default function (props: TableProps) {
@@ -285,6 +286,7 @@ export default function (props: TableProps) {
     }, []);
 
     return <>
+        <div dangerouslySetInnerHTML={{__html: props.description }}></div>
         <TableContext.Provider value={{
             getTableProps: () => props,
             getEditedValues: () => editableValues,
