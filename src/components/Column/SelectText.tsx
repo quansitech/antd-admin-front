@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import {Input, Select, Space} from 'antd'
 import { ColumnProps } from './types';
 
+import styles from './SelectText.module.scss'
+
 export default function (props: ColumnProps & {
     valueEnum?: Map<string|number, string>,
     fieldProps?: {
@@ -29,7 +31,7 @@ export default function (props: ColumnProps & {
     }
 
     return <>
-        <Space.Compact>
+        <Space.Compact className={styles.selectText}>
             <Select onChange={v=>onChange([v, value[1]])} value={value[0]} options={options} />
             <Input placeholder={props.fieldProps?.placeholder} onChange={e=>onChange([value[0], e.target.value])} value={value[1]} />
         </Space.Compact>
