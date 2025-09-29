@@ -43,6 +43,17 @@ export default function (props: TableProps) {
             ...filter,
             sort,
         }
+        // 兼容 key:value 的写法
+        Object.keys(data).forEach(key => {
+            if (key.indexOf(':') !== -1){
+                const keys = key.split(':')
+                keys.map((k, i)=>{
+                    data[k] = data[key][i]
+                })
+                delete data[key]
+            }
+        })
+        
         if (props.pagination) {
             data[props.pagination.paramName || 'page'] = params.current
             delete data.current
@@ -140,7 +151,7 @@ export default function (props: TableProps) {
     const [searchUrl, setSearchUrl] = useState(props.searchUrl)
     const formRef = useRef<FormInstance>()
     const actionRef = useRef<ActionType>()
-    const [lastQuery, setLastQuery] = useState<Record<string, any>>({})
+    const [lastQuery, setLastQuery] = useState<Record<string, any>>(props.defaultSearchValue || {})
     const [editableKeys, setEditableKeys] = useState<React.Key[]>(() => [])
     const [selectedRows, setSelectedRows] = useState<any[]>([])
     const [editableValues, setEditableValues] = useState<Record<string, any>[]>([])
@@ -238,6 +249,22 @@ export default function (props: TableProps) {
         });
     }
 
+    // 处理数组类型的搜索栏key {'key:value': ['【key】','【value】']}
+    const handleSearchArrayKey = (processedValue)=>{ 
+        realColumns.forEach(col => {
+            const dataIndex = col.dataIndex as string
+            if (dataIndex.indexOf(':') !== -1 ){
+                const keys = dataIndex.split(':')
+                const values = []
+                keys.map(key => {
+                    values.push(processedValue[key])
+                    delete processedValue[key]
+                })
+                processedValue[dataIndex] = values
+            }
+        })
+    }
+
     const modalContext = useContext(ModalContext)
     const tabsContext = useContext(TabsContext)
 
@@ -261,8 +288,6 @@ export default function (props: TableProps) {
             setSearchUrl(s)
         }
 
-
-        setLastQuery(props.defaultSearchValue || {})
         setDataSource(postData(props.dataSource || []))
 
         if (!modalContext.inModal) {
@@ -275,7 +300,7 @@ export default function (props: TableProps) {
                 })
 
                 handleSearchRangeValue(query);
-                
+                handleSearchArrayKey(query);
 
                 formRef.current?.setFieldsValue(query)
                 setLastQuery(query)
