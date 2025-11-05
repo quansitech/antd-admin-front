@@ -159,6 +159,7 @@ export default function (props: ColumnProps & {
                 itemRender={(originNode, file) => (
                     <DraggableUploadListItem originNode={originNode} file={file}/>
                 )}
+                multiple={props.fieldProps?.multiple || props.fieldProps?.maxCount > 1}
                 onPreview={props.onPreview || handlePreview}
                 onChange={({fileList}) => setFileList(fileList)}
                 beforeUpload={(f, fl) => beforeUpload(f, fl, fileList)}
