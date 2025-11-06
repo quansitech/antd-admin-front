@@ -58,6 +58,10 @@ export default function (props: ColumnProps & {
 
     return <>
         <File {...props}
+              fieldProps={{
+                ...props.fieldProps,
+                multiple: props.fieldProps.crop? false: props.fieldProps.multiple
+              }}
               uploadButton={uploadButton}
               listType={'picture-card'}
               onPreview={handlePreview}
