@@ -38,7 +38,10 @@ export default function (props: TableProps) {
         pageSize: number,
         current: number
     }, sort: Record<string, SortOrder>, filter: Record<string, (string | number)[] | null>) => {
+        setLoading(true)
+
         const data: Record<string, any> = {
+            ...formRef.current?.getFieldsValue(),
             ...params,
             ...filter,
             sort,
@@ -280,7 +283,12 @@ export default function (props: TableProps) {
 
         // 搜索
         if (!searchUrl) {
-            setSearchUrl(window.location.href)
+            let s = window.location.href
+            s = s.replace(/page=\d+&?/, '')
+            realColumns.filter(c => c.search !== false).map(c => {
+                s = s.replace(new RegExp(`${c.dataIndex}=[^&]*&?`), '')
+            })
+            setSearchUrl(s)
         }
 
         setDataSource(postData(props.dataSource || []))
@@ -301,7 +309,6 @@ export default function (props: TableProps) {
                 setLastQuery(query)
             }
         }
-
 
     }, []);
 
