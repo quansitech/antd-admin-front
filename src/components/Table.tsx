@@ -166,6 +166,8 @@ export default function (props: TableProps) {
     const [extraRenderValues, setExtraRenderValues] = useState(props.extraRenderValues)
     const [toolActions, setToolActions] = useState<TableActionProps[]>(props.actions)
     const [columns, setColumns] = useState(props.columns)
+    const [inited, setInited] = useState(false)
+    const [initialValues, setInitialValues] = useState<Record<string, any>>(props.defaultSearchValue || {})
 
     const realColumns = useMemo(() => {
         const processedColumns: ProColumnType[] = [];
@@ -306,108 +308,115 @@ export default function (props: TableProps) {
                 handleSearchArrayKey(query);
 
                 formRef.current?.setFieldsValue(query)
+                setInitialValues(query)
                 setLastQuery(query)
             }
         }
+
+        setInited(true)
 
     }, []);
 
     return <>
         <div dangerouslySetInnerHTML={{__html: props.description }}></div>
-        <TableContext.Provider value={{
-            getTableProps: () => props,
-            getEditedValues: () => editableValues,
-            editableKeys: editableKeys,
-            getActionRef: () => actionRef.current,
-            getFormRef: () => formRef.current,
-            extraRenderValues: extraRenderValues,
-            dataSource: dataSource,
-            getSelectedRows: () => selectedRows,
-        } as TableContextValue}>
-            <ProTable rowKey={props.rowKey}
-                      tableClassName={'qs-antd-table'}
-                      columns={realColumns as ProColumns[]}
-                      onDataSourceChange={setDataSource}
-                      dataSource={dataSource}
-                      pagination={pagination}
-                      loading={loading}
-                      scroll={{x: true}}
-                      postData={postData}
-                      sticky={sticky}
-                      expandable={props.expandable}
-                      options={{
-                        setting: false,
-                        density: false,
-                        reload: true,
-                      }}
-                      form={{
-                          initialValues: props.defaultSearchValue,
-                          onValuesChange(changedValues: Record<string, any>, allValues) {
-                              let submit = realColumns.filter((c: any) => {
-                                  if (!c.searchOnChange) {
-                                      return false
-                                  }
-                                  return lastQuery[c.dataIndex] !== allValues[c.dataIndex]
-                              }).length
+        {inited ? <>
+            <TableContext.Provider value={{
+                getTableProps: () => props,
+                getEditedValues: () => editableValues,
+                editableKeys: editableKeys,
+                getActionRef: () => actionRef.current,
+                getFormRef: () => formRef.current,
+                extraRenderValues: extraRenderValues,
+                dataSource: dataSource,
+                getSelectedRows: () => selectedRows,
+            } as TableContextValue}>
+                <ProTable rowKey={props.rowKey}
+                        tableClassName={'qs-antd-table'}
+                        columns={realColumns as ProColumns[]}
+                        onDataSourceChange={setDataSource}
+                        dataSource={dataSource}
+                        pagination={pagination}
+                        loading={loading}
+                        scroll={{x: true}}
+                        postData={postData}
+                        sticky={sticky}
+                        expandable={props.expandable}
+                        options={{
+                            setting: false,
+                            density: false,
+                            reload: true,
+                        }}
+                        form={{
+                            initialValues: initialValues,
+                            onValuesChange(changedValues: Record<string, any>, allValues) {
+                                let submit = realColumns.filter((c: any) => {
+                                    if (!c.searchOnChange) {
+                                        return false
+                                    }
+                                    return lastQuery[c.dataIndex] !== allValues[c.dataIndex]
+                                }).length
 
-                              if (!submit) {
-                                  return
-                              }
-                              // 是否立即搜索
-                              formRef.current?.submit()
-                          }
-                      }}
-                      rowSelection={props.rowSelection && {
-                          alwaysShowAlert: false,
-                          selectedRowKeys: selectedRows.map(item => item[props.rowKey]),
-                          onSelect(record, selected) {
-                              if (selected) {
-                                  setSelectedRows([...selectedRows, record])
-                              } else {
-                                  setSelectedRows(selectedRows.filter(item => item[props.rowKey] !== record[props.rowKey]))
-                              }
-                          },
-                          onChange(selectedRowKeys, newSelectedRows, info) {
-                              switch (info.type) {
-                                  case 'all':
-                                      if (newSelectedRows.length) {
-                                          setSelectedRows([
-                                              ...selectedRows,
-                                              ...newSelectedRows.filter(item => !selectedRows.find(s => s[props.rowKey] == item[props.rowKey]))
-                                          ])
-                                      } else {
-                                          setSelectedRows(selectedRows.filter(item => !dataSource.find(dr => dr[props.rowKey] == item[props.rowKey])))
-                                      }
-                                      break;
-                                  case 'none':
-                                      setSelectedRows([])
-                                      break;
-                              }
-                          },
-                      }}
-                      toolbar={{
-                          filter: true,
-                      }}
-                      toolBarRender={(action) => [
-                          <ToolbarActions key={'actions'} actions={toolActions}></ToolbarActions>
-                      ]}
-                      editable={{
-                          type: 'multiple',
-                          editableKeys: editableKeys,
-                          onChange: setEditableKeys,
-                          onValuesChange(record, newDataSource) {
-                              setEditableValues(diffTree(dataSource, newDataSource, props.expandable?.childrenColumnName || 'children'))
-                          }
-                      }}
-                      cardBordered
-                      manualRequest={true}
-                      request={request}
-                      formRef={formRef}
-                      actionRef={actionRef}
-                      search={props.search}
-                      dateFormatter={props.dateFormatter}
-            ></ProTable>
-        </TableContext.Provider>
+                                if (!submit) {
+                                    return
+                                }
+                                // 是否立即搜索
+                                formRef.current?.submit()
+                            }
+                        }}
+                        rowSelection={props.rowSelection && {
+                            alwaysShowAlert: false,
+                            selectedRowKeys: selectedRows.map(item => item[props.rowKey]),
+                            onSelect(record, selected) {
+                                if (selected) {
+                                    setSelectedRows([...selectedRows, record])
+                                } else {
+                                    setSelectedRows(selectedRows.filter(item => item[props.rowKey] !== record[props.rowKey]))
+                                }
+                            },
+                            onChange(selectedRowKeys, newSelectedRows, info) {
+                                switch (info.type) {
+                                    case 'all':
+                                        if (newSelectedRows.length) {
+                                            setSelectedRows([
+                                                ...selectedRows,
+                                                ...newSelectedRows.filter(item => !selectedRows.find(s => s[props.rowKey] == item[props.rowKey]))
+                                            ])
+                                        } else {
+                                            setSelectedRows(selectedRows.filter(item => !dataSource.find(dr => dr[props.rowKey] == item[props.rowKey])))
+                                        }
+                                        break;
+                                    case 'none':
+                                        setSelectedRows([])
+                                        break;
+                                }
+                            },
+                        }}
+                        toolbar={{
+                            filter: true,
+                        }}
+                        toolBarRender={(action) => [
+                            <ToolbarActions key={'actions'} actions={toolActions}></ToolbarActions>
+                        ]}
+                        editable={{
+                            type: 'multiple',
+                            editableKeys: editableKeys,
+                            onChange: setEditableKeys,
+                            onValuesChange(record, newDataSource) {
+                                setEditableValues(diffTree(dataSource, newDataSource, props.expandable?.childrenColumnName || 'children'))
+                            }
+                        }}
+                        cardBordered
+                        manualRequest={true}
+                        request={request}
+                        formRef={formRef}
+                        actionRef={actionRef}
+                        search={props.search}
+                        dateFormatter={props.dateFormatter}
+                ></ProTable>
+            </TableContext.Provider>
+        </>
+        : <></>}
+        
     </>
 }
 

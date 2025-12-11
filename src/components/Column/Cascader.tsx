@@ -16,9 +16,13 @@ export default function (props: ColumnProps) {
     const itemContext = useContext(ItemContext)
 
     const findValue = (options: any[], value: any): any => {
+        if (!value){
+            return []
+        }
+
         for (let i = 0; i < options.length; i++) {
             const option = options[i];
-            if (option.value === value) {
+            if (option.value == value) {
                 return [option.value]
             }
 
@@ -51,26 +55,30 @@ export default function (props: ColumnProps) {
         }
 
         let extraData;
-        if (props.fieldProps?.extraRenderValue){
+        // 表单
+        if (formContext && props.fieldProps?.extraRenderValue){
             extraData = props.fieldProps.extraRenderValue
         }
-        if (props.fieldProps?.extraRenderValues){
+        // 表格行数据
+        if (tableContext && props.fieldProps?.extraRenderValues && props.record){
             let index = -1;
-            if (tableContext && tableContext?.dataSource && props.record){
+            if (tableContext?.dataSource && props.record){
                 const key = tableContext.getTableProps().rowKey
                 index = tableContext.dataSource.findIndex(item => item[key] === props.record[key])
             }
-             if (itemContext && itemContext?.index !== undefined){
-                index = itemContext.index
-            }
-            extraData = props.fieldProps.extraRenderValues[index] ?? []
+            extraData = props.fieldProps.extraRenderValues[index] ?? {}
+        }
+        // 表单列表
+        if (itemContext && itemContext?.index !== undefined){
+            let index = -1;
+            index = itemContext.index
+            extraData = props.fieldProps.extraRenderValues[index] ?? {}
         }
 
-        if (extraData) {
+        if (extraData && value) {
             setOptions(extraData.options)
-            if (value) {
-                setValues(findValue(extraData.options, value))
-            }
+            setValues(findValue(extraData.options, value))
+            
             return
         }
 
