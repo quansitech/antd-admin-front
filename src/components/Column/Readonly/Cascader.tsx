@@ -21,7 +21,7 @@ export default function (props: ColumnReadonlyProps & {
     const findValue = (options: any[], value: any): any => {
         for (let i = 0; i < options.length; i++) {
             const option = options[i];
-            if (option.value === value) {
+            if (option.value == value) {
                 return [option.label]
             } else if (option.children) {
                 return [option.label, ...findValue(option.children, value)]
@@ -31,8 +31,8 @@ export default function (props: ColumnReadonlyProps & {
 
 
     useEffect(() => {
-        setText(props.fieldProps.value)
-        const value = props.fieldProps.value
+        setText(props.text)
+        const value = props.text
 
         let extraData;
         if (props.fieldProps?.extraRenderValue){
@@ -50,7 +50,7 @@ export default function (props: ColumnReadonlyProps & {
             extraData = props.fieldProps.extraRenderValues[index] ?? []
         }
 
-        if (extraData) {
+        if (extraData && value && value != '-') {
             setText(findValue(extraData.options, value).join(' / '))
             return
         }
