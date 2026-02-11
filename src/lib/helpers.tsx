@@ -243,6 +243,18 @@ export function diffTree(tree1: any[], tree2: any[], childKey: string) {
     return res
 }
 
+export function treeToList(tree: any[], childKey: string) {
+    const res = []
+    for (const key in tree) {
+        const item = tree[key]
+        res.push(filterObjectKeys(item, ['children']))
+        if (item[childKey]) {
+                res.push(...treeToList(item[childKey], childKey))
+        }
+    }
+    return res
+}
+
 export function findValuePath(obj: any, target: any, path: string[] = []): string[] | null {
     for (const key in obj) {
         if (obj.hasOwnProperty(key)) {

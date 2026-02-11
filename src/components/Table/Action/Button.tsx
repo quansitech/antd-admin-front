@@ -2,7 +2,7 @@ import {Button, Popconfirm} from "antd";
 import React, {useContext, useEffect, useState} from "react";
 import {TableContext} from "../../TableContext";
 import http from "../../../lib/http";
-import {modalShow, routerNavigateTo} from "../../../lib/helpers";
+import {modalShow, routerNavigateTo, treeToList} from "../../../lib/helpers";
 import {TableActionProps} from "./types";
 import {cloneDeep} from "es-toolkit";
 import {ModalOptions, RequestOptions} from "../../../types";
@@ -13,6 +13,7 @@ export default function (props: TableActionProps & {
         url: string,
     },
     request?: RequestOptions,
+    saveRequest?: RequestOptions,
     modal?: ModalOptions,
 }) {
     const tableContext = useContext(TableContext)
@@ -58,6 +59,41 @@ export default function (props: TableActionProps & {
                 setLoading(false)
             }
             return
+        }
+
+        if (props.saveRequest) {
+            setLoading(true)
+            let data: Record<string, any[]> | Record<string, any>[] = tableContext.getEditedValues()
+            if (!data.length){
+                data = treeToList(tableContext.getDataSource(), tableContext.getTableProps().expandable?.childrenColumnName || 'children')
+            }
+
+            if (props.saveRequest.data) {
+                let resetData: Record<string, any> = {}
+                for (const dataKey in props.saveRequest.data) {
+                    resetData[dataKey] = []
+                    const match = props.saveRequest.data[dataKey].match(/^__(\w+)__$/)
+                    if (!match) {
+                        continue
+                    }
+                    data.forEach(item => {
+                        resetData[dataKey].push(item[match[1]])
+                    })
+                }
+                data = resetData
+            }
+
+            try {
+                await http({
+                    method: props.saveRequest.method,
+                    url: props.saveRequest.url,
+                    data: data,
+                })
+
+                await tableContext.getActionRef()?.reload()
+            } finally {
+                setLoading(false)
+            }
         }
 
         if (props.modal) {

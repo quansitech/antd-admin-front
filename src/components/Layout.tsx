@@ -4,11 +4,12 @@ import New from "./Layout/New";
 import {App, App as AntdApp} from "antd";
 import global from "../lib/global";
 import Blank from "./Layout/Blank";
-import {Head, usePage} from "@inertiajs/react";
+import {Head, router, usePage} from "@inertiajs/react";
 import {ProConfigProvider} from "@ant-design/pro-components";
 import {getProValueTypeMap} from "../lib/helpers";
 import type {LayoutProps} from "./LayoutContext";
 import {LayoutContext} from "./LayoutContext";
+import _ from "lodash";
 
 function ChildApp(props: {
     enableNewLayout: boolean,
@@ -48,7 +49,7 @@ export default function (props: Record<string, any> & React.PropsWithChildren<Ex
 
     const [layoutProps, setLayoutProps] = useState<LayoutProps>({
         title: pageProps.layoutProps?.title || '',
-        metaTitle: '',
+        metaTitle: pageProps.layoutProps?.metaTitle || '',
         topMenuActiveKey: pageProps.layoutProps?.topMenuActiveKey,
         menuActiveKey: pageProps.layoutProps?.menuActiveKey,
         loading: false,
@@ -62,7 +63,9 @@ export default function (props: Record<string, any> & React.PropsWithChildren<Ex
     })
 
     const assignProps = (newProps: LayoutProps) => {
-        setLayoutProps(Object.assign(layoutProps, newProps))
+        setLayoutProps((prev)=>{
+            return _.cloneDeep(Object.assign(prev, newProps))
+        })
     }
 
     useEffect(() => {

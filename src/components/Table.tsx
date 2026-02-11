@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useMemo, useRef, useState} from "react";
+import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
 import {ActionType, FormInstance, ProColumns, ProColumnType, ProTable, ProTableProps} from "@ant-design/pro-components";
 import type {SortOrder} from "antd/lib/table/interface";
 import {TablePaginationConfig} from "antd/es/table";
@@ -11,7 +11,7 @@ import http from "../lib/http";
 import "./Table.scss"
 import {ModalContext} from "./ModalContext";
 import {commonHandler} from "../lib/schemaHandler";
-import {diffTree, getValueByPath, routerNavigateTo} from "../lib/helpers";
+import {diffTree, getValueByPath, routerNavigateTo, treeToList} from "../lib/helpers";
 import qs from 'qs';
 import {TabsContext} from "./TabsContext";
 
@@ -30,6 +30,7 @@ export type TableProps = ProTableProps<any, any> & {
     rowSelection: boolean,
     dateFormatter: string,
     description?: string,
+    defaultEditMode?: boolean,
 }
 
 export default function (props: TableProps) {
@@ -87,6 +88,8 @@ export default function (props: TableProps) {
                     setDataSource(postData(props.dataSource))
                     setExtraRenderValues(props.extraRenderValues)
                     setPagination(props.pagination)
+
+                    afterProcessData()
                 },
                 onFinish: () => {
                     setLoading(false)
@@ -111,6 +114,9 @@ export default function (props: TableProps) {
             setDataSource(postData(props.dataSource))
             setExtraRenderValues(props.extraRenderValues)
             setPagination(props.pagination)
+
+            afterProcessData()
+
             return {
                 data: res.data.dataSource || [],
                 success: true,
@@ -119,6 +125,16 @@ export default function (props: TableProps) {
             setLoading(false)
         }
     }
+
+    const afterProcessData = useCallback(() => { 
+        setTimeout(() => { 
+            const keys = treeToList(dataSource, props.expandable?.childrenColumnName || 'children').map(r => r[props.rowKey] + '')
+            if (props.defaultEditMode){
+                setEditableKeys(keys)
+                console.log(555, keys);
+            }
+        }, 500)
+    }, [])
 
     const postData = (data: any[]) => {
         if (!isArray(data)) {
@@ -294,6 +310,7 @@ export default function (props: TableProps) {
         }
 
         setDataSource(postData(props.dataSource || []))
+        afterProcessData()
 
         if (!modalContext.inModal) {
             const query = qs.parse(window.location.search.replace(/^\?/, ''))
@@ -328,6 +345,7 @@ export default function (props: TableProps) {
                 getFormRef: () => formRef.current,
                 extraRenderValues: extraRenderValues,
                 dataSource: dataSource,
+                getDataSource: () => dataSource,
                 getSelectedRows: () => selectedRows,
             } as TableContextValue}>
                 <ProTable rowKey={props.rowKey}
@@ -402,7 +420,7 @@ export default function (props: TableProps) {
                             editableKeys: editableKeys,
                             onChange: setEditableKeys,
                             onValuesChange(record, newDataSource) {
-                                setEditableValues(diffTree(dataSource, newDataSource, props.expandable?.childrenColumnName || 'children'))
+                                setEditableValues(treeToList(newDataSource, props.expandable?.childrenColumnName || 'children'))
                             }
                         }}
                         cardBordered

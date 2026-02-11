@@ -3,6 +3,7 @@ import {TableContext} from "../../TableContext";
 import React, {useContext, useState} from "react";
 import http from "../../../lib/http";
 import {TableActionProps} from "./types";
+import { treeToList } from "../../../lib/helpers";
 
 export default function (props: TableActionProps & {
     props: ButtonProps,
@@ -46,18 +47,22 @@ export default function (props: TableActionProps & {
     const onSaveClick = async () => {
         setLoading(true)
         let data: Record<string, any[]> | Record<string, any>[] = tableContext.getEditedValues()
+        if (!data.length){
+            data = treeToList(tableContext.getDataSource(), tableContext.getTableProps().expandable?.childrenColumnName || 'children')
+        }
         if (props.saveRequest.data) {
-            data = {}
+            let resetData: Record<string, any> = {}
             for (const dataKey in props.saveRequest.data) {
                 data[dataKey] = []
                 const match = props.saveRequest.data[dataKey].match(/^__(\w+)__$/)
                 if (!match) {
                     continue
                 }
-                tableContext.getEditedValues().forEach(item => {
-                    data[dataKey].push(item[match[1]])
+                data.forEach(item => {
+                    resetData[dataKey].push(item[match[1]])
                 })
             }
+            data = resetData
         }
 
         try {

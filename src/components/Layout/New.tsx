@@ -1,6 +1,6 @@
 // @ts-nocheck
 import {MenuDataItem, PageContainer, ProLayout, ProProvider} from "@ant-design/pro-components";
-import {Button, Dropdown, Menu, MenuProps, Space} from "antd";
+import {Button, Dropdown, Menu, MenuProps, Space, Spin} from "antd";
 import {LayoutContext, LayoutProps} from "../LayoutContext";
 import React, {useContext, useEffect, useMemo, useRef, useState} from "react";
 import {routerNavigateTo} from "../../lib/helpers";
@@ -17,7 +17,7 @@ export default function ({children, pageTitle, setDarkMode}: {
     pageTitle: string,
     siteTitle: string,
     setDarkMode: (darkMode: boolean) => void
-}) {
+}) {    
     const contentRef = useRef<HTMLDivElement>(null)
     const layoutContext = useContext(LayoutContext)
     const pageProps = usePage<any>().props
@@ -146,7 +146,6 @@ export default function ({children, pageTitle, setDarkMode}: {
 
     return <>
         <ProLayout title={layoutProps.title}
-                   loading={layoutContext.props.loading}
                    layout="mix"
                    actionsRender={actionsRender}
                    route={route}
@@ -204,9 +203,11 @@ export default function ({children, pageTitle, setDarkMode}: {
                    } as MenuProps}
         >
 
-            <PageContainer title={pageTitle}>
-                <div ref={contentRef}>{children}</div>
-            </PageContainer>
+            <Spin spinning={layoutContext.props.loading}>
+                <PageContainer title={pageTitle}>
+                    <div className="page-content-wrap" ref={contentRef}>{children}</div>
+                </PageContainer>
+            </Spin>
         </ProLayout>
     </>
 }
