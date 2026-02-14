@@ -2,7 +2,7 @@ import {Button, Popconfirm} from "antd";
 import React, {useContext, useEffect, useState} from "react";
 import {TableContext} from "../../TableContext";
 import http from "../../../lib/http";
-import {modalShow, routerNavigateTo, treeToList} from "../../../lib/helpers";
+import {modalShow, replaceParams, replaceUrl, routerNavigateTo, treeToList} from "../../../lib/helpers";
 import {TableActionProps} from "./types";
 import {cloneDeep} from "es-toolkit";
 import {ModalOptions, RequestOptions} from "../../../types";
@@ -18,8 +18,46 @@ export default function (props: TableActionProps & {
 }) {
     const tableContext = useContext(TableContext)
 
-    const onClick = async () => {
+    const handleRequestDataWithSelection = (requestData: Record<string, any>)=>{
         const rowKey = tableContext.getTableProps().rowKey
+
+        const selectRows = tableContext.getSelectedRows()
+        const data = {}
+        selectRows.forEach(row=>{
+            Object.keys(row).forEach(key=>{
+                if (!data[key]){
+                    data[key] = []
+                }
+                data[key].push(row[key])
+            })
+            data['selection'] = selectRows.map(row=>row[rowKey])
+        })
+
+        return replaceParams(requestData, data)
+
+    }
+
+    const handleSeletionRequestUrl = (url: string)=>{
+        const selectRows = tableContext.getSelectedRows()
+        const data = {}
+        selectRows.forEach(row=>{
+            Object.keys(row).forEach(key=>{
+                if (!data[key]){
+                    data[key] = []
+                }
+                data[key].push(row[key])
+            })
+        })
+        
+        Object.keys(data).forEach(key=>{
+            data[key] = data[key].join(',')
+        })
+
+        return replaceUrl(url, data)
+    }
+
+
+    const onClick = async () => {
         if (props.link) {
             routerNavigateTo(props.link.url)
             return
@@ -27,21 +65,9 @@ export default function (props: TableActionProps & {
 
         if (props.request) {
             setLoading(true)
-            const data = cloneDeep(props.request.data) || {}
+            let data = cloneDeep(props.request.data) || {}
             if (props.relateSelection) {
-                const selectedRows = tableContext.getSelectedRows()
-
-                data.selection = selectedRows?.map(item => item[rowKey])
-                for (const key in data) {
-                    if (typeof data[key] !== 'string') {
-                        continue
-                    }
-                    const matches = data[key].match(/^__(\w+)__$/)
-                    if (!matches) {
-                        continue
-                    }
-                    data[key] = selectedRows?.map(item => item[matches[1]])
-                }
+                data = handleRequestDataWithSelection(data)
             }
             try {
                 await http({
@@ -97,14 +123,33 @@ export default function (props: TableActionProps & {
         }
 
         if (props.modal) {
+            const modal = cloneDeep(props.modal)
             setLoading(true)
-            await modalShow({
-                ...props.modal,
-                contexts: {
-                    tableContext,
-                },
-            })
-            setLoading(false)
+
+            if (props.relateSelection && modal.content.url) {
+                modal.content.url = handleSeletionRequestUrl(modal.content.url)
+            }
+
+            if (props.relateSelection && modal.content.request) {
+                
+                modal.content.request.url = handleSeletionRequestUrl(modal.content.request.url)
+                
+                if (modal.content.request.data){
+                    modal.content.request.data = handleRequestDataWithSelection(modal.content.request.data)
+                }
+            }
+
+            try {
+
+                await modalShow({
+                    ...modal,
+                    contexts: {
+                        tableContext,
+                    },
+                })
+            } finally {
+                setLoading(false)
+            }
             return
         }
 

@@ -66,9 +66,18 @@ export function createScript(url: string) {
 export async function modalShow(options: ModalOptions) {
     let props = options.content.props
     if (options.content.url) {
-        const res = await http({
+        options.content.request = {
             method: 'get',
             url: options.content.url,
+        }
+    }
+
+    if (options.content.request){
+        const r = options.content.request
+        const res = await http({
+            method: r.method,
+            url: r.url,
+            data: r.data,
             headers: {
                 'X-Modal': '1',
             }

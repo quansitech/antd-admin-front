@@ -23,5 +23,6 @@ type ModalOptions = {
         type: 'form' | 'table',
         props?: any,
         url?: string,
+        request?: RequestOptions,
     },
 }
