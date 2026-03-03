@@ -42,14 +42,14 @@ export default function (props: TableProps) {
         setLoading(true)
 
         const data: Record<string, any> = {
-            ...formRef.current?.getFieldsValue(),
+            ...(formRef?.current?.getFieldsValue() || {}),
             ...params,
             ...filter,
             sort,
         }
         // 兼容 key:value 的写法
         Object.keys(data).forEach(key => {
-            if (key.indexOf(':') !== -1){
+            if (key.indexOf(':') !== -1 && data[key]){
                 const keys = key.split(':')
                 keys.map((k, i)=>{
                     data[k] = data[key][i]
