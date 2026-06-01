@@ -93,7 +93,8 @@ export default function (props: Record<string, any> & React.PropsWithChildren<Ex
 
     useEffect(() => {
         const listener = (e: GlobalEvent<'invalid'>) => {
-            if (!e.detail.response.headers['content-type'].includes('json')) {
+            const type = e.detail.response.headers['content-type'] as string
+            if (!type.includes('json')) {
                 return
             }
             e.preventDefault()

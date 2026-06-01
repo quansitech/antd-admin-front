@@ -56,11 +56,12 @@ http.interceptors.response.use(response => {
     return response
 }, error => {
     if (error instanceof AxiosError) {
-        if (error.response?.headers['content-type'].includes('application/json')) {
+        const type = error.response?.headers['content-type'] as string
+        if (type.includes('application/json')) {
             global.notification.error({
                 message: error.response?.data?.info || '请求错误，请稍候重试'
             })
-        } else if (error.response?.headers['content-type'].includes('text/html')) {
+        } else if (type.includes('text/html')) {
             const parser = new DOMParser;
             const doc = parser.parseFromString(error.response?.data, 'text/html');
             const title = doc.querySelector('title')?.textContent;
