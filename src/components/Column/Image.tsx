@@ -6,12 +6,14 @@ import {ColumnProps} from "./types";
 import File from "./File";
 import ImgCrop from 'antd-img-crop';
 import type {ImagePreviewType} from "rc-image/es/Image"
+import container from "../../lib/container";
 
 export default function (props: ColumnProps & {
     fieldProps?: {
         maxCount?: number,
         crop?: {
             ratio: string,
+            modalProps: any,
         }
     }
 }) {
@@ -47,7 +49,11 @@ export default function (props: ColumnProps & {
             }
 
             return <>
-                <ImgCrop quality={props.fieldProps.crop?.quality || 0.92} rotationSlider aspect={aspect}>
+                <ImgCrop quality={props.fieldProps.crop?.quality || 0.92}
+                        rotationSlider
+                        modalProps={container.config.form.columnType.image.crop.modalProps}
+                        aspect={aspect}
+                >
                     {dom}
                 </ImgCrop>
             </>

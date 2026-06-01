@@ -12,6 +12,21 @@ import {calc_file_hash} from "./upload";
 const components: Record<string, any> = {}
 
 const container = {
+
+    config: {
+        form: {
+            columnType: {
+                image: {
+                    crop: {
+                        modalProps: {
+                            zIndex: 2000
+                        }
+                    }
+                }
+            }
+        }
+    },
+
     register(name: string, componentLoader: any) {
         if (this.check(name)) {
             throw new Error(`Component ${name} already registered`)
