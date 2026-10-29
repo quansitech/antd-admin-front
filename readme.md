@@ -778,6 +778,11 @@ const contexts = modalContext.contexts
 
 ## 更新日志
 
+### 1.3.4 (2026-10-29)
+
+**Bug 修复**
+- 修复 Cascader 清空时将字段名写入表单值，导致查询参数出现 `area_id=area_id` 的问题
+
 ### 1.3.0 (2026-02-11)
 
 **新增功能**

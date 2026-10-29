@@ -121,7 +121,7 @@ export default function (props: ColumnProps) {
     const onChange = (values: any[]) => {
         setValues(values)
         if (!values?.length) {
-            props.fieldProps?.onChange(props.fieldProps['data-field'], undefined)
+            props.fieldProps?.onChange(props.fieldProps.multiple ? [] : undefined)
             return
         }
 
